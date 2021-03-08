@@ -1,0 +1,27 @@
+---
+apiVersion: operator.ibm.com/v1beta1
+kind: Crossplane
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane-operator
+  name: ibm-crossplane
+spec:
+  rbacManager:
+    replicas: 1
+  replicas: 1
+  resourcesCrossplane:
+    limits:
+      cpu: 100m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  resourcesRBACManager:
+    limits:
+      cpu: 100m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi

@@ -1,0 +1,62 @@
+replicas: 1
+
+deploymentStrategy: RollingUpdate
+
+image:
+  repository: quay.io/opencloudio/ibm-crossplane:1.0.0-beta
+  pullPolicy: Always
+
+leaderElection: true
+args: {}
+
+provider:
+  packages: []
+
+configuration:
+  packages: []
+
+imagePullSecrets:
+- dockerhub
+
+rbacManager:
+  deploy: true
+  replicas: 1
+  managementPolicy: Basic
+  leaderElection: true
+  args: {}
+
+priorityClassName: ""
+
+resourcesCrossplane:
+  limits:
+    cpu: 100m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+securityContextCrossplane: {}
+
+packageCache:
+  medium: ""
+  sizeLimit: 5Mi
+  pvc: ""
+
+resourcesRBACManager:
+  limits:
+    cpu: 100m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+securityContextRBACManager:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+
+alpha:
+  oam:
+    enabled: false
+
+metrics:
+  enabled: false

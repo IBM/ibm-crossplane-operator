@@ -1,0 +1,8 @@
+# Use the 'create api' subcommand to add watches to this file.
+- group: operator.ibm.com
+  version: v1beta1
+  kind: Crossplane
+  chart: helm-charts/ibm-crossplane
+  overrideValues:
+    image.repository: ${IBM_CROSSPLANE_IMAGE}
+# +kubebuilder:scaffold:watch
