@@ -31,4 +31,4 @@ maintainers:
   - email: info@crossplane.io
     name: Crossplane Maintainers
 name: ibm-crossplane
-version: 0.5.0
+version: 0.2.0

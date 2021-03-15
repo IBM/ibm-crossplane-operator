@@ -35,31 +35,6 @@ VCS_REF ?= $(shell git rev-parse HEAD)
 VERSION ?= $(shell cat RELEASE_VERSION)
 PREVIOUS_VERSION ?= $(shell cat PREVIOUS_VERSION)
 
-LOCAL_OS := $(shell uname)
-ifeq ($(LOCAL_OS),Linux)
-    TARGET_OS ?= linux
-    XARGS_FLAGS="-r"
-	STRIP_FLAGS=
-else ifeq ($(LOCAL_OS),Darwin)
-    TARGET_OS ?= darwin
-    XARGS_FLAGS=
-	STRIP_FLAGS="-x"
-else
-    $(error "This system's OS $(LOCAL_OS) isn't recognized/supported")
-endif
-
-ARCH := $(shell uname -m)
-LOCAL_ARCH := "amd64"
-ifeq ($(ARCH),x86_64)
-    LOCAL_ARCH="amd64"
-else ifeq ($(ARCH),ppc64le)
-    LOCAL_ARCH="ppc64le"
-else ifeq ($(ARCH),s390x)
-    LOCAL_ARCH="s390x"
-else
-    $(error "This system's ARCH $(ARCH) isn't recognized/supported")
-endif
-
 # Current Operator image name
 OPERATOR_IMAGE_NAME ?= ibm-crossplane-operator
 # Current Operator bundle image name
@@ -88,10 +63,10 @@ include common/Makefile.common.mk
 ##@ Develement tools
 ############################################################
 
-OS    = $(shell uname -s | tr '[:upper:]' '[:lower:]')
-ARCH  = $(shell uname -m | sed 's/x86_64/amd64/')
-OSOPER   = $(shell uname -s | tr '[:upper:]' '[:lower:]' | sed 's/darwin/apple-darwin/' | sed 's/linux/linux-gnu/')
-ARCHOPER = $(shell uname -m )
+OS    := $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ARCH  := $(shell uname -m | sed 's/x86_64/amd64/')
+OSOPER   := $(shell uname -s | tr '[:upper:]' '[:lower:]' | sed 's/darwin/apple-darwin/' | sed 's/linux/linux-gnu/')
+ARCHOPER := $(shell uname -m )
 
 tools: kustomize helm-operator opm yq ## Install all development tools
 
@@ -129,7 +104,7 @@ ifeq (, $(shell which opm 2>/dev/null))
 	set -e ;\
 	mkdir -p bin ;\
 	echo "Downloading opm ...";\
-	curl -LO https://github.com/operator-framework/operator-registry/releases/download/$(OPM_VERSION)/$(OS)-amd64-opm ;\
+	curl -LO https://github.com/operator-framework/operator-registry/releases/download/$(OPM_VERSION)/$(OS)-$(ARCH)-opm ;\
 	mv $(OS)-amd64-opm ./bin/opm ;\
 	chmod +x ./bin/opm ;\
 	}
@@ -167,36 +142,52 @@ run: helm-operator ## Run against the configured Kubernetes cluster in ~/.kube/c
 install: kustomize ## Install CRDs, controller, and sample CR to a cluster
 	$(KUSTOMIZE) build config/development | kubectl apply -f -
 	$(KUSTOMIZE) build config/samples | kubectl apply -f -
+	- kubectl config set-context --current --namespace=ibm-crossplane-system
 
 uninstall: kustomize ## Uninstall CRDs, controller, and sample CR from a cluster
 	$(KUSTOMIZE) build config/samples | kubectl delete --ignore-not-found -f -
 	$(KUSTOMIZE) build config/development | kubectl delete --ignore-not-found -f -
+	- make clean-cluster
 
-deploy-csv:
-	$(eval NAMESPACE := $(shell oc project -q))
-	- cat bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml \
-		| sed -e "s|image: quay.io/opencloudio/ibm-crossplane-operator:latest|image: $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-$(ARCH):dev|g" \
-		| sed -e "s|namespace: placeholder|namespace: $(NAMESPACE)|g" | kubectl apply -f -
+install-catalog-source: ## Install the operator catalog source for testing
+	./common/scripts/update_catalogsource.sh $(OPERATOR_IMAGE_NAME) $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-catalog:$(VERSION)
+
+uninstall-catalog-source: ## Uninstall the operator catalog source
+	- kubectl -n openshift-marketplace delete catalogsource $(OPERATOR_IMAGE_NAME)
+
+install-operator: install-catalog-source ## Install the operator from catalog source
+	- kubectl apply -f config/samples/subscription.yaml 
+
+uninstall-operator: uninstall-catalog-source ## Install the operator from catalog source
+	- kubectl get csv -o name | grep ibm-crossplane | xargs kubectl delete
+	- kubectl delete --ignore-not-found -f config/samples/subscription.yaml
+	- make clean-cluster
+
+install-cr: # Install sample CR
+	- kubectl apply -f config/samples/operator_v1beta1_crossplane.yaml
+
+uninstall-cr: # Uninstall sample CR
+	- kubectl get configurations -o name --ignore-not-found | xargs kubectl delete
+	- kubectl delete --ignore-not-found -f config/samples/operator_v1beta1_crossplane.yaml
 
 clean-cluster: ## Clean up all the resources left in the Kubernetes cluster
 	@echo ....... Cleaning up .......
-	- kubectl get platformapis -o name | xargs kubectl delete
+	- kubectl get crossplanes -o name | xargs kubectl delete
 	- kubectl get csv -o name | grep ibm-crossplane | xargs kubectl delete
 	- kubectl get sub -o name | grep ibm-crossplane | xargs kubectl delete
 	- kubectl get installplans | grep ibm-crossplane | awk '{print $$1}' | xargs kubectl delete installplan
 	- kubectl get serviceaccounts -o name | grep ibm-crossplane | xargs kubectl delete
-	- kubectl get clusterrole -o name | grep ibm-crossplane | xargs kubectl delete
-	- kubectl get clusterrolebinding -o name | grep ibm-crossplane | xargs kubectl delete	
-	- kubectl get crd -o name | grep platformapi | xargs kubectl delete
+	- kubectl get configurationrevisions -o name | xargs kubectl patch -p '{"metadata":{"finalizers": []}}' --type=merge
+	- kubectl get configurationrevisions -o name | xargs kubectl delete
+	- kubectl get compositeresourcedefinitions -o name | xargs kubectl patch -p '{"metadata":{"finalizers": []}}' --type=merge
+	- kubectl get compositeresourcedefinitions -o name | xargs kubectl delete
+	- kubectl get configurations -o name --ignore-not-found | xargs kubectl delete
+	- kubectl patch locks lock -p '{"metadata":{"finalizers": []}}' --type=merge
+	- kubectl get crds,clusterroles,clusterrolebindings -o name | grep crossplane | xargs kubectl delete --ignore-not-found
+	- kubectl -n openshift-marketplace get jobs -o name | xargs kubectl -n openshift-marketplace delete --ignore-not-found
 
 global-pull-secrets: ## Update global pull secrets to use artifactory registries
 	./common/scripts/update_global_pull_secrets.sh
-
-deploy-catalog: build-catalog ## Deploy the operator bundle catalogsource for testing
-	./common/scripts/update_catalogsource.sh $(OPERATOR_IMAGE_NAME) $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-catalog:$(VERSION)
-
-undeploy-catalog: ## Undeploy the operator bundle catalogsource
-	- kubectl -n openshift-marketplace delete catalogsource $(OPERATOR_IMAGE_NAME)
 
 ############################################################
 ##@ Test
@@ -217,48 +208,47 @@ build-dev: build-image-dev ## Build operator image for development
 build-catalog: build-bundle-image build-catalog-source ## Build bundle image and catalog source image for development
 
 # Build bundle image
-build-bundle-image: 
-	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
+build-bundle-image: bundle
 	@cp -f bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml /tmp/ibm-crossplane-operator.clusterserviceversion.yaml
 	@$(YQ) d -i bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml "spec.replaces"
-	$(CONTAINER_CLI) build -f bundle.Dockerfile -t $(REGISTRY)/$(BUNDLE_IMAGE_NAME)-$(ARCH):$(VERSION) .
-	$(CONTAINER_CLI) push $(REGISTRY)/$(BUNDLE_IMAGE_NAME)-$(ARCH):$(VERSION)
+	sed -i -e "s|quay.io/opencloudio|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
+	$(CONTAINER_CLI) build -f bundle.Dockerfile -t $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH) .
+	$(CONTAINER_CLI) push $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH)
 	@mv /tmp/ibm-crossplane-operator.clusterserviceversion.yaml bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
 
 # Build catalog source
 build-catalog-source:
-	$(OPM) -u $(CONTAINER_CLI) index add --bundles $(REGISTRY)/$(BUNDLE_IMAGE_NAME)-$(ARCH):$(VERSION) --tag $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-catalog:$(VERSION)
+	$(OPM) -u $(CONTAINER_CLI) index add --bundles $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH) --tag $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-catalog:$(VERSION)
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-catalog:$(VERSION)
 
 # Build image for development
 build-image-dev:
-	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
-	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-$(ARCH):dev \
+	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
 	-f Dockerfile .
-	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-$(ARCH):dev
+	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
 # Build image for amd64
 build-image-amd64: $(CONFIG_DOCKER_TARGET)
 	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
-	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-$(ARCH):$(VERSION) \
+	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
 	-f Dockerfile .
-	@if [ $(BUILD_LOCALLY) -ne 1 ]; then $(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-amd64:$(VERSION); fi
+	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
 
 # Build image for ppc64le
 build-image-ppc64le: $(CONFIG_DOCKER_TARGET)
-	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-ppc64le:$(VERSION) \
+	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
 	-f Dockerfile.ppc64le .
-	@if [ $(BUILD_LOCALLY) -ne 1 ]; then $(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-ppc64le:$(VERSION); fi
+	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
 
 # Build image for s390x
 build-image-s390x: $(CONFIG_DOCKER_TARGET)
-	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-s390x:$(VERSION) \
+	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
 	-f Dockerfile.s390x .
-	@if [ $(BUILD_LOCALLY) -ne 1 ]; then $(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-s390x:$(VERSION); fi
+	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
 
 ############################################################
 ##@ Release
@@ -275,24 +265,19 @@ bundle-manifests:
 	@./common/scripts/adjust_manifests.sh $(VERSION) $(PREVIOUS_VERSION)
 
 images: build-image-amd64 ## Build and publish the multi-arch operator image
-ifeq ($(TARGET_OS),$(filter $(TARGET_OS),linux darwin))
-	@curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(TARGET_OS)-amd64
-	@chmod +x /tmp/manifest-tool
-	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
-	/tmp/manifest-tool push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-ARCH:$(VERSION) --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
-	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
-	/tmp/manifest-tool push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-ARCH:$(VERSION) --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
-endif
-
 # images: build-image-amd64 build-image-ppc64le build-image-s390x ## Build and publish the multi-arch operator image
-# ifeq ($(TARGET_OS),$(filter $(TARGET_OS),linux darwin))
-#	@curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(TARGET_OS)-amd64
-#	@chmod +x /tmp/manifest-tool
+ifeq ($(OS),$(filter $(OS),linux darwin))
+	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(OS)-$(ARCH)
+	chmod +x /tmp/manifest-tool
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
+	/tmp/manifest-tool push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
+	/tmp/manifest-tool push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
 #	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
-#	/tmp/manifest-tool push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-ARCH:$(VERSION) --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
+#	/tmp/manifest-tool push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 #	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
-#	/tmp/manifest-tool push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-ARCH:$(VERSION) --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
-# endif
+#	/tmp/manifest-tool push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+endif
 
 ############################################################
 ##@ Help

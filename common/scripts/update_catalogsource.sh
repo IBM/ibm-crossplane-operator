@@ -24,6 +24,11 @@ if [[ ( -z "${CATALOG_SOURCE_NAME}" || -z "${CATALOG_SOURCE_IMAGE}" ) ]]; then
     exit 1
 fi
 
+echo "[INFO] Cleaning up jobs in openshift-marketplace namespace"
+oc -n openshift-marketplace get jobs -o name | xargs oc -n openshift-marketplace delete --ignore-not-found
+
+sleep 5
+
 cat <<EOF | tee >(kubectl apply -f -) | cat
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource

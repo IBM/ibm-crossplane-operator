@@ -13,24 +13,17 @@ metadata:
               "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
               "app.kubernetes.io/name": "ibm-crossplane-operator"
             },
-            "name": "ibm-crossplane"
+            "name": "ibm-crossplane",
+            "namespace": "ibm-crossplane-system"
           },
           "spec": {
-            "rbacManager": {
-              "replicas": 1
+            "configuration": {
+              "packages": [
+                "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:latest"
+              ]
             },
             "replicas": 1,
             "resourcesCrossplane": {
-              "limits": {
-                "cpu": "100m",
-                "memory": "512Mi"
-              },
-              "requests": {
-                "cpu": "100m",
-                "memory": "256Mi"
-              }
-            },
-            "resourcesRBACManager": {
               "limits": {
                 "cpu": "100m",
                 "memory": "512Mi"
@@ -49,7 +42,7 @@ metadata:
     containerImage: quay.io/opencloudio/ibm-crossplane-operator:latest
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
-    olm.skipRange: '>=0.1.0 <0.5.0'
+    olm.skipRange: '>=0.1.0 <0.2.0'
     operators.operatorframework.io/builder: operator-sdk-v1.4.2
     operators.operatorframework.io/project_layout: helm.sdk.operatorframework.io/v1
     repository: https://github.com/IBM/ibm-crossplane-operator
@@ -57,7 +50,7 @@ metadata:
   labels:
     operatorframework.io/arch.amd64: supported
     operatorframework.io/os.linux: supported
-  name: ibm-crossplane-operator.v0.5.0
+  name: ibm-crossplane-operator.v0.2.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -138,9 +131,47 @@ spec:
       clusterPermissions:
         - rules:
             - apiGroups:
-                - ""
+                - rbac.authorization.k8s.io
               resources:
-                - configmaps
+                - clusterroles
+              verbs:
+                - create
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resourceNames:
+                - ibm-crossplane
+                - ibm-crossplane-bedrock-shim
+              resources:
+                - clusterroles
+              verbs:
+                - delete
+                - get
+                - list
+                - patch
+                - watch
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - clusterrolebindings
+              verbs:
+                - create
+                - list
+                - watch
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resourceNames:
+                - ibm-crossplane
+                - ibm-crossplane-bedrock-shim
+              resources:
+                - clusterrolebindings
+              verbs:
+                - delete
+                - get
+                - patch
+            - apiGroups:
+                - apiextensions.k8s.io
+              resources:
+                - customresourcedefinitions
               verbs:
                 - create
                 - delete
@@ -155,19 +186,19 @@ spec:
                 - events
               verbs:
                 - create
-                - get
+                - update
+                - patch
+                - delete
+            - apiGroups:
+                - ""
+              resources:
+                - secrets
+              verbs:
                 - list
                 - watch
             - apiGroups:
-                - apiextensions.k8s.io
-              resources:
-                - customresourcedefinitions
-              verbs:
-                - create
-                - get
-                - update
-            - apiGroups:
                 - apiextensions.crossplane.io
+                - pkg.crossplane.io
               resources:
                 - '*'
               verbs:
@@ -179,16 +210,9 @@ spec:
                 - update
                 - watch
             - apiGroups:
-                - rbac.authorization.k8s.io
+                - shim.bedrock.ibm.com
               resources:
-                - clusterroles
-                - clusterrolebindings
-              verbs:
                 - '*'
-            - apiGroups:
-                - pkg.crossplane.io
-              resources:
-                - locks
               verbs:
                 - create
                 - delete
@@ -231,7 +255,7 @@ spec:
                           fieldRef:
                             fieldPath: metadata.annotations['olm.targetNamespaces']
                       - name: IBM_CROSSPLANE_IMAGE
-                        value: quay.io/opencloudio/ibm-crossplane:1.0.0-beta
+                        value: quay.io/opencloudio/ibm-crossplane:1.0.0
                     image: quay.io/opencloudio/ibm-crossplane-operator:latest
                     imagePullPolicy: Always
                     name: ibm-crossplane-operator
@@ -257,28 +281,12 @@ spec:
                 - ""
               resources:
                 - configmaps
-                - endpoints
                 - events
-                - persistentvolumeclaims
                 - pods
                 - secrets
                 - serviceaccounts
                 - services
                 - services/finalizers
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - operator.ibm.com
-              resources:
-                - crossplanes
-                - crossplanes/status
-                - crossplanes/finalizers
               verbs:
                 - create
                 - delete
@@ -312,6 +320,58 @@ spec:
                 - patch
                 - update
                 - watch
+            - apiGroups:
+                - operator.ibm.com
+              resources:
+                - crossplanes
+                - crossplanes/status
+                - crossplanes/finalizers
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - operator.ibm.com
+              resources:
+                - operandrequests
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - ibmcloud.ibm.com
+              resources:
+                - bindings
+                - services
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - ibmevents.ibm.com
+              resources:
+                - kafkas
+                - kafkausers
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
           serviceAccountName: ibm-crossplane-operator
     strategy: deployment
   installModes:
@@ -332,4 +392,4 @@ spec:
   maturity: alpha
   provider:
     name: IBM
-  version: 0.5.0
+  version: 0.2.0

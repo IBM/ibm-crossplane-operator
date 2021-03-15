@@ -3,7 +3,7 @@ replicas: 1
 deploymentStrategy: RollingUpdate
 
 image:
-  repository: quay.io/opencloudio/ibm-crossplane:1.0.0-beta
+  repository: quay.io/opencloudio/ibm-crossplane:1.0.0
   pullPolicy: Always
 
 leaderElection: true
@@ -19,7 +19,7 @@ imagePullSecrets:
 - dockerhub
 
 rbacManager:
-  deploy: true
+  deploy: false
   replicas: 1
   managementPolicy: Basic
   leaderElection: true

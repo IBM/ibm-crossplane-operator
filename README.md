@@ -123,25 +123,101 @@ If, as a developer, you are looking to build and test this operator to try out a
 
 Use the following quick start commands for building and testing the operator:
 
-#### Cloning the operator repository
+#### Building and testing the operator using CLI
+
+1. Build the bundle manifest to verify the CSV and the generated manifests
+
 ```
-# git clone git@github.com:IBM/ibm-crossplane-operator.git
-# cd ibm-crossplane-operator
+# make bundle
 ```
 
-#### Building the operator image
+2. Build the operator
+
 ```
-# make build
+# make build-dev
 ```
 
-#### Installing the operator 
+3. Install the operator and deploy a sample CR
+
 ```
 # make install
 ```
 
-#### Uninstalling the operator
+4. Verify the installation in `ibm-crossplane-system` namespace
+
 ```
-# make uninstall
+# oc -n ibm-crossplane-system get po
+NAME                                       READY   STATUS    RESTARTS   AGE
+ibm-crossplane-7d6ff947df-pvg5t            1/1     Running   0          25s
+ibm-crossplane-operator-6cc44f4c5c-p74lg   1/1     Running   0          73s
+```
+
+5. Verify the ibm-crossplane-bedrock-shim configuration package is installed
+
+```
+# oc get pkg
+NAME                                                                 INSTALLED   HEALTHY   PACKAGE                                                         AGE
+configuration.pkg.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:latest   59s
+```
+
+#### Building and testing the operator using OLM
+
+1. Build the bundle manifest to verify the CSV and the generated manifests
+
+```
+# make bundle
+```
+
+2. Build the operator
+
+```
+# make build
+```
+
+3. Build multi-arch images
+
+```
+# make images
+```
+
+4. Build the catalog source
+
+```
+# make build-catalog
+```
+
+5. Install the operator
+
+```
+# oc project ibm-common-services
+# make install-operator
+```
+
+6. Verify the operator is running in `ibm-common-services` namespace
+
+```
+# oc -n ibm-common-services get po | grep crossplane
+ibm-crossplane-operator-57bff8d56-98752                 1/1     Running   0          3m35s
+```
+
+7. Install the sample Crossplane CR
+
+```
+# make install-cr
+```
+
+8. Verify the Crossplane installation and configuration package.
+
+```
+# oc -n ibm-common-services get po | grep crossplane
+ibm-crossplane-5d4bb64b5b-nx8w6                         1/1     Running   0          24s
+ibm-crossplane-operator-57bff8d56-98752                 1/1     Running   0          6m18s
+```
+
+```
+# oc get pkg
+NAME                                                                 INSTALLED   HEALTHY   PACKAGE                                                         AGE
+configuration.pkg.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:latest   59s
 ```
 
 ### Debugging guide
@@ -149,21 +225,63 @@ Use the following quick start commands for building and testing the operator:
 Use the following commands to debug the operator:
 
 #### Check the Cluster Service Version (CSV) installation status
+
 ```
 # oc get csv
-# oc describe csv ibm-crossplane-operator.v0.0.1
+# oc describe csv ibm-crossplane-operator.<version>
 ```
 
 #### Check the custom resource status
+
 ```
 # oc describe crossplanes ibm-crossplane
 # oc get crossplanes ibm-crossplane -o yaml
 ```
 
-#### Check the operator status and log
+### Check the installed Crossplane configuration package
+
+```
+# oc get configurations
+```
+
+### Check the installed Crossplane Composite Resource Definitions (XRDs)
+
+```
+# oc get xrds
+```
+
+### Check the installed Crossplane Compositions
+
+```
+# oc get compositions
+```
+
+### Check the Composite instances
+
+For example, for Kafka
+```
+# oc get kafkacomposites
+```
+
+### Check the Claim instances
+
+For example, for Kafka
+```
+# oc get kafkaclaims
+```
+
+#### Check the Crossplane operator status and log
+
 ```
 # oc describe po -l name=ibm-crossplane-operator
-# oc logs -f $(oc get po -l name=ibm-crossplane-operator -o name)
+# oc logs -f -l name=ibm-crossplane-operator
+```
+
+#### Check the Crossplane operand status and log
+
+```
+# oc describe po -l app=ibm-crossplane
+# oc logs -f -l app=ibm-crossplane
 ```
 
 ### End-to-End testing

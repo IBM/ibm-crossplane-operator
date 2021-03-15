@@ -8,28 +8,12 @@ rules:
   - ''
   resources:
   - configmaps
-  - endpoints
   - events
-  - persistentvolumeclaims
   - pods
   - secrets
   - serviceaccounts
   - services
   - services/finalizers
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - operator.ibm.com
-  resources:
-  - crossplanes
-  - crossplanes/status
-  - crossplanes/finalizers
   verbs:
   - create
   - delete
@@ -63,16 +47,12 @@ rules:
   - patch
   - update
   - watch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: ibm-crossplane-operator
-rules:
 - apiGroups:
-  - ''
+  - operator.ibm.com
   resources:
-  - configmaps
+  - crossplanes
+  - crossplanes/status
+  - crossplanes/finalizers
   verbs:
   - create
   - delete
@@ -81,30 +61,10 @@ rules:
   - patch
   - update
   - watch
-# required by crossplane helm chart
 - apiGroups:
-  - ''
+  - operator.ibm.com
   resources:
-  - events
-  verbs:
-  - create
-  - get
-  - list
-  - watch
-# install CRDs from crossplane helm chart
-- apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
-  verbs:
-  - create
-  - get
-  - update
-# crossplane resources
-- apiGroups:
-  - apiextensions.crossplane.io
-  resources:
-  - '*'
+  - operandrequests
   verbs:
   - create
   - delete
@@ -113,18 +73,24 @@ rules:
   - patch
   - update
   - watch
-# needed to use for cluster role aggregation
 - apiGroups:
-  - rbac.authorization.k8s.io
+  - ibmcloud.ibm.com
   resources:
-  - clusterroles
-  - clusterrolebindings
+  - bindings
+  - services
   verbs:
-  - '*'
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
 - apiGroups:
-  - pkg.crossplane.io
+  - ibmevents.ibm.com
   resources:
-  - locks
+  - kafkas
+  - kafkausers
   verbs:
   - create
   - delete

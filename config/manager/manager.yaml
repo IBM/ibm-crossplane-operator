@@ -42,7 +42,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: IBM_CROSSPLANE_IMAGE
-          value: "quay.io/opencloudio/ibm-crossplane:1.0.0-beta"
+          value: "quay.io/opencloudio/ibm-crossplane:1.0.0"
         image: "quay.io/opencloudio/ibm-crossplane-operator:latest"
         imagePullPolicy: Always
         name: ibm-crossplane-operator

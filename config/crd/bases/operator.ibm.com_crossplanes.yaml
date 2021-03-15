@@ -36,29 +36,6 @@ spec:
                       type: string
                     type: array
                 type: object
-              provider:
-                properties:
-                  packages:
-                    description: Provider packages to be installed
-                    items:
-                      type: string
-                    type: array
-                type: object
-              rbacManager:
-                properties:
-                  deploy:
-                    description: Deploy RBAC Manager and its required roles
-                    type: boolean
-                  managementPolicy:
-                    description: The extent to which the RBAC manager will manage permissions. All indicates to manage all Crossplane controller and user roles
-                    enum:
-                    - All
-                    - Basic
-                    type: string
-                  replicas:
-                    description: The number of replicas to run for the RBAC Manager pods
-                    type: integer
-                type: object
               replicas:
                 description: The number of replicas to run for the Crossplane pods
                 type: integer
@@ -80,27 +57,6 @@ spec:
                         type: string
                       memory:
                         description: Memory resource requests for Crossplane
-                        type: string
-                    type: object
-                type: object
-              resourcesRBACManager:
-                properties:
-                  limits:
-                    properties:
-                      cpu:
-                        description: CPU resource limits for RBAC Manager
-                        type: string
-                      memory:
-                        description: Memory resource limits for RBAC Manager
-                        type: string
-                    type: object
-                  requests:
-                    properties:
-                      cpu:
-                        description: CPU resource requests for RBAC Manager
-                        type: string
-                      memory:
-                        description: Memory resource requests for RBAC Manager
                         type: string
                     type: object
                 type: object

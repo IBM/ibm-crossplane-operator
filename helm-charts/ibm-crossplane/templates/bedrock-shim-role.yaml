@@ -1,33 +1,20 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
-  name: {{ template "name" . }}
   labels:
     app: {{ template "name" . }}
     chart: {{ template "chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  name: {{ template "name" . }}-bedrock-shim
 rules:
 - apiGroups:
   - ""
   resources:
-  - events
-  verbs:
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
+  - configmaps
   - secrets
-  verbs:
-  - list
-  - watch
-- apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
+  - serviceaccounts
   verbs:
   - create
   - delete
@@ -37,10 +24,35 @@ rules:
   - update
   - watch
 - apiGroups:
-  - apiextensions.crossplane.io
-  - pkg.crossplane.io
+  - operator.ibm.com
   resources:
-  - "*"
+  - operandrequests
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ibmcloud.ibm.com
+  resources:
+  - bindings
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ibmevents.ibm.com
+  resources:
+  - kafkas
+  - kafkausers
   verbs:
   - create
   - delete

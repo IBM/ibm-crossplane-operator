@@ -8,17 +8,11 @@ metadata:
     app.kubernetes.io/name: ibm-crossplane-operator
   name: ibm-crossplane
 spec:
-  rbacManager:
-    replicas: 1
+  configuration:
+    packages:
+    - quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:latest
   replicas: 1
   resourcesCrossplane:
-    limits:
-      cpu: 100m
-      memory: 512Mi
-    requests:
-      cpu: 100m
-      memory: 256Mi
-  resourcesRBACManager:
     limits:
       cpu: 100m
       memory: 512Mi
