@@ -39,7 +39,7 @@ CSV_PATH=bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
 echo "==> Linting ${CSV_PATH}"
 ${YQ} v ${CSV_PATH} || exit 1
 
-$(${YQ} r ${CSV_PATH} metadata.annotations.alm-examples | ${JQ} '. | length == 2') == "true" || STATUS=1
+$(${YQ} r ${CSV_PATH} metadata.annotations.alm-examples | ${JQ} '. | length == 1') == "true" || STATUS=1
 
 if [[ ${STATUS} -eq 1 ]]; then
     echo "[ERROR] Incomplete alm-examples"
