@@ -30,6 +30,11 @@ spec:
             properties:
               configuration:
                 properties:
+                  packagePullSecrets:
+                    description: Pull secrets for the configuration packages
+                    items:
+                      type: string
+                    type: array
                   packages:
                     description: Configuration packages to be installed
                     items:

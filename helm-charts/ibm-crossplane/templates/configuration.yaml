@@ -6,6 +6,12 @@ metadata:
   name: {{ regexReplaceAll "(:|@).*" (regexReplaceAll ".*/" . "") "" | trim  }}
 spec:
   package: {{ . | trim }}
+{{- with $.Values.configuration.packagePullSecrets }}
+  packagePullSecrets:
+  {{- range $.Values.configuration.packagePullSecrets }}
+  - name: {{ .| trim  }}
+  {{- end }}
+{{- end }}
 ---
 {{ end }}
 {{- end }}

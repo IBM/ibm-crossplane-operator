@@ -11,6 +11,8 @@ For more information about the available IBM Cloud Platform Common Services, see
 Red Hat OpenShift Container Platform 4.3 or newer installed on one of the following platforms:
 
 - Linux x86_64
+- Linux on Power (ppc64le)
+- Linux on IBM Z and LinuxONE
 
 ## Operator versions
 
@@ -244,10 +246,10 @@ Use the following commands to debug the operator:
 # oc get configurations
 ```
 
-### Check the installed Crossplane Composite Resource Definitions (XRDs)
+### Check the installed Crossplane Composite Resource Definitions (XRD)
 
 ```
-# oc get xrds
+# oc get xrd
 ```
 
 ### Check the installed Crossplane Compositions
