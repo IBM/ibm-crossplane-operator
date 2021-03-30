@@ -8,6 +8,6 @@ spec:
       containers:
       - env:
         - name: IBM_CROSSPLANE_IMAGE
-          value: "hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane:1.0.0-amd64"
+          value: "hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane:1.0.0"
         name: ibm-crossplane-operator
         image: "hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-operator:dev"

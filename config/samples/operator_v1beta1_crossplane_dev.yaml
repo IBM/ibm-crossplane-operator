@@ -1,0 +1,23 @@
+---
+apiVersion: operator.ibm.com/v1beta1
+kind: Crossplane
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane-operator
+  name: ibm-crossplane
+spec:
+  configuration:
+    packages:
+    - hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:latest
+    packagePullSecrets:
+    - artifactory-secret
+  replicas: 1
+  resourcesCrossplane:
+    limits:
+      cpu: 100m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi

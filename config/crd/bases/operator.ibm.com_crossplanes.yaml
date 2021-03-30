@@ -35,6 +35,11 @@ spec:
                     items:
                       type: string
                     type: array
+                  packagePullSecrets:
+                    description: Pull secrets for the configuration packages
+                    items:
+                      type: string
+                    type: array
                 type: object
               replicas:
                 description: The number of replicas to run for the Crossplane pods

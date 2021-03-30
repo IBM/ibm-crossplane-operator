@@ -133,6 +133,15 @@ endif
 ##@ Development
 ############################################################
 
+# artifactory registry
+ARTIFACTORY_REGISTRY := hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com
+
+ifeq ($(OS),darwin)
+	MANIFEST_TOOL_ARGS ?= --username $(DOCKER_USERNAME) --password $(DOCKER_PASSWORD)
+else
+	MANIFEST_TOOL_ARGS ?= 
+endif
+
 check: lint-all ## Check all files lint error
 	./common/scripts/lint-csv.sh
 
@@ -163,12 +172,12 @@ uninstall-operator: uninstall-catalog-source ## Install the operator from catalo
 	- kubectl delete --ignore-not-found -f config/samples/subscription.yaml
 	- make clean-cluster
 
-install-cr: # Install sample CR
-	- kubectl apply -f config/samples/operator_v1beta1_crossplane.yaml
+install-cr: delete-secret create-secret # Install sample CR
+	- kubectl apply -f config/samples/operator_v1beta1_crossplane_dev.yaml
 
-uninstall-cr: # Uninstall sample CR
+uninstall-cr: delete-secret # Uninstall sample CR
 	- kubectl get configurations -o name --ignore-not-found | xargs kubectl delete
-	- kubectl delete --ignore-not-found -f config/samples/operator_v1beta1_crossplane.yaml
+	- kubectl delete --ignore-not-found -f config/samples/operator_v1beta1_crossplane_dev.yaml
 
 clean-cluster: ## Clean up all the resources left in the Kubernetes cluster
 	@echo ....... Cleaning up .......
@@ -185,6 +194,12 @@ clean-cluster: ## Clean up all the resources left in the Kubernetes cluster
 	- kubectl patch locks lock -p '{"metadata":{"finalizers": []}}' --type=merge
 	- kubectl get crds,clusterroles,clusterrolebindings -o name | grep crossplane | xargs kubectl delete --ignore-not-found
 	- kubectl -n openshift-marketplace get jobs -o name | xargs kubectl -n openshift-marketplace delete --ignore-not-found
+
+create-secret: ## Create artifactory secret in current namespace
+	kubectl create secret docker-registry artifactory-secret --docker-server=$(ARTIFACTORY_REGISTRY) --docker-username=$(ARTIFACTORY_USER) --docker-password=$(ARTIFACTORY_TOKEN) --docker-email=none
+
+delete-secret: ## Delete artifactory secret from current namespace
+	kubectl delete secret artifactory-secret --ignore-not-found=true
 
 global-pull-secrets: ## Update global pull secrets to use artifactory registries
 	./common/scripts/update_global_pull_secrets.sh
@@ -264,19 +279,18 @@ bundle-manifests:
 	$(OPERATOR_SDK) bundle validate ./bundle
 	@./common/scripts/adjust_manifests.sh $(VERSION) $(PREVIOUS_VERSION)
 
-images: build-image-amd64 ## Build and publish the multi-arch operator image
-# images: build-image-amd64 build-image-ppc64le build-image-s390x ## Build and publish the multi-arch operator image
+images: build-image-amd64 build-image-ppc64le build-image-s390x ## Build and publish the multi-arch operator image
 ifeq ($(OS),$(filter $(OS),linux darwin))
 	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(OS)-$(ARCH)
 	chmod +x /tmp/manifest-tool
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
-	/tmp/manifest-tool push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
-	/tmp/manifest-tool push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
-#	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
-#	/tmp/manifest-tool push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
-#	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
-#	/tmp/manifest-tool push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
 endif
 
 ############################################################
