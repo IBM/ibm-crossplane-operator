@@ -99,6 +99,14 @@ spec:
                 fieldPath: metadata.namespace
           - name: LEADER_ELECTION
             value: "{{ .Values.leaderElection }}"
+        {{- if .Values.defaultLabel.name }}
+          - name: DEFAULT_LABEL_NAME
+            value: "{{ .Values.defaultLabel.name | trim }}"
+        {{- end }}
+        {{- if .Values.defaultLabel.value }}
+          - name: DEFAULT_LABEL_VALUE
+            value: "{{ .Values.defaultLabel.value | trim }}"
+        {{- end }}
         volumeMounts:
           - mountPath: /cache
             name: package-cache

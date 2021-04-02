@@ -13,6 +13,9 @@ spec:
     - hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:latest
     packagePullSecrets:
     - artifactory-secret
+  defaultLabel:
+    name: provider
+    value: odlm
   replicas: 1
   resourcesCrossplane:
     limits:
