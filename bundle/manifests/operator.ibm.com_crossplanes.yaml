@@ -41,6 +41,15 @@ spec:
                       type: string
                     type: array
                 type: object
+              defaultLabel:
+                properties:
+                  name:
+                    description: The default label name for a claim to select composition
+                    type: string
+                  value:
+                    description: The default label value for a claim to select composition
+                    type: string
+                type: object
               replicas:
                 description: The number of replicas to run for the Crossplane pods
                 type: integer
