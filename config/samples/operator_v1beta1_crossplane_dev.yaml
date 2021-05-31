@@ -10,7 +10,7 @@ metadata:
 spec:
   configuration:
     packages:
-    - hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:latest
+    - hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:1.0.0
     packagePullSecrets:
     - artifactory-secret
   defaultLabel:
