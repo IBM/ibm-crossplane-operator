@@ -10,7 +10,7 @@ metadata:
 spec:
   configuration:
     packages:
-    - quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:latest
+    - quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
   replicas: 1
   resourcesCrossplane:
     limits:
