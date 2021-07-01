@@ -115,6 +115,7 @@ spec:
   - name: IBM Crossplane Operator
     url: https://github.com/IBM/ibm-crossplane-operator
   maturity: alpha
+  minKubeVersion: "1.19.0"
   provider:
     name: IBM
   version: 0.0.0
