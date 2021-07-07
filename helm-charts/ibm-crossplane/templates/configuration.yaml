@@ -5,6 +5,7 @@ kind: Configuration
 metadata:
   name: {{ regexReplaceAll "(:|@).*" (regexReplaceAll ".*/" . "") "" | trim  }}
 spec:
+  packagePullPolicy: Always
   package: {{ . | trim }}
 {{- with $.Values.configuration.packagePullSecrets }}
   packagePullSecrets:
