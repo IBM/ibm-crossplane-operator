@@ -81,11 +81,18 @@ function check_opm() {
 }
 
 function check_container_cli() {
+<<<<<<< HEAD
     if [[ $(which podman) != "" ]]; then
         export CONTAINER_CLI="podman"
         export CONTAINER_FORMAT="--format docker"
     elif [[ $(which docker) != "" ]]; then
         export CONTAINER_CLI="docker"
+=======
+    if [[ $(which docker) != "" ]]; then
+        export CONTAINER_CLI=$(which docker)
+    elif [[ $(which podman) != "" ]]; then
+        export CONTAINER_CLI=$(which podman)
+>>>>>>> 2136af2 (Add 'common/scripts/build_catsrc.sh' and 'common/scripts/install_tools.sh', building catalog source doesn't work yet.)
     else
         echo "no podman/docker executable in \$PATH"
         exit 1
