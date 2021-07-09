@@ -1,19 +1,4 @@
 #! /usr/bin/env bash
-#
-# Copyright 2021 IBM Corporation
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 
 export OS_NAME=$(uname -s)
 export ARCH=$(uname -m)
@@ -27,6 +12,7 @@ export TOOLS_DIR="$(pwd)/bin"
 if [[ ! -d "$TOOLS_DIR" ]]; then
     mkdir "$TOOLS_DIR"
 fi
+
 
 function check_yq() {
     if [[ $(which yq) != "" ]]; then
@@ -80,11 +66,10 @@ function check_opm() {
 }
 
 function check_container_cli() {
-    if [[ $(which podman) != "" ]]; then
-        export CONTAINER_CLI="podman"
-        export CONTAINER_FORMAT="--format docker"
-    elif [[ $(which docker) != "" ]]; then
-        export CONTAINER_CLI="docker"
+    if [[ $(which docker) != "" ]]; then
+        export CONTAINER_CLI=$(which docker)
+    elif [[ $(which podman) != "" ]]; then
+        export CONTAINER_CLI=$(which podman)
     else
         echo "no podman/docker executable in \$PATH"
         exit 1
@@ -99,7 +84,7 @@ function check_curl() {
         echo "no curl executable in \$PATH"
         exit 1
     fi
-    echo -n "curl version: " && $CURL --version | grep "^curl" | cut -f2 -d' '
+    echo -n "curl version: " && $CURL --version | grep "^curl" | cut -f2 -d' ' 
 }
 
 check_container_cli
