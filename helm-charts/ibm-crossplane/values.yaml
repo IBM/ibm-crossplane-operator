@@ -3,7 +3,7 @@ replicas: 1
 deploymentStrategy: RollingUpdate
 
 image:
-  repository: quay.io/opencloudio/ibm-crossplane:1.0.0
+  repository: quay.io/opencloudio/ibm-crossplane:1.0.1
   pullPolicy: Always
 
 leaderElection: true

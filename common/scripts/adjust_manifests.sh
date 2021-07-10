@@ -50,7 +50,7 @@ if [[ -f "${CSV_PATH}" ]]; then
     # yq w ${CSV_PATH} "metadata.annotations.alm-examples" "${NEW_AL_EXAMPLES_JSON}" 1<>${CSV_PATH}
 
     # olm.skipRange
-    yq w ${CSV_PATH} "metadata.annotations[olm.skipRange]" ">=1.0.0 <${OPERATOR_VERSION}" 1<>${CSV_PATH}
+    yq w ${CSV_PATH} "metadata.annotations[olm.skipRange]" ">=1.0.1 <${OPERATOR_VERSION}" 1<>${CSV_PATH}
 
     # replaces
     # yq w ${CSV_PATH} "spec.replaces" "${OPERATOR_NAME}.v${PREVIOUS_VERSION}" 1<>${CSV_PATH}
