@@ -2,5 +2,12 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/operator.ibm.com_crossplanes.yaml
+- bases/apiextensions.ibm.crossplane.io_compositeresourcedefinitions.yaml
+- bases/apiextensions.ibm.crossplane.io_compositions.yaml
+- bases/pkg.ibm.crossplane.io_configurationrevisions.yaml
+- bases/pkg.ibm.crossplane.io_configurations.yaml
+- bases/pkg.ibm.crossplane.io_controllerconfigs.yaml
+- bases/pkg.ibm.crossplane.io_locks.yaml
+- bases/pkg.ibm.crossplane.io_providerrevisions.yaml
+- bases/pkg.ibm.crossplane.io_providers.yaml
 # +kubebuilder:scaffold:crdkustomizeresource

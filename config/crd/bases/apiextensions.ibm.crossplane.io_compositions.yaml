@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: compositions.apiextensions.crossplane.io
+  name: compositions.apiextensions.ibm.crossplane.io
 spec:
-  group: apiextensions.crossplane.io
+  group: apiextensions.ibm.crossplane.io
   names:
     categories:
     - crossplane
@@ -16,7 +16,7 @@ spec:
     listKind: CompositionList
     plural: compositions
     singular: composition
-  scope: Cluster
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .metadata.creationTimestamp

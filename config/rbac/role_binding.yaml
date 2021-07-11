@@ -2,12 +2,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: ibm-crossplane-operator
+  name: ibm-crossplane
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: ibm-crossplane-operator
+  name: ibm-crossplane
 subjects:
 - kind: ServiceAccount
-  name: ibm-crossplane-operator
+  name: ibm-crossplane
   namespace: ibm-crossplane-system

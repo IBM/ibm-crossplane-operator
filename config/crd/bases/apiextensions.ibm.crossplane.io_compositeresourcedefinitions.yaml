@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: compositeresourcedefinitions.apiextensions.crossplane.io
+  name: compositeresourcedefinitions.apiextensions.ibm.crossplane.io
 spec:
-  group: apiextensions.crossplane.io
+  group: apiextensions.ibm.crossplane.io
   names:
     categories:
     - crossplane
@@ -18,7 +18,7 @@ spec:
     shortNames:
     - xrd
     singular: compositeresourcedefinition
-  scope: Cluster
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .status.conditions[?(@.type=='Established')].status
