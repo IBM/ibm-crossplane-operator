@@ -86,7 +86,7 @@ function check_container_cli() {
     elif [[ $(which docker) != "" ]]; then
         export CONTAINER_CLI="docker"
     else
-        echo "no podman/docker executable in \$PATH"
+        echo "no docker executable in \$PATH"
         exit 1
     fi
     $CONTAINER_CLI --version
