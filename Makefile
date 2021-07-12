@@ -251,6 +251,10 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	-f Dockerfile.s390x .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
 
+build-operand-binary:
+# build from submodule. Binary goes to "ibm-crossplane/_output/bin/linux_amd64/crossplane"
+	cd ibm-crossplane && make go.build
+
 ############################################################
 ##@ Release
 ############################################################
@@ -262,7 +266,7 @@ copy-operand: ## Copy files from ibm-crossplane submodule before recreating bund
 	rm config/crd/bases/*
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
 
-bundle: copy-operand kustomize ## Generate bundle manifests and metadata, then validate the generated files
+bundle: build-operand-binary copy-operand kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	- make bundle-manifests CHANNELS=v3 DEFAULT_CHANNEL=v3
 
