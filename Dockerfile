@@ -39,7 +39,7 @@ USER_NAME=ibm-crossplane-operator \
 IMAGE_RELEASE="$IMAGE_RELEASE"
 
 COPY ibm-crossplane/_output/bin/linux_amd64/crossplane ${OPERATOR}/crossplane
-COPY bin /usr/local/bin
+COPY build /usr/local/bin
 COPY bundle ${DEPLOY_DIR}
 RUN /usr/local/bin/user_setup
 
