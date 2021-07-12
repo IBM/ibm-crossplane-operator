@@ -113,6 +113,11 @@ else
 YQ=$(shell which yq)
 endif
 
+kubectl-crossplane: ## build binary needed for docker images
+	cd ./ibm-crossplane && go build -o ./../kubectl-crossplane ./cmd/crank
+	cd ..
+	chmod +x ./kubectl-crossplane
+
 ############################################################
 ##@ Development
 ############################################################
