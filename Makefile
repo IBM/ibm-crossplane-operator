@@ -259,8 +259,8 @@ copy-operand: ## Copy files from ibm-crossplane submodule before recreating bund
 # This (git submodule) is not working properly. `cd` and `git pull` needed 
 # git submodule update --remote --merge
 	cd ibm-crossplane/ && git stash && git checkout namespaceCRDs && git pull --ff-only
-	# rm config/crd/bases/*
-	# cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+	rm config/crd/bases/*
+	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
 
 bundle: copy-operand kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
