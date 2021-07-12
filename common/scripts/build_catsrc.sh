@@ -200,7 +200,7 @@ function prepare_operator_bundle_yamls() {
 function prepare_operator_bundle() {
     info "preparing map of image versions..."
     local DEFAULT_TAG="$RELEASE_VERSION"
-    local DEFAULT_REG="scratch"
+    local DEFAULT_REG="integration"
 
     for IMG in "${IMG_NAMES[@]}"; do
         IMG_TAGS["$IMG"]="$DEFAULT_TAG"
@@ -304,7 +304,7 @@ function update_index() {
         --from-index "$COMMON_SERVICE_BASE_CATSRC" \
         --generate
     if [[ "$?" != 0 ]]; then
-        erro "error while updating index"
+        erro "error while updating registry"
     fi
 }
 
@@ -329,6 +329,15 @@ function create_index() {
         $CONTAINER_CLI tag "$LOCAL_CATSRC_IMG" "$TAG"
         $CONTAINER_CLI push "$TAG"
     done
+    info "done"
+}
+
+# usage: create_index;
+function create_index() {
+    info "creating index..."
+    prepare_db
+    update_registry "$PATH_TO_DB"
+    build_index "$PATH_TO_DB"
     info "done"
 }
 
