@@ -90,11 +90,14 @@ function check_container_cli() {
 =======
     if [[ $(which docker) != "" ]]; then
         export CONTAINER_CLI=$(which docker)
+<<<<<<< HEAD
     elif [[ $(which podman) != "" ]]; then
         export CONTAINER_CLI=$(which podman)
 >>>>>>> 2136af2 (Add 'common/scripts/build_catsrc.sh' and 'common/scripts/install_tools.sh', building catalog source doesn't work yet.)
+=======
+>>>>>>> 03d0816 (Change 'opm index add' to extracting database and using 'opm registry add' to allow use of docker)
     else
-        echo "no podman/docker executable in \$PATH"
+        echo "no docker executable in \$PATH"
         exit 1
     fi
     $CONTAINER_CLI --version
