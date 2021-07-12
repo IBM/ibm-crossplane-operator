@@ -68,10 +68,8 @@ function check_opm() {
 function check_container_cli() {
     if [[ $(which docker) != "" ]]; then
         export CONTAINER_CLI=$(which docker)
-    elif [[ $(which podman) != "" ]]; then
-        export CONTAINER_CLI=$(which podman)
     else
-        echo "no podman/docker executable in \$PATH"
+        echo "no docker executable in \$PATH"
         exit 1
     fi
     $CONTAINER_CLI --version
