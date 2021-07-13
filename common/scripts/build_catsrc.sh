@@ -82,6 +82,10 @@ function setup() {
         info "log in to container registry"
         $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN"
         $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN"
+        if [[ "$REGISTRY" != "" && "$REGISTRY" != "$SCRATCH_REG" ]]; then
+            $CONTAINER_CLI login "$REGISTRY" -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN"
+        fi
+
     fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
@@ -96,7 +100,6 @@ function setup() {
 function cleanup() {
     info "cleaning up"
     cd "$START_WD"
-    rm -rf "$TEMP_WD"
     exit $1
 }
 
@@ -317,7 +320,7 @@ function create_index() {
         update_registry "$PATH_TO_DB"
     elif [[ "$CONTAINER_CLI" == "podman" ]]; then
         update_index
-    else 
+    else
         erro "unknown container cli: $CONTAINER_CLI"
     fi
     local LOCAL_CATSRC_IMG="$SCRATCH_REG/$NEW_CUSTOM_CATSRC:$TIMESTAMP"
