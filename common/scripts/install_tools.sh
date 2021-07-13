@@ -81,16 +81,14 @@ function check_opm() {
 }
 
 function check_container_cli() {
-    if [[ $(which docker) != "" ]]; then
-        export CONTAINER_CLI=$(which docker)
+    if [[ $(which podman) != "" ]]; then
+        export CONTAINER_CLI="podman"
+        export CONTAINER_FORMAT="--format docker"
+    elif [[ $(which docker) != "" ]]; then
+        export CONTAINER_CLI="docker"
     else
-        echo "no docker executable in \$PATH"
+        echo "no podman/docker executable in \$PATH"
         exit 1
-    fi
-    if [[ $OS_NAME == "Darwin" ]]; then
-        export OPM_CONTAINER_TOOL="docker"
-    else 
-        export OPM_CONTAINER_TOOL="podman"
     fi
     $CONTAINER_CLI --version
 }
