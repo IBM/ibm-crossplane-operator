@@ -39,10 +39,10 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-operator@sha256:619c77c5f42700fd3fbfdb57060c4444ac9e802b22b78923fa9b61f9ebfc7f1c
+    containerImage: quay.io/opencloudio/ibm-crossplane-operator:latest
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
-    olm.skipRange: '>=1.0.0 <1626085445.0.0'
+    olm.skipRange: '>=1.0.0 <1.0.0'
     operators.operatorframework.io/builder: operator-sdk-v1.4.2
     operators.operatorframework.io/project_layout: helm.sdk.operatorframework.io/v1
     repository: https://github.com/IBM/ibm-crossplane-operator
@@ -257,8 +257,8 @@ spec:
                           fieldRef:
                             fieldPath: metadata.annotations['olm.targetNamespaces']
                       - name: IBM_CROSSPLANE_IMAGE
-                        value: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane@sha256:7ade66768ec1f54eba180efd79b66447ad18c177ed3cf8080c38bc53d38acd04
-                    image: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-operator@sha256:619c77c5f42700fd3fbfdb57060c4444ac9e802b22b78923fa9b61f9ebfc7f1c
+                        value: quay.io/opencloudio/ibm-crossplane:1.0.0
+                    image: quay.io/opencloudio/ibm-crossplane-operator:latest
                     imagePullPolicy: Always
                     name: ibm-crossplane-operator
                     resources:
@@ -392,7 +392,7 @@ spec:
     - name: IBM Crossplane Operator
       url: https://github.com/IBM/ibm-crossplane-operator
   maturity: alpha
-  minKubeVersion: 1.19.0
+  minKubeVersion: "1.19.0"
   provider:
     name: IBM
   version: 1.0.0
