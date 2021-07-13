@@ -194,8 +194,6 @@ spec:
                       type: string
                   type: object
                 type: array
-              packageSecond:
-                type: string
               revisionActivationPolicy:
                 default: Automatic
                 description: RevisionActivationPolicy specifies how the package controller should update from one revision to the next. Options are Automatic or Manual. Default is Automatic.
@@ -211,7 +209,6 @@ spec:
                 type: boolean
             required:
             - package
-            - packageSecond
             type: object
           status:
             description: ProviderStatus represents the observed state of a Provider.

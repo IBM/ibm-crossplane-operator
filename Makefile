@@ -35,7 +35,7 @@ VERSION ?= $(shell cat RELEASE_VERSION)
 PREVIOUS_VERSION ?= $(shell cat PREVIOUS_VERSION)
 
 # Current Operator image name
-OPERATOR_IMAGE_NAME ?= ibm-crossplane-operator
+OPERATOR_IMAGE_NAME ?= ibm-crossplane
 # Current Operator bundle image name
 BUNDLE_IMAGE_NAME ?= ibm-crossplane-operator-bundle
 

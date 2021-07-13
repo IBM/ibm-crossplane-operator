@@ -55,5 +55,7 @@ COPY LICENSE /licenses
 #RUN echo "$IMAGE_RELEASE" > /IMAGE_RELEASE
 #RUN echo "$IMAGE_BUILDDATE" > /IMAGE_BUILDDATE
 
+RUN echo "new dockerfile yo" > /messpp
+
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
 USER ${USER_UID}
