@@ -234,7 +234,7 @@ function build_operator_bundle() {
     cd "$COMMON_SERVICE_TMP_DIR"
     create_index_tags
     prepare_operator_bundle $OPERAND_VERSION_LIST
-    $CONTAINER_CLI build -f "bundle.Dockerfile" -t "$OPERATOR_BUNDLE_IMG" .
+    $CONTAINER_CLI build $CONTAINER_FORMAT -f "bundle.Dockerfile" -t "$OPERATOR_BUNDLE_IMG" .
     $CONTAINER_CLI push "$OPERATOR_BUNDLE_IMG"
     cd -
 }
@@ -278,21 +278,14 @@ function prepare_db() {
 # passed as arguments
 function update_registry() {
     $OPM registry add \
-        --container-tool "$OPM_CONTAINER_TOOL" \
+        --container-tool "$CONTAINER_CLI" \
         --bundle-images "$BUNDLES" \
         --database "$1"/"$DB_NAME" \
         --debug
     if [[ "$?" != 0 ]]; then
         erro "error while updating registry"
     fi
-}
-
-# usage: build_index <path to db>;
-# build docker image of index
-function build_index() {
-    local LOCAL_CATSRC_IMG="$SCRATCH_REG/$NEW_CUSTOM_CATSRC:$TIMESTAMP"
-    local DOCKERFILE=index.Dockerfile
-    cat >$DOCKERFILE <<EOL
+    cat >"index.Dockerfile" <<EOL
 FROM $BUILDER_IMAGE AS builder 
 LABEL operators.operatorframework.io.index.database.v1=/database/index.db
 COPY $1/$DB_NAME  /database/index.db
@@ -300,22 +293,43 @@ EXPOSE 50051
 ENTRYPOINT ["/bin/opm"]
 CMD ["registry", "serve", "--database", "/database/index.db"]
 EOL
-    for IMG in "${IMG_NAMES[@]}"; do
-        echo "LABEL $IMG ${IMAGES[$IMG]}" >>"$DOCKERFILE"
-    done
-    $CONTAINER_CLI build -f "$DOCKERFILE" -t "$LOCAL_CATSRC_IMG" .
-    for TAG in "${TAGS[@]}"; do
-        $CONTAINER_CLI tag "$LOCAL_CATSRC_IMG" "$TAG"
-        $CONTAINER_CLI push "$TAG"
-    done
+}
+
+# usage: update_index;
+# creates updated index
+function update_index() {
+    info "adding new packages..."
+    $OPM index add \
+        --container-tool "$CONTAINER_CLI" \
+        --bundles "$BUNDLES" \
+        --from-index "$COMMON_SERVICE_BASE_CATSRC" \
+        --generate
+    if [[ "$?" != 0 ]]; then
+        erro "error while updating index"
+    fi
 }
 
 # usage: create_index;
 function create_index() {
     info "creating index..."
-    prepare_db
-    update_registry "$PATH_TO_DB"
-    build_index "$PATH_TO_DB"
+    if [[ "$CONTAINER_CLI" == "docker" ]]; then
+        prepare_db
+        update_registry "$PATH_TO_DB"
+    elif [[ "$CONTAINER_CLI" == "podman" ]]; then
+        update_index
+    else 
+        erro "unknown container cli: $CONTAINER_CLI"
+    fi
+    local LOCAL_CATSRC_IMG="$SCRATCH_REG/$NEW_CUSTOM_CATSRC:$TIMESTAMP"
+    local DOCKERFILE=index.Dockerfile
+    for IMG in "${IMG_NAMES[@]}"; do
+        echo "LABEL $IMG ${IMAGES[$IMG]}" >>"$DOCKERFILE"
+    done
+    $CONTAINER_CLI build $CONTAINER_FORMAT -f "$DOCKERFILE" -t "$LOCAL_CATSRC_IMG" .
+    for TAG in "${TAGS[@]}"; do
+        $CONTAINER_CLI tag "$LOCAL_CATSRC_IMG" "$TAG"
+        $CONTAINER_CLI push "$TAG"
+    done
     info "done"
 }
 
