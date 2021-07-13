@@ -80,24 +80,15 @@ function check_opm() {
     echo -n "opm version: " && $OPM version | cut -f2 -d\"
 }
 
+
 function check_container_cli() {
-<<<<<<< HEAD
     if [[ $(which podman) != "" ]]; then
         export CONTAINER_CLI="podman"
         export CONTAINER_FORMAT="--format docker"
     elif [[ $(which docker) != "" ]]; then
         export CONTAINER_CLI="docker"
-=======
-    if [[ $(which docker) != "" ]]; then
-        export CONTAINER_CLI=$(which docker)
-<<<<<<< HEAD
-    elif [[ $(which podman) != "" ]]; then
-        export CONTAINER_CLI=$(which podman)
->>>>>>> 2136af2 (Add 'common/scripts/build_catsrc.sh' and 'common/scripts/install_tools.sh', building catalog source doesn't work yet.)
-=======
->>>>>>> 03d0816 (Change 'opm index add' to extracting database and using 'opm registry add' to allow use of docker)
     else
-        echo "no docker executable in \$PATH"
+        echo "no podman/docker executable in \$PATH"
         exit 1
     fi
     $CONTAINER_CLI --version
