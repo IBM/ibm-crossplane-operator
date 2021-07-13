@@ -85,13 +85,18 @@ function setup() {
     fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
+    TEMP_WD=$(mktemp -d)
+    START_WD=$(pwd)
+    info "temp dir: $TEMP_WD"
+    cp -R . "$TEMP_WD"
+    cd "$TEMP_WD"
 }
 
 # usage: cleanup <exit code>;
 function cleanup() {
     info "cleaning up"
     cd "$START_WD"
-    rm -rf "$COMMON_SERVICE_TMP_DIR"
+    rm -rf "$TEMP_WD"
     exit $1
 }
 
