@@ -304,7 +304,7 @@ function update_index() {
         --from-index "$COMMON_SERVICE_BASE_CATSRC" \
         --generate
     if [[ "$?" != 0 ]]; then
-        erro "error while updating registry"
+        erro "error while updating index"
     fi
 }
 
@@ -316,7 +316,7 @@ function create_index() {
         update_registry "$PATH_TO_DB"
     elif [[ "$CONTAINER_CLI" == "podman" ]]; then
         update_index
-    else
+    else 
         erro "unknown container cli: $CONTAINER_CLI"
     fi
     local LOCAL_CATSRC_IMG="$SCRATCH_REG/$NEW_CUSTOM_CATSRC:$TIMESTAMP"
