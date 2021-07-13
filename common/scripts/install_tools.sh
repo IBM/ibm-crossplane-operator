@@ -87,6 +87,11 @@ function check_container_cli() {
         echo "no docker executable in \$PATH"
         exit 1
     fi
+    if [[ $OS_NAME == "Darwin" ]]; then
+        export OPM_CONTAINER_TOOL="docker"
+    else 
+        export OPM_CONTAINER_TOOL="podman"
+    fi
     $CONTAINER_CLI --version
 }
 

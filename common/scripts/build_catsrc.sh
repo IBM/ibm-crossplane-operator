@@ -26,12 +26,20 @@ NC='\033[0m'
 
 # usage: info <message>;
 function info() {
-    echo -e "${GREEN}[INFO]${NC} $SCRIPT_NAME: $1"
+    if [ -t 1 ]; then
+        echo -e "${GREEN}[INFO]${NC} $SCRIPT_NAME: $1"
+    else
+        echo -e "[INFO] $SCRIPT_NAME: $1"
+    fi
 }
 
 # usage: erro <message>;
 function erro() {
-    echo -e "${RED}[ERROR]${NC} $SCRIPT_NAME: $1"
+    if [ -t 1 ]; then
+        echo -e "${RED}[ERROR]${NC} $SCRIPT_NAME: $1"
+    else
+        echo -e "[ERROR] $SCRIPT_NAME: $1"
+    fi
     print_usage
     cleanup 1
 }
@@ -253,7 +261,7 @@ function prepare_db() {
         mkdir "$PATH_TO_DB"
     fi
     rm -f "$PATH_TO_DB/$DB_NAME"
-    local CONTAINER=$($CONTAINER_CLI run -d -v "$PATH_TO_DB":/opt/mount --rm "$COMMON_SERVICE_BASE_CATSRC")
+    local CONTAINER=$($CONTAINER_CLI run -d -v "$PATH_TO_DB":/opt/mount:z --rm "$COMMON_SERVICE_BASE_CATSRC")
     $CONTAINER_CLI exec "$CONTAINER" cp /database/index.db /opt/mount/"$DB_NAME"
     $CONTAINER_CLI exec "$CONTAINER" chmod 777 /opt/mount/"$DB_NAME"
     $CONTAINER_CLI stop "$CONTAINER"
@@ -264,7 +272,8 @@ function prepare_db() {
 # creates updated registry with specified versions of operators
 # passed as arguments
 function update_registry() {
-    $OPM registry add -c docker \
+    $OPM registry add \
+        --container-tool "$OPM_CONTAINER_TOOL" \
         --bundle-images "$BUNDLES" \
         --database "$1"/"$DB_NAME" \
         --debug
