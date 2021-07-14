@@ -14,3 +14,8 @@ bin
 *.swp
 *.swo
 *~
+
+# opm index files
+database
+bundle_tmp*
+index.Dockerfile
