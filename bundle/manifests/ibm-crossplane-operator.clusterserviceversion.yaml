@@ -2,49 +2,16 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
   annotations:
-    alm-examples: |-
-      [
-        {
-          "apiVersion": "operator.ibm.com/v1beta1",
-          "kind": "Crossplane",
-          "metadata": {
-            "labels": {
-              "app.kubernetes.io/instance": "ibm-crossplane",
-              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
-              "app.kubernetes.io/name": "ibm-crossplane-operator"
-            },
-            "name": "ibm-crossplane",
-            "namespace": "ibm-crossplane-system"
-          },
-          "spec": {
-            "configuration": {
-              "packages": [
-                "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0"
-              ]
-            },
-            "replicas": 1,
-            "resourcesCrossplane": {
-              "limits": {
-                "cpu": "100m",
-                "memory": "512Mi"
-              },
-              "requests": {
-                "cpu": "100m",
-                "memory": "256Mi"
-              }
-            }
-          }
-        }
-      ]
+    alm-examples: '[]'
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: quay.io/opencloudio/ibm-crossplane-operator:latest
+    containerImage: quay.io/opencloudio/ibm-crossplane:1.0.0
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
     olm.skipRange: '>=1.0.0 <1.0.0'
-    operators.operatorframework.io/builder: operator-sdk-v1.4.2
-    operators.operatorframework.io/project_layout: helm.sdk.operatorframework.io/v1
+    operators.operatorframework.io/builder: operator-sdk-v1.2.0
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
     repository: https://github.com/IBM/ibm-crossplane-operator
     support: IBM
   labels:
@@ -58,45 +25,47 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-      - description: Crossplane is a Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
-        displayName: Crossplane
-        kind: Crossplane
-        name: crossplanes.operator.ibm.com
-        resources:
-          - kind: ConfigMap
-            name: ConfigMap
-            version: v1
-          - kind: Deployment
-            name: Deployment
-            version: v1
-          - kind: Ingress
-            name: Ingress
-            version: extensions/v1beta1
-          - kind: Pod
-            name: Pod
-            version: v1
-          - kind: ReplicaSet
-            name: ReplicaSet
-            version: v1
-          - kind: Role
-            name: Role
-            version: rbac.authorization.k8s.io/v1
-          - kind: RoleBinding
-            name: RoleBinding
-            version: rbac.authorization.k8s.io/v1
-          - kind: Service
-            name: Service
-            version: v1
-          - kind: ServiceAccount
-            name: ServiceAccount
-            version: v1
-        statusDescriptors:
-          - description: Conditions contains the observed states of the Helm release
-            displayName: Conditions
-            path: conditions
-          - description: Deployed Release shows the manifest of the deployed Helm release
-            displayName: Deployed Release
-            path: deployedRelease
+      - kind: CompositeResourceDefinition
+        name: compositeresourcedefinitions.apiextensions.crossplane.io
+        version: v1
+      - kind: CompositeResourceDefinition
+        name: compositeresourcedefinitions.apiextensions.crossplane.io
+        version: v1beta1
+      - kind: Composition
+        name: compositions.apiextensions.crossplane.io
+        version: v1
+      - kind: Composition
+        name: compositions.apiextensions.crossplane.io
+        version: v1beta1
+      - kind: ConfigurationRevision
+        name: configurationrevisions.pkg.crossplane.io
+        version: v1
+      - kind: ConfigurationRevision
+        name: configurationrevisions.pkg.crossplane.io
+        version: v1beta1
+      - kind: Configuration
+        name: configurations.pkg.crossplane.io
+        version: v1
+      - kind: Configuration
+        name: configurations.pkg.crossplane.io
+        version: v1beta1
+      - kind: ControllerConfig
+        name: controllerconfigs.pkg.crossplane.io
+        version: v1alpha1
+      - kind: Lock
+        name: locks.pkg.crossplane.io
+        version: v1alpha1
+      - kind: ProviderRevision
+        name: providerrevisions.pkg.crossplane.io
+        version: v1
+      - kind: ProviderRevision
+        name: providerrevisions.pkg.crossplane.io
+        version: v1beta1
+      - kind: Provider
+        name: providers.pkg.crossplane.io
+        version: v1
+      - kind: Provider
+        name: providers.pkg.crossplane.io
         version: v1beta1
   description: |-
     **Important:** Do not install this operator directly. Only install this operator using the IBM Common Services Operator. For more information about installing this operator and other Common Services operators, see [Installer documentation](http://ibm.biz/cpcs_opinstall). Additionally, you can exit this panel and navigate to the IBM Common Services tile in OperatorHub to learn more about the operator. If you are using this operator as part of an IBM Cloud Pak, see the documentation for that IBM Cloud Pak to learn more about how to install and use the operator service. For more information about IBM Cloud Paks, see [IBM Cloud Paks that use Common Services](http://ibm.biz/cpcs_cloudpaks).
@@ -199,8 +168,8 @@ spec:
                 - list
                 - watch
             - apiGroups:
-                - apiextensions.crossplane.io
-                - pkg.crossplane.io
+                - apiextensions.ibm.crossplane.io
+                - pkg.ibm.crossplane.io
               resources:
                 - '*'
               verbs:
@@ -223,18 +192,23 @@ spec:
                 - patch
                 - update
                 - watch
-          serviceAccountName: ibm-crossplane-operator
+          serviceAccountName: ibm-crossplane
       deployments:
-        - name: ibm-crossplane-operator
+        - name: ibm-crossplane
           spec:
+            progressDeadlineSeconds: 600
             replicas: 1
+            revisionHistoryLimit: 10
             selector:
               matchLabels:
-                app.kubernetes.io/instance: ibm-crossplane
-                app.kubernetes.io/managed-by: ibm-crossplane-operator
-                app.kubernetes.io/name: ibm-crossplane-operator
-                name: ibm-crossplane-operator
-            strategy: {}
+                app: ibm-crossplane
+                intent: projected
+                release: ibm-crossplane
+            strategy:
+              rollingUpdate:
+                maxSurge: 25%
+                maxUnavailable: 25%
+              type: RollingUpdate
             template:
               metadata:
                 annotations:
@@ -242,31 +216,52 @@ spec:
                   productMetric: FREE
                   productName: IBM Cloud Platform Common Services
                 labels:
-                  app.kubernetes.io/instance: ibm-crossplane
-                  app.kubernetes.io/managed-by: ibm-crossplane-operator
-                  app.kubernetes.io/name: ibm-crossplane-operator
-                  name: ibm-crossplane-operator
+                  app: ibm-crossplane
+                  intent: projected
+                  release: ibm-crossplane
               spec:
+                affinity:
+                  nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      nodeSelectorTerms:
+                        - matchExpressions:
+                            - key: kubernetes.io/arch
+                              operator: In
+                              values:
+                                - amd64
+                                - ppc64le
+                                - s390x
+                  podAntiAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                      - podAffinityTerm:
+                          labelSelector:
+                            matchExpressions:
+                              - key: app
+                                operator: In
+                                values:
+                                  - ibm-crossplane
+                          topologyKey: kubernetes.io/hostname
+                        weight: 100
                 containers:
-                  - args:
-                      - --enable-leader-election
-                      - --leader-election-id=ibm-crossplane-operator
-                    env:
-                      - name: WATCH_NAMESPACE
+                  - env:
+                      - name: POD_NAMESPACE
                         valueFrom:
                           fieldRef:
-                            fieldPath: metadata.annotations['olm.targetNamespaces']
-                      - name: IBM_CROSSPLANE_IMAGE
-                        value: quay.io/opencloudio/ibm-crossplane:1.0.0
-                    image: quay.io/opencloudio/ibm-crossplane-operator:latest
+                            apiVersion: v1
+                            fieldPath: metadata.namespace
+                      - name: LEADER_ELECTION
+                        value: "true"
+                      - name: IBM_BEDROCK_SHIM_IMAGE
+                        value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
+                    image: quay.io/opencloudio/ibm-crossplane:1.0.0
                     imagePullPolicy: Always
-                    name: ibm-crossplane-operator
+                    name: ibm-crossplane
                     resources:
                       limits:
-                        cpu: 50m
-                        memory: 256Mi
+                        cpu: 100m
+                        memory: 512Mi
                       requests:
-                        cpu: 20m
+                        cpu: 100m
                         memory: 256Mi
                     securityContext:
                       allowPrivilegeEscalation: false
@@ -276,7 +271,37 @@ spec:
                       privileged: false
                       readOnlyRootFilesystem: true
                       runAsNonRoot: true
-                serviceAccountName: ibm-crossplane-operator
+                    terminationMessagePath: /dev/termination-log
+                    terminationMessagePolicy: File
+                    volumeMounts:
+                      - mountPath: /cache
+                        name: package-cache
+                dnsPolicy: ClusterFirst
+                restartPolicy: Always
+                schedulerName: default-scheduler
+                securityContext: {}
+                serviceAccount: ibm-crossplane
+                serviceAccountName: ibm-crossplane
+                terminationGracePeriodSeconds: 30
+                topologySpreadConstraints:
+                  - labelSelector:
+                      matchLabels:
+                        key: app
+                        values: ibm-crossplane
+                    maxSkew: 1
+                    topologyKey: topology.kubernetes.io/zone
+                    whenUnsatisfiable: ScheduleAnyway
+                  - labelSelector:
+                      matchLabels:
+                        key: app
+                        values: ibm-crossplane
+                    maxSkew: 1
+                    topologyKey: topology.kubernetes.io/region
+                    whenUnsatisfiable: ScheduleAnyway
+                volumes:
+                  - emptyDir:
+                      sizeLimit: 5Mi
+                    name: package-cache
       permissions:
         - rules:
             - apiGroups:
@@ -374,7 +399,7 @@ spec:
                 - patch
                 - update
                 - watch
-          serviceAccountName: ibm-crossplane-operator
+          serviceAccountName: ibm-crossplane
     strategy: deployment
   installModes:
     - supported: true
@@ -392,7 +417,7 @@ spec:
     - name: IBM Crossplane Operator
       url: https://github.com/IBM/ibm-crossplane-operator
   maturity: alpha
-  minKubeVersion: "1.19.0"
+  minKubeVersion: 1.19.0
   provider:
     name: IBM
   version: 1.0.0

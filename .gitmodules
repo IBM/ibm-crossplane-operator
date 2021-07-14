@@ -1,0 +1,6 @@
+[submodule "submodule/ibm-crossplane"]
+	path = submodule/ibm-crossplane
+	url = https://github.com/IBM/ibm-crossplane.git
+[submodule "ibm-crossplane"]
+	path = ibm-crossplane
+	url = https://github.com/IBM/ibm-crossplane.git

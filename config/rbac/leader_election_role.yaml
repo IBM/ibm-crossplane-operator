@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: ibm-crossplane-operator-leader-election-role
+  name: ibm-crossplane-leader-election-role
 rules:
 - apiGroups:
   - ""

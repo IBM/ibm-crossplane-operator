@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: ibm-crossplane-operator-leader-election-rolebinding
+  name: ibm-crossplane-leader-election-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: ibm-crossplane-operator-leader-election-role
+  name: ibm-crossplane-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: ibm-crossplane-operator
+  name: ibm-crossplane
   namespace: ibm-crossplane-system

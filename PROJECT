@@ -1,11 +1,13 @@
 domain: ibm.com
-layout: helm.sdk.operatorframework.io/v1
 projectName: ibm-crossplane-operator
+layout: go.kubebuilder.io/v2
+repo: github.com/IBM/ibm-crossplane-operator
 resources:
 - group: operator
   kind: Crossplane
   version: v1beta1
 version: 3-alpha
 plugins:
+  go.operator-sdk.io/v2-alpha: {}
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}

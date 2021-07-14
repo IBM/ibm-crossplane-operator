@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: ibm-crossplane-operator
+  name: ibm-crossplane
 rules:
 # for operator to create clusterroles
 - apiGroups:
@@ -77,8 +77,8 @@ rules:
   - watch
 # for crossplane to manage crossplane resources
 - apiGroups:
-  - apiextensions.crossplane.io
-  - pkg.crossplane.io
+  - apiextensions.ibm.crossplane.io
+  - pkg.ibm.crossplane.io
   resources:
   - '*'
   verbs:

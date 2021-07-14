@@ -21,7 +21,6 @@ OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
 KUSTOMIZE ?= $(shell which kustomize)
 KUSTOMIZE_VERSION=v3.8.7
-HELM_OPERATOR_VERSION=v1.4.2
 OPM_VERSION=v1.15.2
 YQ_VERSION=3.4.1
 
@@ -36,7 +35,7 @@ VERSION ?= $(shell cat RELEASE_VERSION)
 PREVIOUS_VERSION ?= $(shell cat PREVIOUS_VERSION)
 
 # Current Operator image name
-OPERATOR_IMAGE_NAME ?= ibm-crossplane-operator
+OPERATOR_IMAGE_NAME ?= ibm-crossplane
 # Current Operator bundle image name
 BUNDLE_IMAGE_NAME ?= ibm-crossplane-operator-bundle
 
@@ -68,7 +67,7 @@ ARCH  := $(shell uname -m | sed 's/x86_64/amd64/')
 OSOPER   := $(shell uname -s | tr '[:upper:]' '[:lower:]' | sed 's/darwin/apple-darwin/' | sed 's/linux/linux-gnu/')
 ARCHOPER := $(shell uname -m )
 
-tools: kustomize helm-operator opm yq ## Install all development tools
+tools: kustomize opm yq ## Install all development tools
 
 kustomize: ## Install kustomize
 ifeq (, $(shell which kustomize 2>/dev/null))
@@ -81,21 +80,6 @@ ifeq (, $(shell which kustomize 2>/dev/null))
 KUSTOMIZE=$(realpath ./bin/kustomize)
 else
 KUSTOMIZE=$(shell which kustomize)
-endif
-
-helm-operator: ## Install helm-operator
-ifeq (, $(shell which helm-operator 2>/dev/null))
-	@{ \
-	set -e ;\
-	mkdir -p bin ;\
-	echo "Downloading helm-operator ...";\
-	curl -LO https://github.com/operator-framework/operator-sdk/releases/download/$(HELM_OPERATOR_VERSION)/helm-operator-$(HELM_OPERATOR_VERSION)-$(ARCHOPER)-$(OSOPER) ;\
-	mv helm-operator-$(HELM_OPERATOR_VERSION)-$(ARCHOPER)-$(OSOPER) ./bin/helm-operator ;\
-	chmod +x ./bin/helm-operator ;\
-	}
-HELM_OPERATOR=$(realpath ./bin/helm-operator)
-else
-HELM_OPERATOR=$(shell which helm-operator)
 endif
 
 opm: ## Install operator registry opm
@@ -129,6 +113,11 @@ else
 YQ=$(shell which yq)
 endif
 
+kubectl-crossplane: ## build binary needed for docker images
+	cd ./ibm-crossplane && go build -o ./../kubectl-crossplane ./cmd/crank
+	cd ..
+	chmod +x ./kubectl-crossplane
+
 ############################################################
 ##@ Development
 ############################################################
@@ -144,9 +133,6 @@ endif
 
 check: lint-all ## Check all files lint error
 	./common/scripts/lint-csv.sh
-
-run: helm-operator ## Run against the configured Kubernetes cluster in ~/.kube/config
-	$(HELM_OPERATOR) run
 
 install: kustomize ## Install CRDs, controller, and sample CR to a cluster
 	$(KUSTOMIZE) build config/development | kubectl apply -f -
@@ -265,11 +251,19 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	-f Dockerfile.s390x .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
 
+build-operator-binary:
+# build from submodule. Binary goes to "ibm-crossplane/_output/bin/linux_amd64/crossplane"
+	cd ibm-crossplane && make go.build
+
 ############################################################
 ##@ Release
 ############################################################
 
-bundle: kustomize ## Generate bundle manifests and metadata, then validate the generated files
+copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
+	git submodule update --init --recursive --remote
+	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+
+bundle: build-operator-binary copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	- make bundle-manifests CHANNELS=v3 DEFAULT_CHANNEL=v3
 
