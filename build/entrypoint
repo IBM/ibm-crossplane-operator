@@ -9,5 +9,4 @@ if ! whoami &>/dev/null; then
   fi
 fi
 
-echo "IN ENTRYPOINT"
-exec ${OPERATOR}/crossplane --debug
+exec ${OPERATOR}/crossplane
