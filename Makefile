@@ -35,7 +35,7 @@ VERSION ?= $(shell cat RELEASE_VERSION)
 PREVIOUS_VERSION ?= $(shell cat PREVIOUS_VERSION)
 
 # Current Operator image name
-OPERATOR_IMAGE_NAME ?= ibm-crossplane-operator
+OPERATOR_IMAGE_NAME ?= ibm-crossplane
 # Current Operator bundle image name
 BUNDLE_IMAGE_NAME ?= ibm-crossplane-operator-bundle
 
@@ -251,11 +251,21 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	-f Dockerfile.s390x .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
 
+build-operand-binary:
+# build from submodule. Binary goes to "ibm-crossplane/_output/bin/linux_amd64/crossplane"
+	cd ibm-crossplane && make go.build
+
 ############################################################
 ##@ Release
 ############################################################
 
-bundle: kustomize ## Generate bundle manifests and metadata, then validate the generated files
+copy-operand: ## Copy files from ibm-crossplane submodule before recreating bundle
+	git submodule update -f --remote
+	cd ibm-crossplane/ && git stash && git checkout namespaceCRDs && git pull --ff-only
+	rm -f config/crd/bases/*
+	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+
+bundle: build-operand-binary copy-operand kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	- make bundle-manifests CHANNELS=v3 DEFAULT_CHANNEL=v3
 

@@ -32,8 +32,30 @@ LABEL org.label-schema.vendor="IBM" \
     summary="IBM Crossplane Operator" \
     release=$VCS_REF
 
-ENV HOME=/opt/helm
-COPY watches.yaml ${HOME}/watches.yaml
-COPY helm-charts ${HOME}/helm-charts
-COPY LICENSE /licenses/
-WORKDIR ${HOME}
+ENV OPERATOR=/usr/local/bin/ibm-crossplane-operator \
+DEPLOY_DIR=/deploy \
+USER_UID=1001 \
+USER_NAME=ibm-crossplane-operator \
+IMAGE_RELEASE="$IMAGE_RELEASE"
+
+COPY ibm-crossplane/_output/bin/linux_amd64/crossplane ${OPERATOR}/crossplane
+COPY build /usr/local/bin
+COPY bundle ${DEPLOY_DIR}
+RUN /usr/local/bin/user_setup
+
+# needed for crossplane binary
+RUN mkdir /cache
+
+# copy licenses
+RUN mkdir /licenses
+COPY LICENSE /licenses
+
+# TODO
+# add commit image release, 
+#RUN echo "$IMAGE_RELEASE" > /IMAGE_RELEASE
+#RUN echo "$IMAGE_BUILDDATE" > /IMAGE_BUILDDATE
+
+RUN echo "new dockerfile yo" > /messpp
+
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
+USER ${USER_UID}

@@ -11,10 +11,9 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: ibm-crossplane
-      app.kubernetes.io/managed-by: ibm-crossplane
-      app.kubernetes.io/name: ibm-crossplane
-      name: ibm-crossplane
+      app: ibm-crossplane
+      intent: projected
+      release: ibm-crossplane
   template:
     metadata:
       labels:
