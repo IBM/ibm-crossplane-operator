@@ -12,6 +12,7 @@ spec:
   names:
     categories:
     - crossplane
+    - ibm
     - pkg
     kind: Configuration
     listKind: ConfigurationList
