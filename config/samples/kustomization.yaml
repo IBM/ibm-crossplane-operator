@@ -1,5 +1,6 @@
 ## Append samples you want in your CSV to this file as resources ##
 resources:
+<<<<<<< HEAD
 - apiextensions.ibm.crossplane.io_compositeresourcedefinition.yaml
 # - apiextensions.ibm.crossplane.io_composition.yaml
 # - pkg.ibm.crossplane.io_configurationrevision.yaml
@@ -10,4 +11,7 @@ resources:
 # - pkg.ibm.crossplane.io_provider.yaml
 # - shim.bedrock.ibm.com_kafkaclaim.yaml
 # - shim.bedrock.ibm.com_kafkacomposite.yaml
+=======
+- pkg.crossplane.io_configuration.yaml
+>>>>>>> 7f02ad6 (change project file)
 

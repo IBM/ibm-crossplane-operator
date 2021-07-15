@@ -1,0 +1,11 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: ibm-crossplane-bedrock-shim-config
+spec:
+  ignoreCrossplaneConstraints: false
+  package: 'quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0'
+  packagePullPolicy: Always
+  revisionActivationPolicy: Automatic
+  revisionHistoryLimit: 1
+  skipDependencyResolution: false
