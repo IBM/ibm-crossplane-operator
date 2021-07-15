@@ -15,9 +15,6 @@ bin
 *.swo
 *~
 
-#binaries
-ibm-crossplane
-
 # opm index files
 database
 bundle_tmp*
