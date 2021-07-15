@@ -1,0 +1,52 @@
+#
+# Copyright 2021 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: catsrc
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag for the resulting catalog source image'
+        required: false
+        default: 'default'
+  push:
+    branches:
+      - master
+
+jobs:
+  build-ibm-crossplane-catsrc:
+    name: Build ibm-crossplane Catalog Source
+    runs-on: ubuntu-20.04
+    steps:
+    
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Build Catalog Source
+      env:
+        ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
+        ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
+      run: |
+        if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
+        ./common/scripts/build_catsrc.sh $OPTIONS  > ./build_logs.txt
+
+    - name: Archive logs
+      uses: actions/upload-artifact@v2
+      with:
+        name: catsrc build
+        path: ./*.txt

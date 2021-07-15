@@ -18,3 +18,9 @@ bin
 #binaries
 ibm-crossplane
 build
+
+# opm index files
+database
+bundle_tmp*
+index.Dockerfile
+

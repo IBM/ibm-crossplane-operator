@@ -61,7 +61,7 @@ fi
 
 if [[ "${changed}" == "true" ]]; then
     echo "${new_pull_secret}" > /tmp/dockerconfig.json
-    kubectl -n openshift-config set data secret/pull-secret --from-file=.dockerconfigjson=/tmp/dockerconfig.json
+    oc -n openshift-config set data secret/pull-secret --from-file=.dockerconfigjson=/tmp/dockerconfig.json
 
     if [[ "$?" -ne 0 ]]; then
         echo "[ERROR] Error updating global pull secrets"
