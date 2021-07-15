@@ -1,3 +1,4 @@
 [submodule "ibm-crossplane"]
 	path = ibm-crossplane
 	url = https://github.com/IBM/ibm-crossplane.git
+	branch = master
