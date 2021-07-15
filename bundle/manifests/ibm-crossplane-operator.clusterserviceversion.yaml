@@ -185,8 +185,8 @@ spec:
                 - list
                 - watch
             - apiGroups:
-                - apiextensions.ibm.crossplane.io
-                - pkg.ibm.crossplane.io
+                - apiextensions.crossplane.io
+                - pkg.crossplane.io
               resources:
                 - '*'
               verbs:
