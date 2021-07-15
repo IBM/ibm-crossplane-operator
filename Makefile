@@ -202,7 +202,7 @@ test: ## Run unit test on prow
 ############################################################
 
 # build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
-build: build-image-amd64 ## Build multi-arch operator image
+build: copy-operator-data build-image-amd64 ## Build multi-arch operator image
 
 build-dev: build-image-dev ## Build operator image for development
 
