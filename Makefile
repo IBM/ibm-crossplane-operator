@@ -333,6 +333,7 @@ update-submodule:
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+	cd ibm-crossplane && make go.build cd ./../
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
