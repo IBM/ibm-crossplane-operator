@@ -208,7 +208,7 @@ global-pull-secrets: ## Update global pull secrets to use artifactory registries
 ##@ Test
 ############################################################
 
-test: ## Run unit test on prow
+test: images ## Run unit test on prow
 	@echo good
 
 ############################################################
