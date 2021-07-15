@@ -1,7 +1,4 @@
-# Adds namespace to all resources.
-namespace: ibm-crossplane-system
-
 ## Append samples you want in your CSV to this file as resources ##
 resources:
-- operator_v1beta1_crossplane.yaml
-# +kubebuilder:scaffold:manifestskustomizesamples
+- pkg.crossplane.io_configuration.yaml
+

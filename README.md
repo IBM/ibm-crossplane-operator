@@ -145,10 +145,10 @@ Use the following quick start commands for building and testing the operator:
 # make install
 ```
 
-4. Verify the installation in `ibm-crossplane-system` namespace
+4. Verify the installation in `ibm-common-services` namespace
 
 ```
-# oc -n ibm-crossplane-system get po
+# oc -n ibm-common-services get po
 NAME                                       READY   STATUS    RESTARTS   AGE
 ibm-crossplane-7d6ff947df-pvg5t            1/1     Running   0          25s
 ibm-crossplane-operator-6cc44f4c5c-p74lg   1/1     Running   0          73s

@@ -10,4 +10,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: ibm-crossplane
-  namespace: ibm-crossplane-system
+  namespace: ibm-common-services

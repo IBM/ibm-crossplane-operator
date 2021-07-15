@@ -33,7 +33,7 @@ get-cluster-credentials: activate-serviceaccount
 config-docker: get-cluster-credentials
 	@common/scripts/config_docker.sh
 
-FINDFILES=find . \( -path ./.git -o -path ./.github \) -prune -o -type f
+FINDFILES=find . \( -path ./.git -o -path ./.github -o -path ./ibm-crossplane \) -prune -o -type f
 XARGS = xargs -0 ${XARGS_FLAGS}
 CLEANXARGS = xargs ${XARGS_FLAGS}
 
@@ -41,9 +41,6 @@ lint-copyright-banner:
 	@${FINDFILES} \( -name '*.go' -o -name '*.cc' -o -name '*.h' -o -name '*.proto' -o -name '*.py' -o -name '*.sh' \) \( ! \( -name '*.gen.go' -o -name '*.pb.go' -o -name '*_pb2.py' \) \) -print0 |\
 		${XARGS} common/scripts/lint_copyright_banner.sh
 
-lint-helm:
-	@${FINDFILES} -name 'Chart.yaml' -print0 | ${XARGS} -L 1 dirname | ${CLEANXARGS} helm lint
+lint-all: lint-copyright-banner
 
-lint-all: lint-copyright-banner lint-helm
-
-.PHONY: lint-copyright-banner lint-helm lint-all config-docker
+.PHONY: lint-copyright-banner lint-all config-docker

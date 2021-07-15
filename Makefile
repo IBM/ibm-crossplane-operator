@@ -137,7 +137,7 @@ check: lint-all ## Check all files lint error
 install: kustomize ## Install CRDs, controller, and sample CR to a cluster
 	$(KUSTOMIZE) build config/development | kubectl apply -f -
 	$(KUSTOMIZE) build config/samples | kubectl apply -f -
-	- kubectl config set-context --current --namespace=ibm-crossplane-system
+	- kubectl config set-context --current --namespace=ibm-common-services
 
 uninstall: kustomize ## Uninstall CRDs, controller, and sample CR from a cluster
 	$(KUSTOMIZE) build config/samples | kubectl delete --ignore-not-found -f -
@@ -263,7 +263,7 @@ copy-operator-data: ## Copy files from ibm-crossplane submodule before recreatin
 	git submodule update --init --recursive --remote
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
 
-bundle: build-operator-binary copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
+bundle: copy-operator-data build-operator-binary kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	- make bundle-manifests CHANNELS=v3 DEFAULT_CHANNEL=v3
 
