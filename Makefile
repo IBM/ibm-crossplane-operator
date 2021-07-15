@@ -48,6 +48,8 @@ BUNDLE_DEFAULT_CHANNEL := --default-channel=$(DEFAULT_CHANNEL)
 endif
 BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 
+REGISTRY_DAILY ?= hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom
+
 ifeq ($(BUILD_LOCALLY),0)
     export CONFIG_DOCKER_TARGET = config-docker
 	# Default image repo
@@ -212,7 +214,7 @@ build-catalog: build-bundle-image build-catalog-source ## Build bundle image and
 build-bundle-image: bundle
 	@cp -f bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml /tmp/ibm-crossplane-operator.clusterserviceversion.yaml
 	@$(YQ) d -i bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml "spec.replaces"
-	sed -i -e "s|quay.io/opencloudio|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
+	sed -i -e "s|quay.io/opencloudio|$(REGISTRY_DAILY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
 	$(CONTAINER_CLI) build -f bundle.Dockerfile -t $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH) .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH)
 	@mv /tmp/ibm-crossplane-operator.clusterserviceversion.yaml bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
