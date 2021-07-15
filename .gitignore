@@ -20,3 +20,4 @@ database
 bundle_tmp*
 index.Dockerfile
 
+/ibm-crossplane/
