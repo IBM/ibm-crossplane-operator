@@ -22,7 +22,6 @@ BUNDLE_DOCKERFILE_PATH=bundle.Dockerfile
 BUNDLE_ANNOTATIONS_PATH=bundle/metadata/annotations.yaml
 OPERANDREQUEST_PATH=config/manifests/operandrequest.json
 CSV_PATH=bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
-CHART_PATH=helm-charts/ibm-crossplane/Chart.yaml
 
 if [[ -z "${OPERATOR_VERSION}" || -z "${PREVIOUS_VERSION}" ]]; then
     echo "Usage: $0 OPERATOR_VERSION PREVIOUS_VERSION"
@@ -55,12 +54,4 @@ if [[ -f "${CSV_PATH}" ]]; then
     # replaces
     # yq w ${CSV_PATH} "spec.replaces" "${OPERATOR_NAME}.v${PREVIOUS_VERSION}" 1<>${CSV_PATH}
     # yq d -i ${CSV_PATH} "spec.replaces" # temporary adjustment for moving to v3 channel
-fi
-
-# adjust Chart.yaml
-if [[ -f "${CHART_PATH}" ]]; then
-    echo "[INFO] Adjusting ${CHART_PATH}"
-
-    # version
-    yq w ${CHART_PATH} version "${OPERATOR_VERSION}" 1<>${CHART_PATH}
 fi

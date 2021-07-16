@@ -227,7 +227,7 @@ build-catalog-source:
 # Build image for development
 build-image-dev:
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
@@ -235,22 +235,22 @@ build-image-dev:
 build-image-amd64: $(CONFIG_DOCKER_TARGET)
 	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
 
 # Build image for ppc64le
 build-image-ppc64le: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
-	-f Dockerfile.ppc64le .
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
+	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
 
 # Build image for s390x
 build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
-	-f Dockerfile.s390x .
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
+	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
 
 ############################################################
@@ -259,9 +259,9 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET)
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
-	cd ./ibm-crossplane && git checkout master && git pull && cd ./../
+	git submodule update --remote --merge
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
-	cd ibm-crossplane && make go.build && cd ./../
+	cd ibm-crossplane && make build.all && cd ./../
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
