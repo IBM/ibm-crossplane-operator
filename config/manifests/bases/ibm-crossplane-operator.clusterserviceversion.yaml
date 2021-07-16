@@ -29,34 +29,42 @@ spec:
       displayName: CompositeResourceDefinition
       kind: CompositeResourceDefinition
       name: compositeresourcedefinitions.apiextensions.crossplane.io
+      version: ""
     - description: Composition defines the group of resources to be created when a compatible type is created with reference to the composition.
       displayName: Composition
       kind: Composition
       name: compositions.apiextensions.crossplane.io
+      version: ""
     - description: A ConfigurationRevision that has been added to Crossplane.
       displayName: ConfigurationRevision
       kind: ConfigurationRevision
       name: configurationrevisions.pkg.crossplane.io
+      version: ""
     - description: Configuration is the CRD type for a request to add a configuration to Crossplane.
       displayName: Configuration
       kind: Configuration
       name: configurations.pkg.crossplane.io
+      version: ""
     - description: ControllerConfig is the CRD type for a packaged controller configuration.
       displayName: ControllerConfig
       kind: ControllerConfig
       name: controllerconfigs.pkg.crossplane.io
+      version: ""
     - description: Lock is the CRD type that tracks package dependencies.
       displayName: Lock
       kind: Lock
       name: locks.pkg.crossplane.io
+      version: ""
     - description: A ProviderRevision that has been added to Crossplane.
       displayName: ProviderRevision
       kind: ProviderRevision
       name: providerrevisions.pkg.crossplane.io
+      version: ""
     - description: Provider is the CRD type for a request to add a provider to Crossplane.
       displayName: Provider
       kind: Provider
       name: providers.pkg.crossplane.io
+      version: ""
   description: |-
     **Important:** Do not install this operator directly. Only install this operator using the IBM Common Services Operator. For more information about installing this operator and other Common Services operators, see [Installer documentation](http://ibm.biz/cpcs_opinstall). Additionally, you can exit this panel and navigate to the IBM Common Services tile in OperatorHub to learn more about the operator. If you are using this operator as part of an IBM Cloud Pak, see the documentation for that IBM Cloud Pak to learn more about how to install and use the operator service. For more information about IBM Cloud Paks, see [IBM Cloud Paks that use Common Services](http://ibm.biz/cpcs_cloudpaks).
 

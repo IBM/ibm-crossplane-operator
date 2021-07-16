@@ -204,7 +204,7 @@ test: ## Run unit test on prow
 ############################################################
 
 # build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
-build: copy-operator-data build-image-amd64 ## Build multi-arch operator image
+build: copy-operator-data build-crossplane-binary build-image-amd64 ## Build multi-arch operator image
 
 build-dev: build-image-dev ## Build operator image for development
 
@@ -253,6 +253,10 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
 
+# Build binary in ibm-crossplane submodule
+build-crossplane-binary:
+	cd ibm-crossplane && make build.all && cd ./../
+
 ############################################################
 ##@ Release
 ############################################################
@@ -261,7 +265,6 @@ copy-operator-data: ## Copy files from ibm-crossplane submodule before recreatin
 	git submodule update --init --recursive
 	git submodule update --remote --merge
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
-	cd ibm-crossplane && make build.all && cd ./../
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
