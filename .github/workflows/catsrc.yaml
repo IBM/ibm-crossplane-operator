@@ -41,7 +41,7 @@ jobs:
     - name: Checkout ibm-crossplane
       uses: actions/checkout@v2
       with:
-        name: IBM/ibm-crossplane
+        repository: IBM/ibm-crossplane
         ref: refs/heads/pkopel-images-for-catsrc
         path: ./ibm-crossplane
 
