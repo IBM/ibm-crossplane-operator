@@ -31,42 +31,74 @@ spec:
     - description: An CompositeResourceDefinition defines a new kind of composite infrastructure resource. The new resource is composed of other composite or managed infrastructure resources.
       displayName: CompositeResourceDefinition
       kind: CompositeResourceDefinition
+<<<<<<< HEAD
       name: compositeresourcedefinitions.apiextensions.ibm.crossplane.io
+=======
+      name: compositeresourcedefinitions.apiextensions.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
     - description: Composition defines the group of resources to be created when a compatible type is created with reference to the composition.
       displayName: Composition
       kind: Composition
+<<<<<<< HEAD
       name: compositions.apiextensions.ibm.crossplane.io
+=======
+      name: compositions.apiextensions.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
     - description: A ConfigurationRevision that has been added to Crossplane.
       displayName: ConfigurationRevision
       kind: ConfigurationRevision
+<<<<<<< HEAD
       name: configurationrevisions.pkg.ibm.crossplane.io
+=======
+      name: configurationrevisions.pkg.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
     - description: Configuration is the CRD type for a request to add a configuration to Crossplane.
       displayName: Configuration
       kind: Configuration
+<<<<<<< HEAD
       name: configurations.pkg.ibm.crossplane.io
+=======
+      name: configurations.pkg.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
     - description: ControllerConfig is the CRD type for a packaged controller configuration.
       displayName: ControllerConfig
       kind: ControllerConfig
+<<<<<<< HEAD
       name: controllerconfigs.pkg.ibm.crossplane.io
+=======
+      name: controllerconfigs.pkg.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
     - description: Lock is the CRD type that tracks package dependencies.
       displayName: Lock
       kind: Lock
+<<<<<<< HEAD
       name: locks.pkg.ibm.crossplane.io
+=======
+      name: locks.pkg.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
     - description: A ProviderRevision that has been added to Crossplane.
       displayName: ProviderRevision
       kind: ProviderRevision
+<<<<<<< HEAD
       name: providerrevisions.pkg.ibm.crossplane.io
+=======
+      name: providerrevisions.pkg.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
     - description: Provider is the CRD type for a request to add a provider to Crossplane.
       displayName: Provider
       kind: Provider
+<<<<<<< HEAD
       name: providers.pkg.ibm.crossplane.io
+=======
+      name: providers.pkg.crossplane.io
+>>>>>>> 09944e2 (Ppytel2 (#26))
       version: ""
   description: |-
     **Important:** Do not install this operator directly. Only install this operator using the IBM Common Services Operator. For more information about installing this operator and other Common Services operators, see [Installer documentation](http://ibm.biz/cpcs_opinstall). Additionally, you can exit this panel and navigate to the IBM Common Services tile in OperatorHub to learn more about the operator. If you are using this operator as part of an IBM Cloud Pak, see the documentation for that IBM Cloud Pak to learn more about how to install and use the operator service. For more information about IBM Cloud Paks, see [IBM Cloud Paks that use Common Services](http://ibm.biz/cpcs_cloudpaks).
