@@ -22,6 +22,23 @@ on:
         description: 'Tag for the resulting catalog source image'
         required: false
         default: 'default'
+      ibm-crossplane-operator-tag:
+        description: 'Tag of ibm-crossplane-operator image'
+        required: false
+        default: 1.0.0
+      ibm-crossplane-operator-registry:
+        description: 'Registry of ibm-crossplane-operator image'
+        required: false
+        default: scratch
+      ibm-crossplane-tag:
+        description: 'Tag of ibm-crossplane image'
+        required: false
+        default: 1.0.0
+      ibm-crossplane-registry:
+        description: 'Registry of ibm-crossplane image'
+        required: false
+        default: scratch
+      
   push:
     branches:
       - master
@@ -32,10 +49,23 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     
-    - name: Checkout
+    - name: Checkout ibm-crossplane-operator
       uses: actions/checkout@v2
       with:
         ref: ${{ github.ref }}
+        path: ./ibm-crossplane-operator
+
+    - name: Checkout ibm-crossplane
+      uses: actions/checkout@v2
+      with:
+        name: IBM/ibm-crossplane
+        ref: refs/heads/pkopel-images-for-catsrc
+        path: ./ibm-crossplane
+
+    - name: Build images
+      run: |
+        make -C ./ibm-crossplane-operator images
+        make -C ./ibm-crossplane images
 
     - name: Build Catalog Source
       env:
@@ -43,7 +73,10 @@ jobs:
         ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
       run: |
         if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
-        ./common/scripts/build_catsrc.sh $OPTIONS  > ./build_logs.txt
+        IBM_CROSSPLANE_OPERATOR="ibm-crossplane-operator:${{ github.event.inputs.ibm-crossplane-operator-tag }}:${{ github.event.inputs.ibm-crossplane-operator-registry }}"
+        IBM_CROSSPLANE_OPERATOR="ibm-crossplane:${{ github.event.inputs.ibm-crossplane-tag }}:${{ github.event.inputs.ibm-crossplane-registry }}"
+        OPTIONS="$OPTIONS -ot \"$IBM_CROSSPLANE_OPERATOR,$IBM_CROSSPLANE\" "
+        ./ibm-crossplane-operator/common/scripts/build_catsrc.sh $OPTIONS  > ./build_logs.txt
 
     - name: Archive logs
       uses: actions/upload-artifact@v2
