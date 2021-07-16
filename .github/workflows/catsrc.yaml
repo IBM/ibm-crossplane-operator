@@ -64,7 +64,7 @@ jobs:
         ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
       run: |
         if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
-        ./ibm-crossplane-operator/common/scripts/build_catsrc.sh $OPTIONS  > ./build_logs.txt
+        (cd ./ibm-crossplane-operator && ./common/scripts/build_catsrc.sh $OPTIONS)  > ./build_logs.txt
 
     - name: Archive logs
       uses: actions/upload-artifact@v2
