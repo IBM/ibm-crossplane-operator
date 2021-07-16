@@ -22,23 +22,6 @@ on:
         description: 'Tag for the resulting catalog source image'
         required: false
         default: 'default'
-      ibm-crossplane-operator-tag:
-        description: 'Tag of ibm-crossplane-operator image'
-        required: false
-        default: 1.0.0
-      ibm-crossplane-operator-registry:
-        description: 'Registry of ibm-crossplane-operator image'
-        required: false
-        default: scratch
-      ibm-crossplane-tag:
-        description: 'Tag of ibm-crossplane image'
-        required: false
-        default: 1.0.0
-      ibm-crossplane-registry:
-        description: 'Registry of ibm-crossplane image'
-        required: false
-        default: scratch
-      
   push:
     branches:
       - master
@@ -62,6 +45,13 @@ jobs:
         ref: refs/heads/pkopel-images-for-catsrc
         path: ./ibm-crossplane
 
+    - name: Login to Artifactory  
+      uses: docker/login-action@v1
+      with:
+        registry: hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom
+        username: ${{ secrets.ARTIFACTORY_USER }}
+        password: ${{ secrets.ARTIFACTORY_TOKEN }}
+    
     - name: Build images
       run: |
         make -C ./ibm-crossplane-operator images
@@ -73,9 +63,6 @@ jobs:
         ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
       run: |
         if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
-        IBM_CROSSPLANE_OPERATOR="ibm-crossplane-operator:${{ github.event.inputs.ibm-crossplane-operator-tag }}:${{ github.event.inputs.ibm-crossplane-operator-registry }}"
-        IBM_CROSSPLANE_OPERATOR="ibm-crossplane:${{ github.event.inputs.ibm-crossplane-tag }}:${{ github.event.inputs.ibm-crossplane-registry }}"
-        OPTIONS="$OPTIONS -ot \"$IBM_CROSSPLANE_OPERATOR,$IBM_CROSSPLANE\" "
         ./ibm-crossplane-operator/common/scripts/build_catsrc.sh $OPTIONS  > ./build_logs.txt
 
     - name: Archive logs
