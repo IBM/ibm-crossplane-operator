@@ -204,7 +204,7 @@ test: ## Run unit test on prow
 ############################################################
 
 # build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
-build: copy-operator-data build-image-amd64 ## Build multi-arch operator image
+build: copy-operator-data build-crossplane-binary build-image-amd64 ## Build multi-arch operator image
 
 build-dev: build-image-dev ## Build operator image for development
 
@@ -214,7 +214,7 @@ build-catalog: build-bundle-image build-catalog-source ## Build bundle image and
 build-bundle-image: bundle
 	@cp -f bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml /tmp/ibm-crossplane-operator.clusterserviceversion.yaml
 	@$(YQ) d -i bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml "spec.replaces"
-	sed -i -e "s|quay.io/opencloudio|$(REGISTRY_DAILY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
+	sed -i -e "s|quay.io/opencloudio|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
 	$(CONTAINER_CLI) build -f bundle.Dockerfile -t $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH) .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH)
 	@mv /tmp/ibm-crossplane-operator.clusterserviceversion.yaml bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
@@ -227,7 +227,7 @@ build-catalog-source:
 # Build image for development
 build-image-dev:
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
@@ -235,23 +235,27 @@ build-image-dev:
 build-image-amd64: $(CONFIG_DOCKER_TARGET)
 	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
 
 # Build image for ppc64le
 build-image-ppc64le: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
-	-f Dockerfile.ppc64le .
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
+	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
 
 # Build image for s390x
 build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
-	-f Dockerfile.s390x .
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
+	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
+
+# Build binary in ibm-crossplane submodule
+build-crossplane-binary:
+	cd ibm-crossplane && make build.all && cd ./../
 
 ############################################################
 ##@ Release
@@ -259,9 +263,8 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET)
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
-	cd ./ibm-crossplane && git checkout master && git pull && cd ./../
+	git submodule update --remote --merge
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
-	cd ibm-crossplane && make go.build && cd ./../
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q

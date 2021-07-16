@@ -26,10 +26,6 @@ Before you install this operator, you need to first install the operator depende
 
 - For the list of prerequisites for installing the operator, see the IBM Knowledge Center [Preparing to install services documentation](http://ibm.biz/cpcs_opinstprereq).
 
-## PodSecurityPolicy Requirements
-
-See [IBM Crossplane Chart README](./helm-charts/ibm-crossplane/README.md)
-
 ## Documentation
 
 To install the operator with the IBM Common Services Operator follow the the installation and configuration instructions within the IBM Knowledge Center.

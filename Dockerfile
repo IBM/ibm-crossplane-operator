@@ -18,6 +18,7 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4-200.1622548483
 
 ARG VCS_REF
 ARG VCS_URL
+ARG PLATFORM
 
 LABEL org.label-schema.vendor="IBM" \
     org.label-schema.name="ibm-crossplane-operator" \
@@ -38,7 +39,9 @@ USER_UID=1001 \
 USER_NAME=ibm-crossplane-operator \
 IMAGE_RELEASE="$IMAGE_RELEASE"
 
-COPY ibm-crossplane/_output/bin/linux_amd64/crossplane ${OPERATOR}/crossplane
+# binary generated from submodule ibm-crossplane
+COPY ibm-crossplane/_output/bin/${PLATFORM}/crossplane ${OPERATOR}/crossplane
+
 COPY build /usr/local/bin
 COPY bundle ${DEPLOY_DIR}
 RUN /usr/local/bin/user_setup
