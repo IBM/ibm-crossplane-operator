@@ -79,10 +79,11 @@ jobs:
           key: ${{ runner.os }}-pkg-${{ hashFiles('**/go.sum') }}
           restore-keys: ${{ runner.os }}-pkg-
 
-      - name: Build images
-        run: |
-          make -C ./ibm-crossplane-operator images
-          make -C ./ibm-crossplane images
+      - name: Build ibm-crossplane-operator images
+        run: make -C ./ibm-crossplane-operator images
+
+      - name: Build ibm-crossplane images
+        run: make -C ./ibm-crossplane images
 
       - name: Build Catalog Source
         env:
