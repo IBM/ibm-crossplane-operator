@@ -13,6 +13,7 @@
 # limitations under the License.
 
 .DEFAULT_GOAL:=help
+TIMESTAMP = $(shell date +%s)
 
 # Dependence tools
 CONTAINER_CLI ?= $(shell basename $(shell which docker))
@@ -287,10 +288,14 @@ ifeq ($(OS),$(filter $(OS),linux darwin))
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(TIMESTAMP)"
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(TIMESTAMP)
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(TIMESTAMP)"
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(TIMESTAMP)
 endif
 
 ############################################################
