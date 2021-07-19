@@ -200,7 +200,7 @@ function prepare_operator_bundle_yamls() {
 function prepare_operator_bundle() {
     info "preparing map of image versions..."
     local DEFAULT_TAG="$RELEASE_VERSION"
-    local DEFAULT_REG="integration"
+    local DEFAULT_REG="scratch"
 
     for IMG in "${IMG_NAMES[@]}"; do
         IMG_TAGS["$IMG"]="$DEFAULT_TAG"

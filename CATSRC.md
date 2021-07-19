@@ -1,8 +1,8 @@
 # ibm-crossplane catalog source
 
 Script `common/scripts/build_catsrc.sh` adds `ibm-crossplane-operator-app` package to `ibm-common-service-catalog`. Default images of operator and operands are:
-* `ibm-crossplane-operator`: tag `1.0.0`, registry 'integration'
-* `ibm-crossplane`: tag `1.0.0`, registry 'integration'
+* `ibm-crossplane-operator`: tag `1.0.0`, registry 'scratch'
+* `ibm-crossplane`: tag `1.0.0`, registry 'scratch'
 
 Script builds new image only if there is no catalog source image with selected tag or digests of selected operator/operand images were changed.
 

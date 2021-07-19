@@ -28,7 +28,6 @@ if [[ ! -d "$TOOLS_DIR" ]]; then
     mkdir "$TOOLS_DIR"
 fi
 
-
 function check_yq() {
     if [[ $(which yq) != "" ]]; then
         YQ=$(which yq)
@@ -100,7 +99,7 @@ function check_curl() {
         echo "no curl executable in \$PATH"
         exit 1
     fi
-    echo -n "curl version: " && $CURL --version | grep "^curl" | cut -f2 -d' ' 
+    echo -n "curl version: " && $CURL --version | grep "^curl" | cut -f2 -d' '
 }
 
 check_container_cli

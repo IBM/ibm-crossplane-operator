@@ -19,34 +19,82 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag for the resulting catalog source image'
+        description: "Tag for the resulting catalog source image"
         required: false
-        default: 'default'
+        default: "default"
   push:
     branches:
       - master
+
+env:
+  GO_VERSION: "1.14"
+  GOLANGCI_VERSION: "v1.31"
 
 jobs:
   build-ibm-crossplane-catsrc:
     name: Build ibm-crossplane Catalog Source
     runs-on: ubuntu-20.04
     steps:
-    
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        ref: ${{ github.ref }}
+      - name: Checkout ibm-crossplane-operator
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          path: ./ibm-crossplane-operator
 
-    - name: Build Catalog Source
-      env:
-        ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
-        ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
-      run: |
-        if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
-        ./common/scripts/build_catsrc.sh $OPTIONS  > ./build_logs.txt
+      - name: Checkout ibm-crossplane
+        uses: actions/checkout@v2
+        with:
+          repository: IBM/ibm-crossplane
+          ref: refs/heads/pkopel-images-for-catsrc
+          path: ./ibm-crossplane
+          submodules: true
 
-    - name: Archive logs
-      uses: actions/upload-artifact@v2
-      with:
-        name: catsrc build
-        path: ./*.txt
+      - name: Login to Artifactory
+        uses: docker/login-action@v1
+        with:
+          registry: hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom
+          username: ${{ secrets.ARTIFACTORY_USER }}
+          password: ${{ secrets.ARTIFACTORY_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Find the Go Build Cache
+        id: go
+        run: echo "::set-output name=cache::$(go env GOCACHE)"
+
+      - name: Cache the Go Build Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.go.outputs.cache }}
+          key: ${{ runner.os }}-build-check-diff-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-build-check-diff-
+
+      - name: Cache Go Dependencies
+        uses: actions/cache@v2
+        with:
+          path: .work/pkg
+          key: ${{ runner.os }}-pkg-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-pkg-
+
+      - name: Build ibm-crossplane-operator images
+        run: make -C ./ibm-crossplane-operator images
+
+      - name: Build ibm-crossplane images
+        run: make -C ./ibm-crossplane images
+
+      - name: Build Catalog Source
+        env:
+          ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
+          ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
+        run: |
+          if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
+          (cd ./ibm-crossplane-operator && ./common/scripts/build_catsrc.sh $OPTIONS) | tee ./build_logs.txt
+
+      - name: Archive logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: catsrc build
+          path: ./*.txt
