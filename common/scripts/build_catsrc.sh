@@ -80,8 +80,8 @@ function setup() {
     fi
     if [[ "$ARTIFACTORY_USER" != "" && "$ARTIFACTORY_TOKEN" != "" ]]; then
         info "log in to container registry"
-        $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN"
-        $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN"
+        echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" --password-stdin
+        echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" --password-stdin
     fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
