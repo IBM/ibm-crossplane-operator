@@ -80,8 +80,8 @@ function setup() {
     fi
     if [[ "$ARTIFACTORY_USER" != "" && "$ARTIFACTORY_TOKEN" != "" ]]; then
         info "log in to container registry"
-        $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN"
-        $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" -p "$ARTIFACTORY_TOKEN"
+        echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" --password-stdin
+        echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" --password-stdin
     fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
@@ -102,13 +102,10 @@ function cleanup() {
 ############################################################
 #### Operator bundle functions
 ############################################################
-#ibm-crossplane:1.0.0
-#ibm-crossplane-bedrock-shim-config:1.0.0
-#ibm-crossplane-operator:1.0.0
 OPERATOR_IMG="ibm-crossplane-operator"
 IBM_CROSSPLANE_IMG="ibm-crossplane"
 #IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
-IMG_NAMES=($OPERATOR_IMG $IBM_CROSSPLANE_IMG $IBM_BEDROCK_SHIM_IMG)
+IMG_NAMES=($IBM_CROSSPLANE_IMG $IBM_BEDROCK_SHIM_IMG)
 declare -A IMG_TAGS
 declare -A IMG_REGS
 declare -A IMAGES
@@ -189,8 +186,7 @@ function prepare_operator_bundle_yamls() {
     $KUSTOMIZE build config/manifests | $OPERATOR_SDK generate bundle -q --overwrite --version "$RELEASE_VERSION" $BUNDLE_METADATA_OPTS
     $YQ d -i "$CSV_YAML" "spec.replaces"
     # operand images
-    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$OPERATOR_IMG]}"
-    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[1].value" "${IMAGES[$IBM_CROSSPLANE_IMG]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$IBM_CROSSPLANE_IMG]}"
     # annotations
     $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "ibm-crossplane-operator-app"
     $OPERATOR_SDK bundle validate ./bundle
@@ -200,7 +196,7 @@ function prepare_operator_bundle_yamls() {
 function prepare_operator_bundle() {
     info "preparing map of image versions..."
     local DEFAULT_TAG="$RELEASE_VERSION"
-    local DEFAULT_REG="integration"
+    local DEFAULT_REG="scratch"
 
     for IMG in "${IMG_NAMES[@]}"; do
         IMG_TAGS["$IMG"]="$DEFAULT_TAG"
