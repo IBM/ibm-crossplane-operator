@@ -33,6 +33,8 @@ VCS_URL = $(shell git config --get remote.origin.url)
 VCS_REF ?= $(shell git rev-parse HEAD)
 VERSION ?= $(shell cat RELEASE_VERSION)
 PREVIOUS_VERSION ?= $(shell cat PREVIOUS_VERSION)
+GIT_VERSION ?= $(shell git describe --exact-match 2> /dev/null || \
+                 	   git describe --match=$(git rev-parse --short=8 HEAD) --always --dirty --abbrev=8)
 
 # Current Operator image name
 OPERATOR_IMAGE_NAME ?= ibm-crossplane
@@ -284,11 +286,17 @@ ifeq ($(OS),$(filter $(OS),linux darwin))
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)"
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)"
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
 endif
+
+
 
 ############################################################
 ##@ Help
