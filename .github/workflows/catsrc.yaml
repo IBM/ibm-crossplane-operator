@@ -44,7 +44,7 @@ jobs:
           password: ${{ secrets.ARTIFACTORY_TOKEN }}
 
       - name: Build ibm-crossplane images
-        run: make -C images
+        run: make images
 
       - name: Build Catalog Source
         env:
