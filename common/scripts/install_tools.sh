@@ -58,12 +58,12 @@ function check_operator_sdk() {
             OS="darwin"
         fi
         echo "istalling operator-sdk"
-        local RELEASE_VERSION="v1.4.2"
+        local RELEASE_VERSION="v1.3.0"
         local URL="https://github.com/operator-framework/operator-sdk/releases/download"
         local FILE_NAME="operator-sdk_${OS}_${LOCAL_ARCH}"
         $CURL -LO "$URL/$RELEASE_VERSION/$FILE_NAME"
         chmod +x "$FILE_NAME"
-        cp "$FILE_NAME" "$TOOLS_DIR/operator-sdk"
+        mv "$FILE_NAME" "$TOOLS_DIR/operator-sdk"
         echo "done"
     fi
     export OPERATOR_SDK=${OPERATOR_SDK:-"$TOOLS_DIR/operator-sdk"}
