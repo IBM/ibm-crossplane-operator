@@ -40,11 +40,7 @@ USER_NAME=ibm-crossplane-operator \
 IMAGE_RELEASE="$IMAGE_RELEASE"
 
 # binary generated from submodule ibm-crossplane
-<<<<<<< HEAD
 COPY ibm-crossplane/_output/bin/${PLATFORM}/crossplane ${OPERATOR}
-=======
-COPY ibm-crossplane/_output/bin/${PLATFORM}/crossplane ${OPERATOR}/crossplane
->>>>>>> 09944e2 (Ppytel2 (#26))
 
 COPY build /usr/local/bin
 COPY bundle ${DEPLOY_DIR}
