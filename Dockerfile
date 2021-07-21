@@ -33,14 +33,14 @@ LABEL org.label-schema.vendor="IBM" \
     summary="IBM Crossplane Operator" \
     release=$VCS_REF
 
-ENV OPERATOR=/usr/local/bin/ibm-crossplane-operator \
+ENV OPERATOR=/usr/local/bin/ibm-crossplane-operator/crossplane \
 DEPLOY_DIR=/deploy \
 USER_UID=1001 \
 USER_NAME=ibm-crossplane-operator \
 IMAGE_RELEASE="$IMAGE_RELEASE"
 
 # binary generated from submodule ibm-crossplane
-COPY ibm-crossplane/_output/bin/${PLATFORM}/crossplane ${OPERATOR}/crossplane
+COPY ibm-crossplane/_output/bin/${PLATFORM}/crossplane ${OPERATOR}
 
 COPY build /usr/local/bin
 COPY bundle ${DEPLOY_DIR}
