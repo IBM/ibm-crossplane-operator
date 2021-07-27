@@ -206,7 +206,7 @@ test: ## Run unit test on prow
 ############################################################
 
 # build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
-build: copy-operator-data build-crossplane-binary build-image-amd64 ## Build multi-arch operator image
+build: build-image-amd64 ## Build multi-arch operator image
 
 build-dev: build-image-dev ## Build operator image for development
 
@@ -227,14 +227,14 @@ build-catalog-source:
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME)-catalog:$(VERSION)
 
 # Build image for development
-build-image-dev:
+build-image-dev: update-submodule
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
 # Build image for amd64
-build-image-amd64: $(CONFIG_DOCKER_TARGET)
+build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
 	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
@@ -242,14 +242,14 @@ build-image-amd64: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
 
 # Build image for ppc64le
-build-image-ppc64le: $(CONFIG_DOCKER_TARGET)
+build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
 
 # Build image for s390x
-build-image-s390x: $(CONFIG_DOCKER_TARGET)
+build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
@@ -262,6 +262,10 @@ build-crossplane-binary:
 ############################################################
 ##@ Release
 ############################################################
+
+update-submodule:
+	make copy-operator-data
+	make build-crossplane-binary
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
