@@ -233,23 +233,29 @@ build-image-dev: update-submodule
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
-# Build image for amd64
-build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
+# Update submodule and build image for amd64
+build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule raw-build-image-amd64
+
+# Update submodule and build image for ppc64le
+build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule raw-build-image-ppc64le
+
+# Update submodule and build image for s390x
+build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule raw-build-image-s390x
+
+raw-build-image-amd64: $(CONFIG_DOCKER_TARGET)
 	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
 
-# Build image for ppc64le
-build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
+raw-build-image-ppc64le: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
 
-# Build image for s390x
-build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
+raw-build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
@@ -282,7 +288,7 @@ bundle-manifests:
 	$(OPERATOR_SDK) bundle validate ./bundle
 	@./common/scripts/adjust_manifests.sh $(VERSION) $(PREVIOUS_VERSION)
 
-images: build-image-amd64 build-image-ppc64le build-image-s390x ## Build and publish the multi-arch operator image
+images: update-submodule raw-build-image-amd64 raw-build-image-ppc64le raw-build-image-s390x ## Build and publish the multi-arch operator image
 ifeq ($(OS),$(filter $(OS),linux darwin))
 	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(OS)-$(ARCH)
 	chmod +x /tmp/manifest-tool
