@@ -205,8 +205,7 @@ test: ## Run unit test on prow
 ##@ Build
 ############################################################
 
-# build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
-build: build-image-amd64 ## Build multi-arch operator image
+build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
 
 build-dev: build-image-dev ## Build operator image for development
 
@@ -231,6 +230,8 @@ build-image-dev: update-submodule
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
+
+push-image-dev:
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
 # Build image for amd64
@@ -239,13 +240,18 @@ build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
+
+push-image-amd64:
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
+
 
 # Build image for ppc64le
 build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
+
+push-image-ppc64le:
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
 
 # Build image for s390x
@@ -253,6 +259,8 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
+
+push-image-s390x:
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
 
 # Build binary in ibm-crossplane submodule
@@ -282,7 +290,7 @@ bundle-manifests:
 	$(OPERATOR_SDK) bundle validate ./bundle
 	@./common/scripts/adjust_manifests.sh $(VERSION) $(PREVIOUS_VERSION)
 
-images: build-image-amd64 build-image-ppc64le build-image-s390x ## Build and publish the multi-arch operator image
+images: build-image-amd64 push-image-amd64 build-image-ppc64le push-image-ppc64le build-image-s390x push-image-s390x ## Build and publish the multi-arch operator image
 ifeq ($(OS),$(filter $(OS),linux darwin))
 	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(OS)-$(ARCH)
 	chmod +x /tmp/manifest-tool
