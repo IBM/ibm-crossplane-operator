@@ -21,7 +21,6 @@ OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
 KUSTOMIZE ?= $(shell which kustomize)
 KUSTOMIZE_VERSION=v3.8.7
-HELM_OPERATOR_VERSION=v1.4.2
 OPM_VERSION=v1.15.2
 YQ_VERSION=3.4.1
 
@@ -38,7 +37,7 @@ GIT_VERSION ?= $(shell git describe --exact-match 2> /dev/null || \
                  	   git describe --match=$(git rev-parse --short=8 HEAD) --always --dirty --abbrev=8)
 
 # Current Operator image name
-OPERATOR_IMAGE_NAME ?= ibm-crossplane-operator
+OPERATOR_IMAGE_NAME ?= ibm-crossplane
 # Current Operator bundle image name
 BUNDLE_IMAGE_NAME ?= ibm-crossplane-operator-bundle
 
@@ -50,6 +49,8 @@ ifneq ($(origin DEFAULT_CHANNEL), undefined)
 BUNDLE_DEFAULT_CHANNEL := --default-channel=$(DEFAULT_CHANNEL)
 endif
 BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
+
+REGISTRY_DAILY ?= hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom
 
 ifeq ($(BUILD_LOCALLY),0)
     export CONFIG_DOCKER_TARGET = config-docker
@@ -70,7 +71,7 @@ ARCH  := $(shell uname -m | sed 's/x86_64/amd64/')
 OSOPER   := $(shell uname -s | tr '[:upper:]' '[:lower:]' | sed 's/darwin/apple-darwin/' | sed 's/linux/linux-gnu/')
 ARCHOPER := $(shell uname -m )
 
-tools: kustomize helm-operator opm yq ## Install all development tools
+tools: kustomize opm yq ## Install all development tools
 
 kustomize: ## Install kustomize
 ifeq (, $(shell which kustomize 2>/dev/null))
@@ -83,21 +84,6 @@ ifeq (, $(shell which kustomize 2>/dev/null))
 KUSTOMIZE=$(realpath ./bin/kustomize)
 else
 KUSTOMIZE=$(shell which kustomize)
-endif
-
-helm-operator: ## Install helm-operator
-ifeq (, $(shell which helm-operator 2>/dev/null))
-	@{ \
-	set -e ;\
-	mkdir -p bin ;\
-	echo "Downloading helm-operator ...";\
-	curl -LO https://github.com/operator-framework/operator-sdk/releases/download/$(HELM_OPERATOR_VERSION)/helm-operator-$(HELM_OPERATOR_VERSION)-$(ARCHOPER)-$(OSOPER) ;\
-	mv helm-operator-$(HELM_OPERATOR_VERSION)-$(ARCHOPER)-$(OSOPER) ./bin/helm-operator ;\
-	chmod +x ./bin/helm-operator ;\
-	}
-HELM_OPERATOR=$(realpath ./bin/helm-operator)
-else
-HELM_OPERATOR=$(shell which helm-operator)
 endif
 
 opm: ## Install operator registry opm
@@ -131,6 +117,11 @@ else
 YQ=$(shell which yq)
 endif
 
+kubectl-crossplane: ## build binary needed for docker images
+	cd ./ibm-crossplane && go build -o ./../kubectl-crossplane ./cmd/crank
+	cd ..
+	chmod +x ./kubectl-crossplane
+
 ############################################################
 ##@ Development
 ############################################################
@@ -147,13 +138,10 @@ endif
 check: lint-all ## Check all files lint error
 	./common/scripts/lint-csv.sh
 
-run: helm-operator ## Run against the configured Kubernetes cluster in ~/.kube/config
-	$(HELM_OPERATOR) run
-
 install: kustomize ## Install CRDs, controller, and sample CR to a cluster
 	$(KUSTOMIZE) build config/development | kubectl apply -f -
 	$(KUSTOMIZE) build config/samples | kubectl apply -f -
-	- kubectl config set-context --current --namespace=ibm-crossplane-system
+	- kubectl config set-context --current --namespace=ibm-common-services
 
 uninstall: kustomize ## Uninstall CRDs, controller, and sample CR from a cluster
 	$(KUSTOMIZE) build config/samples | kubectl delete --ignore-not-found -f -
@@ -218,7 +206,7 @@ test: ## Run unit test on prow
 ############################################################
 
 # build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
-build: build-image-amd64 ## Build multi-arch operator image
+build: copy-operator-data build-crossplane-binary build-image-amd64 ## Build multi-arch operator image
 
 build-dev: build-image-dev ## Build operator image for development
 
@@ -241,7 +229,7 @@ build-catalog-source:
 # Build image for development
 build-image-dev:
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
@@ -249,29 +237,38 @@ build-image-dev:
 build-image-amd64: $(CONFIG_DOCKER_TARGET)
 	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/'))
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
 
 # Build image for ppc64le
 build-image-ppc64le: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
-	-f Dockerfile.ppc64le .
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
+	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
 
 # Build image for s390x
 build-image-s390x: $(CONFIG_DOCKER_TARGET)
 	$(CONTAINER_CLI) build -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
-	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) \
-	-f Dockerfile.s390x .
+	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
+	-f Dockerfile .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
+
+# Build binary in ibm-crossplane submodule
+build-crossplane-binary:
+	cd ibm-crossplane && make build.all && cd ./../
 
 ############################################################
 ##@ Release
 ############################################################
 
-bundle: kustomize ## Generate bundle manifests and metadata, then validate the generated files
+copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
+	git submodule update --init --recursive
+	git submodule update --remote --merge
+	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+
+bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	- make bundle-manifests CHANNELS=v3 DEFAULT_CHANNEL=v3
 
@@ -298,6 +295,8 @@ ifeq ($(OS),$(filter $(OS),linux darwin))
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
 endif
+
+
 
 ############################################################
 ##@ Help

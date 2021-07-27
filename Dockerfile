@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 # Build the manager binary
-FROM quay.io/operator-framework/helm-operator:v1.4.2
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4-200.1622548483
 
 ARG VCS_REF
 ARG VCS_URL
+ARG PLATFORM
 
 LABEL org.label-schema.vendor="IBM" \
     org.label-schema.name="ibm-crossplane-operator" \
@@ -32,8 +33,25 @@ LABEL org.label-schema.vendor="IBM" \
     summary="IBM Crossplane Operator" \
     release=$VCS_REF
 
-ENV HOME=/opt/helm
-COPY watches.yaml ${HOME}/watches.yaml
-COPY helm-charts ${HOME}/helm-charts
-COPY LICENSE /licenses/
-WORKDIR ${HOME}
+ENV OPERATOR=/usr/local/bin/ibm-crossplane-operator/crossplane \
+DEPLOY_DIR=/deploy \
+USER_UID=1001 \
+USER_NAME=ibm-crossplane-operator \
+IMAGE_RELEASE="$IMAGE_RELEASE"
+
+# binary generated from submodule ibm-crossplane
+COPY ibm-crossplane/_output/bin/${PLATFORM}/crossplane ${OPERATOR}
+
+COPY build /usr/local/bin
+COPY bundle ${DEPLOY_DIR}
+RUN /usr/local/bin/user_setup
+
+# needed for crossplane binary
+RUN mkdir /cache
+
+# copy licenses
+RUN mkdir /licenses
+COPY LICENSE /licenses
+
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
+USER ${USER_UID}

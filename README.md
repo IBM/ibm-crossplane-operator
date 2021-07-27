@@ -26,10 +26,6 @@ Before you install this operator, you need to first install the operator depende
 
 - For the list of prerequisites for installing the operator, see the IBM Knowledge Center [Preparing to install services documentation](http://ibm.biz/cpcs_opinstprereq).
 
-## PodSecurityPolicy Requirements
-
-See [IBM Crossplane Chart README](./helm-charts/ibm-crossplane/README.md)
-
 ## Documentation
 
 To install the operator with the IBM Common Services Operator follow the the installation and configuration instructions within the IBM Knowledge Center.
@@ -145,10 +141,10 @@ Use the following quick start commands for building and testing the operator:
 # make install
 ```
 
-4. Verify the installation in `ibm-crossplane-system` namespace
+4. Verify the installation in `ibm-common-services` namespace
 
 ```
-# oc -n ibm-crossplane-system get po
+# oc -n ibm-common-services get po
 NAME                                       READY   STATUS    RESTARTS   AGE
 ibm-crossplane-7d6ff947df-pvg5t            1/1     Running   0          25s
 ibm-crossplane-operator-6cc44f4c5c-p74lg   1/1     Running   0          73s

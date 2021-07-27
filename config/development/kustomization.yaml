@@ -1,9 +1,0 @@
-# Adds namespace to all resources.
-namespace: ibm-crossplane-system
-
-bases:
-- ../default/
-patchesStrategicMerge:
-- manager_patch.yaml
-resources:
-- serviceaccount.yaml

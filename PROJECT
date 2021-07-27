@@ -1,11 +1,34 @@
 domain: ibm.com
-layout: helm.sdk.operatorframework.io/v1
 projectName: ibm-crossplane-operator
+layout: go.kubebuilder.io/v2
+repo: github.com/IBM/ibm-crossplane-operator
 resources:
-- group: operator
-  kind: Crossplane
-  version: v1beta1
+- group: pkg.crossplane.io
+  kind: Configuration
+  version: v1
+- group: pkg.crossplane.io
+  kind: Lock
+  version: v1alpha1
+- group: pkg.crossplane.io
+  kind: Provider
+  version: v1
+- group: pkg.crossplane.io
+  kind: ProviderRevision
+  version: v1
+- group: pkg.crossplane.io
+  kind: ControllerConfig
+  version: v1alpha1
+- group: pkg.crossplane.io
+  kind: ConfigurationRevision
+  version: v1
+- group: apiextensions.crossplane.io
+  kind: Composition
+  version: v1
+- group: apiextensions.crossplane.io
+  kind: CompositeResourceDefinition
+  version: v1
 version: 3-alpha
 plugins:
+  go.operator-sdk.io/v2-alpha: {}
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}
