@@ -35,7 +35,7 @@ function check_yq() {
     fi
     local YQ_VERSION="3.4.1"
     curl -LO https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${LOCAL_ARCH}
-    mv yq_${OS}_${ARCH} "$TOOLS_DIR"/yq
+    mv yq_${OS}_${LOCAL_ARCH} "$TOOLS_DIR"/yq
     chmod +x "$TOOLS_DIR"/yq
     export YQ="$TOOLS_DIR/yq"
     $YQ --version
