@@ -29,12 +29,15 @@ if [[ ! -d "$TOOLS_DIR" ]]; then
 fi
 
 function check_yq() {
-    if [[ $(which yq) != "" ]]; then
-        YQ=$(which yq)
-    elif [[ ! -f "$TOOLS_DIR/yq" ]]; then
-        make yq
+    local OS="linux"
+    if [[ $OS_NAME == "Darwin" ]]; then
+        OS="darwin"
     fi
-    export YQ=${YQ:-"$TOOLS_DIR/yq"}
+    local YQ_VERSION="3.4.1"
+    curl -LO https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${LOCAL_ARCH}
+    mv yq_${OS}_${LOCAL_ARCH} "$TOOLS_DIR"/yq
+    chmod +x "$TOOLS_DIR"/yq
+    export YQ="$TOOLS_DIR/yq"
     $YQ --version
 }
 
