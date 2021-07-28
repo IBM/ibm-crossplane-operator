@@ -270,7 +270,7 @@ spec:
                         value: "true"
                       - name: IBM_BEDROCK_SHIM_IMAGE
                         value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
-                    image: quay.io/opencloudio/ibm-crossplane:1.0.0
+                    image: quay.io/opencloudio/ibm-crossplane-operator:1.0.0
                     imagePullPolicy: Always
                     name: ibm-crossplane
                     resources:
