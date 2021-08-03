@@ -271,6 +271,9 @@ push-image-s390x:
 
 # Build binary in ibm-crossplane submodule
 build-crossplane-binary:
+	go version
+	cd ibm-crossplane/build && git branch
+	cd ibm-crossplane/build && git remote show origin
 	cd ibm-crossplane && make build.all && cd ./../
 
 ############################################################
