@@ -10,4 +10,5 @@ resources:
 - bases/pkg.crossplane.io_locks.yaml
 - bases/pkg.crossplane.io_providerrevisions.yaml
 - bases/pkg.crossplane.io_providers.yaml
+- bases/KafkaClaimCRD.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
