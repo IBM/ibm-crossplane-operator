@@ -92,6 +92,9 @@ function setup() {
     if [[ $(uname -s) == "Darwin" ]]; then
         export MANIFEST_TOOL="$MANIFEST_TOOL --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN"
     fi
+    if [[ $(uname -s) == "Darwin" ]]; then
+        export MANIFEST_TOOL="$MANIFEST_TOOL --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN"
+    fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
     TEMP_WD=$(mktemp -d)
