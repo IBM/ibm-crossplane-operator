@@ -12,7 +12,7 @@ metadata:
           },
           "spec": {
             "ignoreCrossplaneConstraints": false,
-            "package": "quay.io/ppyt/ibm-crossplane-bedrock-shim-config:1.0.0",
+            "package": "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0",
             "packagePullPolicy": "Always",
             "revisionActivationPolicy": "Automatic",
             "revisionHistoryLimit": 1,
@@ -23,7 +23,7 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: quay.io/ppyt/ibm-crossplane:1.0.0
+    containerImage: quay.io/opencloudio/ibm-crossplane:1.0.0
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
     olm.skipRange: '>=1.0.0 <1.0.0'
@@ -226,8 +226,8 @@ spec:
                       - name: LEADER_ELECTION
                         value: "true"
                       - name: IBM_BEDROCK_SHIM_IMAGE
-                        value: quay.io/ppyt/ibm-crossplane-bedrock-shim-config:1.0.0
-                    image: quay.io/ppyt/ibm-crossplane-operator@sha256:534082110152407aa369dcf3a22a9f9eaf062e55e622fddee814799f7e70ff8c
+                        value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
+                    image: quay.io/opencloudio/ibm-crossplane-operator:1.0.0
                     imagePullPolicy: Always
                     name: ibm-crossplane
                     resources:
