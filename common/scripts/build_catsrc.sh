@@ -83,6 +83,9 @@ function setup() {
         echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" --password-stdin
         echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" --password-stdin
     fi
+    if [[ $(uname -s) == "Darwin" ]]; then
+        export MANIFEST_TOOL="$MANIFEST_TOOL --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN"
+    fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
     TEMP_WD=$(mktemp -d)
@@ -97,6 +100,25 @@ function cleanup() {
     info "cleaning up"
     cd "$START_WD"
     exit $1
+}
+
+# usage: build_multiarch <dockerfile> <tags array>;
+function build_multiarch() {
+    local DOCKERFILE="$1"
+    shift
+    local TAGS=("$@")
+    local ARCHS=(amd64 ppc64le s390x)
+    local PLATFORMS="linux/amd64,linux/ppc64le,linux/s390x"
+    for ARCH in "${ARCHS[@]}"; do
+        $CONTAINER_CLI build $CONTAINER_FORMAT --build-arg PLATFORM=linux_$ARCH -f $DOCKERFILE -t $TAGS-$ARCH .
+        $CONTAINER_CLI push $TAGS-$ARCH
+    done
+    for TAG in "${TAGS[@]}"; do
+        $MANIFEST_TOOL push from-args \
+            --platforms "$PLATFORMS" \
+            --template "$TAGS-ARCH" \
+            --target "$TAG"
+    done
 }
 
 ############################################################
@@ -144,7 +166,7 @@ function set_image_digests() {
 
 # usage: check_image_digests;
 function check_image_digests() {
-    local OLD_CUSTOM_CATSRC=${TAGS[0]}
+    local OLD_CUSTOM_CATSRC=${CATSRC_TAGS[0]}
     local REG=$(echo $OLD_CUSTOM_CATSRC | cut -f1 -d.)
     local SUB_REG=$(echo $OLD_CUSTOM_CATSRC | cut -f2 -d/)
     local IMG=$(echo $OLD_CUSTOM_CATSRC | cut -f3 -d/ | cut -f1 -d:)
@@ -153,7 +175,7 @@ function check_image_digests() {
     local RESP=$($CURL --user "$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN" "$URL")
     if [[ $RESP == "" ]]; then
         local CHANGED=false
-        info "pulling previous image with tag ${TAGS[0]}"
+        info "pulling previous image with tag ${CATSRC_TAGS[0]}"
         $CONTAINER_CLI pull $OLD_CUSTOM_CATSRC
         info "looking for changes in images.."
         for IMG in "${IMG_NAMES[@]}"; do
@@ -229,8 +251,7 @@ function build_operator_bundle() {
     cd "$COMMON_SERVICE_TMP_DIR"
     create_index_tags
     prepare_operator_bundle $OPERAND_VERSION_LIST
-    $CONTAINER_CLI build $CONTAINER_FORMAT -f "bundle.Dockerfile" -t "$OPERATOR_BUNDLE_IMG" .
-    $CONTAINER_CLI push "$OPERATOR_BUNDLE_IMG"
+    build_multiarch "bundle.Dockerfile" "$OPERATOR_BUNDLE_IMG"
     cd -
 }
 
@@ -315,16 +336,11 @@ function create_index() {
     else
         erro "unknown container cli: $CONTAINER_CLI"
     fi
-    local LOCAL_CATSRC_IMG="$SCRATCH_REG/$NEW_CUSTOM_CATSRC:$TIMESTAMP"
     local DOCKERFILE=index.Dockerfile
     for IMG in "${IMG_NAMES[@]}"; do
         echo "LABEL $IMG ${IMAGES[$IMG]}" >>"$DOCKERFILE"
     done
-    $CONTAINER_CLI build $CONTAINER_FORMAT -f "$DOCKERFILE" -t "$LOCAL_CATSRC_IMG" .
-    for TAG in "${TAGS[@]}"; do
-        $CONTAINER_CLI tag "$LOCAL_CATSRC_IMG" "$TAG"
-        $CONTAINER_CLI push "$TAG"
-    done
+    build_multiarch "$DOCKERFILE" "${CATSRC_TAGS[@]}"
     info "done"
 }
 
@@ -332,20 +348,20 @@ function create_index() {
 # creates list of tags for index image
 function create_index_tags() {
     if [[ "$USER_TAG" != "" ]]; then
-        TAGS=("$REGISTRY/$NEW_CUSTOM_CATSRC:$USER_TAG")
+        CATSRC_TAGS=("$REGISTRY/$NEW_CUSTOM_CATSRC:$USER_TAG")
     elif [[ "$CROSSPLANE_BRANCH" == "master" ]]; then
-        TAGS=(
+        CATSRC_TAGS=(
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION-$TIMESTAMP"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:latest"
         )
     elif [[ "$CROSSPLANE_BRANCH" == "release-"* ]]; then
-        TAGS=(
+        CATSRC_TAGS=(
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION-$TIMESTAMP"
         )
     else
-        TAGS=(
+        CATSRC_TAGS=(
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$CROSSPLANE_BRANCH"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$CROSSPLANE_BRANCH-$TIMESTAMP"
         )
@@ -413,7 +429,7 @@ info "build catsrc image..."
 create_index
 info "done"
 
-for TAG in "${TAGS[@]}"; do
+for TAG in "${CATSRC_TAGS[@]}"; do
     info "pushed tag: $TAG"
 done
 
