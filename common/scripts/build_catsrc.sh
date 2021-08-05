@@ -142,13 +142,6 @@ function build_multiarch() {
 #### Operator bundle functions
 ############################################################
 
-<<<<<<< HEAD
-=======
-OPERATOR_IMG="ibm-crossplane-operator"
-IBM_CROSSPLANE_IMG="ibm-crossplane"
-#IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
-IMG_NAMES=($IBM_CROSSPLANE_IMG $IBM_BEDROCK_SHIM_IMG)
->>>>>>> 9078f71 (Fix exec format errors.)
 declare -A IMG_TAGS
 declare -A IMG_REGS
 declare -A IMG_NAMES
@@ -293,20 +286,14 @@ COMMON_SERVICE_BASE_REGISTRY="hyc-cloud-private-daily-docker-local.artifactory.s
 COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:future"
 NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
 BUNDLES="$OPERATOR_BUNDLE_IMG"
-<<<<<<< HEAD
 PACKAGES="$OPERATOR_IMG-app"
 
 DB_NAME="index.db"
 PATH_TO_DB=./database
-=======
-
-DB_NAME="index.db"
->>>>>>> 9078f71 (Fix exec format errors.)
 
 # usage: prepare_db;
 # extract db file and change access mode to add new bundles
 function prepare_db() {
-    PATH_TO_DB=$(pwd)/database
     if [[ ! -d "$PATH_TO_DB" ]]; then
         mkdir "$PATH_TO_DB"
     fi
@@ -315,7 +302,6 @@ function prepare_db() {
     $CONTAINER_CLI exec "$CONTAINER" cp /database/index.db /opt/mount/"$DB_NAME"
     $CONTAINER_CLI exec "$CONTAINER" chmod 777 /opt/mount/"$DB_NAME"
     $CONTAINER_CLI stop "$CONTAINER"
-    PATH_TO_DB=$(basename $PATH_TO_DB)
 }
 
 # usage: update_registry <path to db>;

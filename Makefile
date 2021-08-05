@@ -97,7 +97,7 @@ ifeq (, $(shell which opm 2>/dev/null))
 	mv $(OS)-$(ARCH)-opm ./bin/opm ;\
 	chmod +x ./bin/opm ;\
 	}
-OPM=$(realpath ./bin/opm-$(ARCH))
+OPM=$(realpath ./bin/opm)
 else
 OPM=$(shell which opm)
 endif
