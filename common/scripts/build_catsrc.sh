@@ -24,6 +24,10 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+TIMESTAMP=$(date +%s)
+SCRATCH_REG="hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom"
+REGISTRY=${REGISTRY:-"$SCRATCH_REG"}
+
 # usage: info <message>;
 function info() {
     if [ -t 1 ]; then
@@ -109,21 +113,30 @@ function build_multiarch() {
     local TAGS=("$@")
     local ARCHS=(amd64 ppc64le s390x)
     local PLATFORMS="linux/amd64,linux/ppc64le,linux/s390x"
-    for ARCH in "${ARCHS[@]}"; do
-        $CONTAINER_CLI build $CONTAINER_FORMAT --build-arg PLATFORM=linux_$ARCH -f $DOCKERFILE -t $TAGS-$ARCH .
-        $CONTAINER_CLI push $TAGS-$ARCH
-    done
-    for TAG in "${TAGS[@]}"; do
-        $MANIFEST_TOOL push from-args \
-            --platforms "$PLATFORMS" \
-            --template "$TAGS-ARCH" \
-            --target "$TAG"
-    done
+    if [[ $CONTAINER_CLI == "podman" ]]; then
+        for ARCH in "${ARCHS[@]}"; do
+            local BUILD_ARGS="--arch $ARCH"
+            $CONTAINER_CLI build $CONTAINER_FORMAT $BUILD_ARGS -f $DOCKERFILE -t $TAGS-$ARCH .
+            $CONTAINER_CLI push $TAGS-$ARCH
+        done
+        for TAG in "${TAGS[@]}"; do
+            $MANIFEST_TOOL push from-args \
+                --platforms "$PLATFORMS" \
+                --template "$TAGS-ARCH" \
+                --target "$TAG"
+        done
+    elif [[ $CONTAINER_CLI == "docker" ]]; then
+        for TAG in "${TAGS[@]}"; do
+            local TAG_LIST="$TAG_LIST -t $TAG"
+        done
+        $CONTAINER_CLI buildx build --platform $PLATFORMS -f $DOCKERFILE $TAG_LIST . --push
+    fi
 }
 
 ############################################################
 #### Operator bundle functions
 ############################################################
+
 OPERATOR_IMG="ibm-crossplane-operator"
 IBM_CROSSPLANE_IMG="ibm-crossplane"
 #IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
@@ -133,6 +146,8 @@ declare -A IMG_REGS
 declare -A IMAGES
 
 BUNDLE_METADATA_OPTS="--channels=v3 --default-channel=v3"
+OPERATOR_BUNDLE="ibm-crossplane-operator-bundle"
+OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$TIMESTAMP"
 
 # usage: set_image_digest <image name> <image tag> <image registry>;
 function set_image_digest() {
@@ -259,20 +274,12 @@ function build_operator_bundle() {
 #### Main functions
 ############################################################
 
-declare -A VERSIONS
-TIMESTAMP=$(date +%s)
-SCRATCH_REG="hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom"
-REGISTRY=${REGISTRY:-"$SCRATCH_REG"}
 COMMON_SERVICE_BASE_REGISTRY="hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom"
 COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:cd"
 NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
-OPERATOR_BUNDLE="ibm-crossplane-operator-bundle"
-OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$TIMESTAMP"
 BUNDLES="$OPERATOR_BUNDLE_IMG"
-PACKAGES="ibm-crossplane-operator"
 
 DB_NAME="index.db"
-BUILDER_IMAGE="quay.io/operator-framework/upstream-opm-builder"
 
 # usage: prepare_db;
 # extract db file and change access mode to add new bundles
@@ -301,14 +308,6 @@ function update_registry() {
     if [[ "$?" != 0 ]]; then
         erro "error while updating registry"
     fi
-    cat >"index.Dockerfile" <<EOL
-FROM $BUILDER_IMAGE AS builder 
-LABEL operators.operatorframework.io.index.database.v1=/database/index.db
-COPY $1/$DB_NAME  /database/index.db
-EXPOSE 50051
-ENTRYPOINT ["/bin/opm"]
-CMD ["registry", "serve", "--database", "/database/index.db"]
-EOL
 }
 
 # usage: update_index;
@@ -337,6 +336,17 @@ function create_index() {
         erro "unknown container cli: $CONTAINER_CLI"
     fi
     local DOCKERFILE=index.Dockerfile
+    cat >"$DOCKERFILE" <<EOL
+FROM $COMMON_SERVICE_BASE_CATSRC AS builder 
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+LABEL operators.operatorframework.io.index.database.v1=/database/index.db
+COPY $PATH_TO_DB/$DB_NAME  /database/index.db
+COPY --from=builder /registry-server /registry-server
+COPY --from=builder /bin/grpc_health_probe /bin/grpc_health_probe
+EXPOSE 50051
+ENTRYPOINT ["/registry-server"]
+CMD ["--database", "/database/index.db"]
+EOL
     for IMG in "${IMG_NAMES[@]}"; do
         echo "LABEL $IMG ${IMAGES[$IMG]}" >>"$DOCKERFILE"
     done
