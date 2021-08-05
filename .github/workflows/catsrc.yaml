@@ -22,6 +22,10 @@ on:
         description: "Tag for the resulting catalog source image"
         required: false
         default: "default"
+      force:
+        description: "Force build even if no changes in images"
+        required: true
+        default: "false"
   push:
     branches:
       - master
@@ -83,6 +87,7 @@ jobs:
           ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
         run: |
           if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
+          if [[ "${{ github.event.inputs.force }}" == "true" ]]; then OPTIONS="$OPTIONS -f"; fi
           ./common/scripts/build_catsrc.sh $OPTIONS | tee ./build_logs.txt
 
       - name: Archive logs

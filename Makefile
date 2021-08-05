@@ -93,10 +93,10 @@ ifeq (, $(shell which opm 2>/dev/null))
 	mkdir -p bin ;\
 	echo "Downloading opm ...";\
 	curl -LO https://github.com/operator-framework/operator-registry/releases/download/$(OPM_VERSION)/$(OS)-$(ARCH)-opm ;\
-	mv $(OS)-$(ARCH)-opm ./bin/opm-$(ARCH) ;\
-	chmod +x ./bin/opm-$(ARCH) ;\
+	mv $(OS)-$(ARCH)-opm ./bin/opm ;\
+	chmod +x ./bin/opm ;\
 	}
-OPM=$(realpath ./bin/opm-$(ARCH))
+OPM=$(realpath ./bin/opm)
 else
 OPM=$(shell which opm)
 endif

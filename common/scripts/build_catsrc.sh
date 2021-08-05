@@ -263,11 +263,9 @@ function prepare_operator_bundle() {
 # usage: build_operator_bundle;
 # prepare yamls and build bundle
 function build_operator_bundle() {
-    cd "$COMMON_SERVICE_TMP_DIR"
     create_index_tags
     prepare_operator_bundle $OPERAND_VERSION_LIST
     build_multiarch "bundle.Dockerfile" "$OPERATOR_BUNDLE_IMG"
-    cd -
 }
 
 ############################################################
@@ -280,11 +278,11 @@ NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
 BUNDLES="$OPERATOR_BUNDLE_IMG"
 
 DB_NAME="index.db"
+PATH_TO_DB=database
 
 # usage: prepare_db;
 # extract db file and change access mode to add new bundles
 function prepare_db() {
-    PATH_TO_DB=$(pwd)/database
     if [[ ! -d "$PATH_TO_DB" ]]; then
         mkdir "$PATH_TO_DB"
     fi
@@ -293,7 +291,6 @@ function prepare_db() {
     $CONTAINER_CLI exec "$CONTAINER" cp /database/index.db /opt/mount/"$DB_NAME"
     $CONTAINER_CLI exec "$CONTAINER" chmod 777 /opt/mount/"$DB_NAME"
     $CONTAINER_CLI stop "$CONTAINER"
-    PATH_TO_DB=$(basename $PATH_TO_DB)
 }
 
 # usage: update_registry <path to db>;
