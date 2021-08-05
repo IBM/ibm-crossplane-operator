@@ -138,9 +138,8 @@ function build_multiarch() {
 ############################################################
 
 OPERATOR_IMG="ibm-crossplane-operator"
-IBM_CROSSPLANE_IMG="ibm-crossplane"
 #IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
-IMG_NAMES=($IBM_CROSSPLANE_IMG $IBM_BEDROCK_SHIM_IMG)
+IMG_NAMES=($OPERATOR_IMG $IBM_BEDROCK_SHIM_IMG)
 declare -A IMG_TAGS
 declare -A IMG_REGS
 declare -A IMAGES
@@ -223,7 +222,7 @@ function prepare_operator_bundle_yamls() {
     $KUSTOMIZE build config/manifests | $OPERATOR_SDK generate bundle -q --overwrite --version "$RELEASE_VERSION" $BUNDLE_METADATA_OPTS
     $YQ d -i "$CSV_YAML" "spec.replaces"
     # operand images
-    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$IBM_CROSSPLANE_IMG]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$OPERATOR_IMG]}"
     # annotations
     $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "ibm-crossplane-operator-app"
     $OPERATOR_SDK bundle validate ./bundle
