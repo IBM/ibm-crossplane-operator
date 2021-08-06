@@ -274,9 +274,10 @@ function build_operator_bundle() {
 ############################################################
 
 COMMON_SERVICE_BASE_REGISTRY="hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom"
-COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:cd"
+COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:future"
 NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
 BUNDLES="$OPERATOR_BUNDLE_IMG"
+PACKAGES="$OPERATOR_IMG-app"
 
 DB_NAME="index.db"
 PATH_TO_DB=./database
@@ -300,11 +301,13 @@ function prepare_db() {
 # creates updated registry with specified versions of operators
 # passed as arguments
 function update_registry() {
+    $OPM registry rm \
+        --packages "$PACKAGES" \
+        --database "$1"/"$DB_NAME"
     $OPM registry add \
         --container-tool "$CONTAINER_CLI" \
         --bundle-images "$BUNDLES" \
-        --database "$1"/"$DB_NAME" \
-        --debug
+        --database "$1"/"$DB_NAME"
     if [[ "$?" != 0 ]]; then
         erro "error while updating registry"
     fi
@@ -314,11 +317,15 @@ function update_registry() {
 # creates updated index
 function update_index() {
     info "adding new packages..."
-    $OPM index add \
+    $OPM index rm \
         --container-tool "$CONTAINER_CLI" \
-        --bundles "$BUNDLES" \
+        --packages "$PACKAGES" \
         --from-index "$COMMON_SERVICE_BASE_CATSRC" \
         --generate
+    $OPM registry add \
+        --container-tool "$CONTAINER_CLI" \
+        --bundle-images "$BUNDLES" \
+        --database "$1"/"$DB_NAME"
     if [[ "$?" != 0 ]]; then
         erro "error while updating index"
     fi
