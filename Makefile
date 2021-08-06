@@ -15,8 +15,20 @@
 .DEFAULT_GOAL:=help
 
 # Dependence tools
+<<<<<<< HEAD
 CONTAINER_CLI ?= $(shell basename $(shell which docker))
 CONTAINER_BUILD_CMD ?= build
+=======
+ifneq ($(shell which podman),)
+	CONTAINER_CLI ?= $(shell basename $(shell which podman))
+	CONTAINER_BUILD_CMD ?= build --format docker
+	CONTAINER_ARCH ?= --arch 
+else
+	CONTAINER_CLI ?= $(shell basename $(shell which docker))
+	CONTAINER_BUILD_CMD ?= build
+	CONTAINER_ARCH ?= --platform linux/
+endif
+>>>>>>> 34d83a8 (Fix builing multiarch ibm-crossplane-operator image)
 KUBECTL ?= $(shell which kubectl)
 OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
@@ -237,10 +249,14 @@ push-image-dev:
 
 # Build image for amd64
 build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
+<<<<<<< HEAD
 ifneq ($(ARCH),amd64)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/amd64)
 endif
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
+=======
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) $(CONTAINER_ARCH)amd64 -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
+>>>>>>> 34d83a8 (Fix builing multiarch ibm-crossplane-operator image)
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 
@@ -252,10 +268,14 @@ endif
 
 # Build image for ppc64le
 build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
+<<<<<<< HEAD
 ifneq ($(ARCH),ppc64le)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/ppc64le)
 endif
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
+=======
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) $(CONTAINER_ARCH)ppc64le -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
+>>>>>>> 34d83a8 (Fix builing multiarch ibm-crossplane-operator image)
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
 
@@ -266,10 +286,14 @@ endif
 
 # Build image for s390x
 build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
+<<<<<<< HEAD
 ifneq ($(ARCH),s390x)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/s390x)
 endif
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
+=======
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) $(CONTAINER_ARCH)s390x -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
+>>>>>>> 34d83a8 (Fix builing multiarch ibm-crossplane-operator image)
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
 
@@ -281,7 +305,11 @@ endif
 # Build binary in ibm-crossplane submodule
 build-crossplane-binary:
 	make -C ibm-crossplane build.all
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 34d83a8 (Fix builing multiarch ibm-crossplane-operator image)
 ############################################################
 ##@ Release
 ############################################################
