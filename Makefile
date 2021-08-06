@@ -294,7 +294,7 @@ endif
 build-crossplane-binary:
 	rm -rf ibm-crossplane/_output/bin/*
 	make -C ibm-crossplane build.all
-
+	
 ############################################################
 ##@ Release
 ############################################################

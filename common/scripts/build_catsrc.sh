@@ -92,9 +92,6 @@ function setup() {
     if [[ $(uname -s) == "Darwin" ]]; then
         export MANIFEST_TOOL="$MANIFEST_TOOL --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN"
     fi
-    if [[ $(uname -s) == "Darwin" ]]; then
-        export MANIFEST_TOOL="$MANIFEST_TOOL --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN"
-    fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
     TEMP_WD=$(mktemp -d)
@@ -294,6 +291,7 @@ PATH_TO_DB=./database
 # usage: prepare_db;
 # extract db file and change access mode to add new bundles
 function prepare_db() {
+    PATH_TO_DB=$(pwd)/database
     if [[ ! -d "$PATH_TO_DB" ]]; then
         mkdir "$PATH_TO_DB"
     fi
@@ -302,6 +300,7 @@ function prepare_db() {
     $CONTAINER_CLI exec "$CONTAINER" cp /database/index.db /opt/mount/"$DB_NAME"
     $CONTAINER_CLI exec "$CONTAINER" chmod 777 /opt/mount/"$DB_NAME"
     $CONTAINER_CLI stop "$CONTAINER"
+    PATH_TO_DB=$(basename $PATH_TO_DB)
 }
 
 # usage: update_registry <path to db>;
