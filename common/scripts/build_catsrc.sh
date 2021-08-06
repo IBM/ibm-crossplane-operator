@@ -86,6 +86,8 @@ function setup() {
         info "log in to container registry"
         echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" --password-stdin
         echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" --password-stdin
+    else
+        erro "ARTIFACTORY_USER or ARTIFACTORY_TOKEN not set"
     fi
     if [[ $(uname -s) == "Darwin" ]]; then
         export MANIFEST_TOOL="$MANIFEST_TOOL --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN"
@@ -277,11 +279,12 @@ NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
 BUNDLES="$OPERATOR_BUNDLE_IMG"
 
 DB_NAME="index.db"
-PATH_TO_DB=database
+PATH_TO_DB=./database
 
 # usage: prepare_db;
 # extract db file and change access mode to add new bundles
 function prepare_db() {
+    PATH_TO_DB=$(pwd)/database
     if [[ ! -d "$PATH_TO_DB" ]]; then
         mkdir "$PATH_TO_DB"
     fi
@@ -290,6 +293,7 @@ function prepare_db() {
     $CONTAINER_CLI exec "$CONTAINER" cp /database/index.db /opt/mount/"$DB_NAME"
     $CONTAINER_CLI exec "$CONTAINER" chmod 777 /opt/mount/"$DB_NAME"
     $CONTAINER_CLI stop "$CONTAINER"
+    PATH_TO_DB=$(basename $PATH_TO_DB)
 }
 
 # usage: update_registry <path to db>;
