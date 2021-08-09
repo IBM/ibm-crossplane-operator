@@ -319,7 +319,7 @@ function update_index() {
     info "adding new packages..."
     $OPM index rm \
         --container-tool "$CONTAINER_CLI" \
-        --packages "$PACKAGES" \
+        --operators "$PACKAGES" \
         --from-index "$COMMON_SERVICE_BASE_CATSRC" \
         --generate
     $OPM registry add \
