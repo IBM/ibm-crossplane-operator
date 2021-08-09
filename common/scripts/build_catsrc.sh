@@ -313,35 +313,11 @@ function update_registry() {
     fi
 }
 
-# usage: update_index;
-# creates updated index
-function update_index() {
-    info "adding new packages..."
-    $OPM index rm \
-        --container-tool "$CONTAINER_CLI" \
-        --operators "$PACKAGES" \
-        --from-index "$COMMON_SERVICE_BASE_CATSRC" \
-        --generate
-    $OPM registry add \
-        --container-tool "$CONTAINER_CLI" \
-        --bundle-images "$BUNDLES" \
-        --database "$1"/"$DB_NAME"
-    if [[ "$?" != 0 ]]; then
-        erro "error while updating index"
-    fi
-}
-
 # usage: create_index;
 function create_index() {
     info "creating index..."
-    if [[ "$CONTAINER_CLI" == "docker" ]]; then
-        prepare_db
-        update_registry "$PATH_TO_DB"
-    elif [[ "$CONTAINER_CLI" == "podman" ]]; then
-        update_index
-    else
-        erro "unknown container cli: $CONTAINER_CLI"
-    fi
+    prepare_db
+    update_registry "$PATH_TO_DB"
     local DOCKERFILE=index.Dockerfile
     cat >"$DOCKERFILE" <<EOL
 FROM $COMMON_SERVICE_BASE_CATSRC AS builder 
