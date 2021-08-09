@@ -44,6 +44,7 @@ COPY ibm-crossplane/_output/bin/${PLATFORM}/crossplane ${OPERATOR}
 
 COPY build /usr/local/bin
 COPY bundle ${DEPLOY_DIR}
+RUN /usr/local/bin/user_setup
 
 # needed for crossplane binary
 RUN mkdir /cache
