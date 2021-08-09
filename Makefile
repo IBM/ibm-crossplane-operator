@@ -15,15 +15,8 @@
 .DEFAULT_GOAL:=help
 
 # Dependence tools
-ifneq ($(shell which podman),)
-	CONTAINER_CLI ?= $(shell basename $(shell which podman))
-	CONTAINER_BUILD_CMD ?= build --format docker
-	CONTAINER_ARCH ?= --arch 
-else
-	CONTAINER_CLI ?= $(shell basename $(shell which docker))
-	CONTAINER_BUILD_CMD ?= buildx build
-	CONTAINER_ARCH ?= --platform linux/
-endif
+CONTAINER_CLI ?= $(shell basename $(shell which docker))
+CONTAINER_BUILD_CMD ?= build
 KUBECTL ?= $(shell which kubectl)
 OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
@@ -244,31 +237,46 @@ push-image-dev:
 
 # Build image for amd64
 build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) $(CONTAINER_ARCH)amd64 -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
+ifneq ($(ARCH),amd64)
+	$(eval CONTAINER_BUILD_CMD = buildx build --push)
+endif
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) --platform linux/amd64 -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 
 push-image-amd64:
+ifeq ($(ARCH),amd64)
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
+endif
 
 
 # Build image for ppc64le
 build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) $(CONTAINER_ARCH)ppc64le -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
+ifneq ($(ARCH),ppc64le)
+	$(eval CONTAINER_BUILD_CMD = buildx build --push)
+endif
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) --platform linux/ppc64le -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
 
 push-image-ppc64le:
+ifeq ($(ARCH),ppc64le)
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
+endif
 
 # Build image for s390x
 build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) $(CONTAINER_ARCH)s390x -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
+ifneq ($(ARCH),s390x)
+	$(eval CONTAINER_BUILD_CMD = buildx build --push)
+endif
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) --platform linux/s390x -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
 
 push-image-s390x:
+ifeq ($(ARCH),s390x)
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
+endif
 
 # Build binary in ibm-crossplane submodule
 build-crossplane-binary:
