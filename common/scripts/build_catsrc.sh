@@ -139,13 +139,14 @@ function build_multiarch() {
 #### Operator bundle functions
 ############################################################
 
-OPERATOR_IMG="ibm-crossplane-operator"
-#IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
-IMG_NAMES=($OPERATOR_IMG $IBM_BEDROCK_SHIM_IMG)
 declare -A IMG_TAGS
 declare -A IMG_REGS
+declare -A IMG_NAMES
 declare -A IMAGES
 
+OPERATOR_IMG="ibm-crossplane-operator"
+IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
+IMG_NAMES=([$OPERATOR_IMG]="scratch" [$IBM_BEDROCK_SHIM_IMG]="integration")
 BUNDLE_METADATA_OPTS="--channels=v3 --default-channel=v3"
 OPERATOR_BUNDLE="ibm-crossplane-operator-bundle"
 OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$TIMESTAMP"
@@ -162,17 +163,21 @@ function set_image_digest() {
         "$REGISTRY_URL/$NAME/$TAG/list.manifest.json?properties" |
         grep "docker.manifest.digest" | cut -f4 -d\")
     if [[ $DIGEST == "" ]]; then
-        erro "could not find digest for $NAME:$TAG:$REG"
-    else
-        info "digest of $NAME:$TAG:$REG: $DIGEST"
-        IMAGES["$NAME"]="$REGISTRY_URI/$NAME@$DIGEST"
+        DIGEST=$($CURL --user "$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN" \
+            "$REGISTRY_URL/$NAME/$TAG/manifest.json?properties" |
+            grep "docker.manifest.digest" | cut -f4 -d\")
+        if [[ $DIGEST == "" ]]; then
+            erro "could not find digest for $NAME:$TAG:$REG"
+        fi
     fi
+    info "digest of $NAME:$TAG:$REG: $DIGEST"
+    IMAGES["$NAME"]="$REGISTRY_URI/$NAME@$DIGEST"
 }
 
 # usage: set_image_digests;
 function set_image_digests() {
     info "downloading image digests..."
-    for IMG in "${IMG_NAMES[@]}"; do
+    for IMG in "${!IMG_NAMES[@]}"; do
         local TAG="${IMG_TAGS[$IMG]}"
         local REG="${IMG_REGS[$IMG]}"
         set_image_digest "$IMG" "$TAG" "$REG"
@@ -194,7 +199,7 @@ function check_image_digests() {
         info "pulling previous image with tag ${CATSRC_TAGS[0]}"
         $CONTAINER_CLI pull $OLD_CUSTOM_CATSRC
         info "looking for changes in images.."
-        for IMG in "${IMG_NAMES[@]}"; do
+        for IMG in "${!IMG_NAMES[@]}"; do
             local FORMAT="'{{index .Config.Labels \"$IMG\"}}'"
             local OLD_IMG=$(echo "$CONTAINER_CLI inspect --format=$FORMAT $OLD_CUSTOM_CATSRC" | sh)
             local NEW_IMG="${IMAGES[$IMG]}"
@@ -225,6 +230,7 @@ function prepare_operator_bundle_yamls() {
     $YQ d -i "$CSV_YAML" "spec.replaces"
     # operand images
     $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$OPERATOR_IMG]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[2].value" "${IMAGES[$IBM_BEDROCK_SHIM_IMG]}"
     # annotations
     $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "ibm-crossplane-operator-app"
     $OPERATOR_SDK bundle validate ./bundle
@@ -236,9 +242,9 @@ function prepare_operator_bundle() {
     local DEFAULT_TAG="$RELEASE_VERSION"
     local DEFAULT_REG="scratch"
 
-    for IMG in "${IMG_NAMES[@]}"; do
+    for IMG in "${!IMG_NAMES[@]}"; do
         IMG_TAGS["$IMG"]="$DEFAULT_TAG"
-        IMG_REGS["$IMG"]="$DEFAULT_REG"
+        IMG_REGS["$IMG"]="${IMG_NAMES[$IMG]}"
     done
 
     while [[ "$#" -gt 0 ]]; do
@@ -330,7 +336,7 @@ EXPOSE 50051
 ENTRYPOINT ["/registry-server"]
 CMD ["--database", "/database/index.db"]
 EOL
-    for IMG in "${IMG_NAMES[@]}"; do
+    for IMG in "${!IMG_NAMES[@]}"; do
         echo "LABEL $IMG ${IMAGES[$IMG]}" >>"$DOCKERFILE"
     done
     build_multiarch "$DOCKERFILE" "${CATSRC_TAGS[@]}"
