@@ -206,7 +206,7 @@ test: ## Run unit test on prow
 ##@ Build
 ############################################################
 
-build: build-image-$(ARCH)
+build: build-image-$(ARCH) ## Build operator image for local architecture
 
 build-dev: build-image-dev ## Build operator image for development
 
