@@ -206,7 +206,7 @@ test: ## Run unit test on prow
 ##@ Build
 ############################################################
 
-build: build-image-amd64 build-image-ppc64le build-image-s390x ## Build multi-arch operator image
+build: build-image-$(ARCH)
 
 build-dev: build-image-dev ## Build operator image for development
 
