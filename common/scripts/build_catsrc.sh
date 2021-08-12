@@ -24,6 +24,10 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+TIMESTAMP=$(date +%s)
+SCRATCH_REG="hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom"
+REGISTRY=${REGISTRY:-"$SCRATCH_REG"}
+
 # usage: info <message>;
 function info() {
     if [ -t 1 ]; then
@@ -82,6 +86,11 @@ function setup() {
         info "log in to container registry"
         echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$SCRATCH_REG" -u "$ARTIFACTORY_USER" --password-stdin
         echo "$ARTIFACTORY_TOKEN" | $CONTAINER_CLI login "$COMMON_SERVICE_BASE_REGISTRY" -u "$ARTIFACTORY_USER" --password-stdin
+    else
+        erro "ARTIFACTORY_USER or ARTIFACTORY_TOKEN not set"
+    fi
+    if [[ $(uname -s) == "Darwin" ]]; then
+        export MANIFEST_TOOL="$MANIFEST_TOOL --username $ARTIFACTORY_USER --password $ARTIFACTORY_TOKEN"
     fi
     RELEASE_VERSION=$(cat RELEASE_VERSION)
     CROSSPLANE_BRANCH=$(git branch --show-current)
@@ -99,18 +108,48 @@ function cleanup() {
     exit $1
 }
 
+# usage: build_multiarch <dockerfile> <tags array>;
+function build_multiarch() {
+    local DOCKERFILE="$1"
+    shift
+    local TAGS=("$@")
+    local ARCHS=(amd64 ppc64le s390x)
+    local PLATFORMS="linux/amd64,linux/ppc64le,linux/s390x"
+    if [[ $CONTAINER_CLI == "podman" ]]; then
+        for ARCH in "${ARCHS[@]}"; do
+            local BUILD_ARGS="--arch $ARCH"
+            $CONTAINER_CLI build $CONTAINER_FORMAT $BUILD_ARGS -f $DOCKERFILE -t $TAGS-$ARCH .
+            $CONTAINER_CLI push $TAGS-$ARCH
+        done
+        for TAG in "${TAGS[@]}"; do
+            $MANIFEST_TOOL push from-args \
+                --platforms "$PLATFORMS" \
+                --template "$TAGS-ARCH" \
+                --target "$TAG"
+        done
+    elif [[ $CONTAINER_CLI == "docker" ]]; then
+        for TAG in "${TAGS[@]}"; do
+            local TAG_LIST="$TAG_LIST -t $TAG"
+        done
+        $CONTAINER_CLI buildx build --platform $PLATFORMS -f $DOCKERFILE $TAG_LIST . --push
+    fi
+}
+
 ############################################################
 #### Operator bundle functions
 ############################################################
-OPERATOR_IMG="ibm-crossplane-operator"
-IBM_CROSSPLANE_IMG="ibm-crossplane"
-#IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
-IMG_NAMES=($IBM_CROSSPLANE_IMG $IBM_BEDROCK_SHIM_IMG)
+
 declare -A IMG_TAGS
 declare -A IMG_REGS
+declare -A IMG_NAMES
 declare -A IMAGES
 
+OPERATOR_IMG="ibm-crossplane-operator"
+IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
+IMG_NAMES=([$OPERATOR_IMG]="scratch" [$IBM_BEDROCK_SHIM_IMG]="integration")
 BUNDLE_METADATA_OPTS="--channels=v3 --default-channel=v3"
+OPERATOR_BUNDLE="ibm-crossplane-operator-bundle"
+OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$TIMESTAMP"
 
 # usage: set_image_digest <image name> <image tag> <image registry>;
 function set_image_digest() {
@@ -124,17 +163,21 @@ function set_image_digest() {
         "$REGISTRY_URL/$NAME/$TAG/list.manifest.json?properties" |
         grep "docker.manifest.digest" | cut -f4 -d\")
     if [[ $DIGEST == "" ]]; then
-        erro "could not find digest for $NAME:$TAG:$REG"
-    else
-        info "digest of $NAME:$TAG:$REG: $DIGEST"
-        IMAGES["$NAME"]="$REGISTRY_URI/$NAME@$DIGEST"
+        DIGEST=$($CURL --user "$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN" \
+            "$REGISTRY_URL/$NAME/$TAG/manifest.json?properties" |
+            grep "docker.manifest.digest" | cut -f4 -d\")
+        if [[ $DIGEST == "" ]]; then
+            erro "could not find digest for $NAME:$TAG:$REG"
+        fi
     fi
+    info "digest of $NAME:$TAG:$REG: $DIGEST"
+    IMAGES["$NAME"]="$REGISTRY_URI/$NAME@$DIGEST"
 }
 
 # usage: set_image_digests;
 function set_image_digests() {
     info "downloading image digests..."
-    for IMG in "${IMG_NAMES[@]}"; do
+    for IMG in "${!IMG_NAMES[@]}"; do
         local TAG="${IMG_TAGS[$IMG]}"
         local REG="${IMG_REGS[$IMG]}"
         set_image_digest "$IMG" "$TAG" "$REG"
@@ -144,7 +187,7 @@ function set_image_digests() {
 
 # usage: check_image_digests;
 function check_image_digests() {
-    local OLD_CUSTOM_CATSRC=${TAGS[0]}
+    local OLD_CUSTOM_CATSRC=${CATSRC_TAGS[0]}
     local REG=$(echo $OLD_CUSTOM_CATSRC | cut -f1 -d.)
     local SUB_REG=$(echo $OLD_CUSTOM_CATSRC | cut -f2 -d/)
     local IMG=$(echo $OLD_CUSTOM_CATSRC | cut -f3 -d/ | cut -f1 -d:)
@@ -153,10 +196,10 @@ function check_image_digests() {
     local RESP=$($CURL --user "$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN" "$URL")
     if [[ $RESP == "" ]]; then
         local CHANGED=false
-        info "pulling previous image with tag ${TAGS[0]}"
+        info "pulling previous image with tag ${CATSRC_TAGS[0]}"
         $CONTAINER_CLI pull $OLD_CUSTOM_CATSRC
         info "looking for changes in images.."
-        for IMG in "${IMG_NAMES[@]}"; do
+        for IMG in "${!IMG_NAMES[@]}"; do
             local FORMAT="'{{index .Config.Labels \"$IMG\"}}'"
             local OLD_IMG=$(echo "$CONTAINER_CLI inspect --format=$FORMAT $OLD_CUSTOM_CATSRC" | sh)
             local NEW_IMG="${IMAGES[$IMG]}"
@@ -186,7 +229,8 @@ function prepare_operator_bundle_yamls() {
     $KUSTOMIZE build config/manifests | $OPERATOR_SDK generate bundle -q --overwrite --version "$RELEASE_VERSION" $BUNDLE_METADATA_OPTS
     $YQ d -i "$CSV_YAML" "spec.replaces"
     # operand images
-    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$IBM_CROSSPLANE_IMG]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$OPERATOR_IMG]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[2].value" "${IMAGES[$IBM_BEDROCK_SHIM_IMG]}"
     # annotations
     $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "ibm-crossplane-operator-app"
     $OPERATOR_SDK bundle validate ./bundle
@@ -198,9 +242,9 @@ function prepare_operator_bundle() {
     local DEFAULT_TAG="$RELEASE_VERSION"
     local DEFAULT_REG="scratch"
 
-    for IMG in "${IMG_NAMES[@]}"; do
+    for IMG in "${!IMG_NAMES[@]}"; do
         IMG_TAGS["$IMG"]="$DEFAULT_TAG"
-        IMG_REGS["$IMG"]="$DEFAULT_REG"
+        IMG_REGS["$IMG"]="${IMG_NAMES[$IMG]}"
     done
 
     while [[ "$#" -gt 0 ]]; do
@@ -226,32 +270,23 @@ function prepare_operator_bundle() {
 # usage: build_operator_bundle;
 # prepare yamls and build bundle
 function build_operator_bundle() {
-    cd "$COMMON_SERVICE_TMP_DIR"
     create_index_tags
     prepare_operator_bundle $OPERAND_VERSION_LIST
-    $CONTAINER_CLI build $CONTAINER_FORMAT -f "bundle.Dockerfile" -t "$OPERATOR_BUNDLE_IMG" .
-    $CONTAINER_CLI push "$OPERATOR_BUNDLE_IMG"
-    cd -
+    build_multiarch "bundle.Dockerfile" "$OPERATOR_BUNDLE_IMG"
 }
 
 ############################################################
 #### Main functions
 ############################################################
 
-declare -A VERSIONS
-TIMESTAMP=$(date +%s)
-SCRATCH_REG="hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom"
-REGISTRY=${REGISTRY:-"$SCRATCH_REG"}
 COMMON_SERVICE_BASE_REGISTRY="hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom"
-COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:cd"
+COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:future"
 NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
-OPERATOR_BUNDLE="ibm-crossplane-operator-bundle"
-OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$TIMESTAMP"
 BUNDLES="$OPERATOR_BUNDLE_IMG"
-PACKAGES="ibm-crossplane-operator"
+PACKAGES="$OPERATOR_IMG-app"
 
 DB_NAME="index.db"
-BUILDER_IMAGE="quay.io/operator-framework/upstream-opm-builder"
+PATH_TO_DB=./database
 
 # usage: prepare_db;
 # extract db file and change access mode to add new bundles
@@ -272,59 +307,39 @@ function prepare_db() {
 # creates updated registry with specified versions of operators
 # passed as arguments
 function update_registry() {
+    $OPM registry rm \
+        --packages "$PACKAGES" \
+        --database "$1"/"$DB_NAME"
     $OPM registry add \
         --container-tool "$CONTAINER_CLI" \
         --bundle-images "$BUNDLES" \
-        --database "$1"/"$DB_NAME" \
-        --debug
+        --database "$1"/"$DB_NAME"
     if [[ "$?" != 0 ]]; then
         erro "error while updating registry"
-    fi
-    cat >"index.Dockerfile" <<EOL
-FROM $BUILDER_IMAGE AS builder 
-LABEL operators.operatorframework.io.index.database.v1=/database/index.db
-COPY $1/$DB_NAME  /database/index.db
-EXPOSE 50051
-ENTRYPOINT ["/bin/opm"]
-CMD ["registry", "serve", "--database", "/database/index.db"]
-EOL
-}
-
-# usage: update_index;
-# creates updated index
-function update_index() {
-    info "adding new packages..."
-    $OPM index add \
-        --container-tool "$CONTAINER_CLI" \
-        --bundles "$BUNDLES" \
-        --from-index "$COMMON_SERVICE_BASE_CATSRC" \
-        --generate
-    if [[ "$?" != 0 ]]; then
-        erro "error while updating index"
     fi
 }
 
 # usage: create_index;
 function create_index() {
     info "creating index..."
-    if [[ "$CONTAINER_CLI" == "docker" ]]; then
-        prepare_db
-        update_registry "$PATH_TO_DB"
-    elif [[ "$CONTAINER_CLI" == "podman" ]]; then
-        update_index
-    else
-        erro "unknown container cli: $CONTAINER_CLI"
-    fi
-    local LOCAL_CATSRC_IMG="$SCRATCH_REG/$NEW_CUSTOM_CATSRC:$TIMESTAMP"
+    prepare_db
+    update_registry "$PATH_TO_DB"
     local DOCKERFILE=index.Dockerfile
-    for IMG in "${IMG_NAMES[@]}"; do
+    cat >"$DOCKERFILE" <<EOL
+FROM $COMMON_SERVICE_BASE_CATSRC AS builder 
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+LABEL operators.operatorframework.io.index.database.v1=/database/index.db
+COPY $PATH_TO_DB/$DB_NAME  /database/index.db
+COPY --from=builder /registry-server /registry-server
+COPY --from=builder /bin/grpc_health_probe /bin/grpc_health_probe
+EXPOSE 50051
+ENTRYPOINT ["/registry-server"]
+CMD ["--database", "/database/index.db"]
+EOL
+    for IMG in "${!IMG_NAMES[@]}"; do
         echo "LABEL $IMG ${IMAGES[$IMG]}" >>"$DOCKERFILE"
     done
-    $CONTAINER_CLI build $CONTAINER_FORMAT -f "$DOCKERFILE" -t "$LOCAL_CATSRC_IMG" .
-    for TAG in "${TAGS[@]}"; do
-        $CONTAINER_CLI tag "$LOCAL_CATSRC_IMG" "$TAG"
-        $CONTAINER_CLI push "$TAG"
-    done
+    build_multiarch "$DOCKERFILE" "${CATSRC_TAGS[@]}"
     info "done"
 }
 
@@ -332,20 +347,20 @@ function create_index() {
 # creates list of tags for index image
 function create_index_tags() {
     if [[ "$USER_TAG" != "" ]]; then
-        TAGS=("$REGISTRY/$NEW_CUSTOM_CATSRC:$USER_TAG")
+        CATSRC_TAGS=("$REGISTRY/$NEW_CUSTOM_CATSRC:$USER_TAG")
     elif [[ "$CROSSPLANE_BRANCH" == "master" ]]; then
-        TAGS=(
+        CATSRC_TAGS=(
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION-$TIMESTAMP"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:latest"
         )
     elif [[ "$CROSSPLANE_BRANCH" == "release-"* ]]; then
-        TAGS=(
+        CATSRC_TAGS=(
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION-$TIMESTAMP"
         )
     else
-        TAGS=(
+        CATSRC_TAGS=(
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$CROSSPLANE_BRANCH"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$CROSSPLANE_BRANCH-$TIMESTAMP"
         )
@@ -413,7 +428,7 @@ info "build catsrc image..."
 create_index
 info "done"
 
-for TAG in "${TAGS[@]}"; do
+for TAG in "${CATSRC_TAGS[@]}"; do
     info "pushed tag: $TAG"
 done
 

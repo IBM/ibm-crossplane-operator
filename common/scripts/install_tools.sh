@@ -15,12 +15,16 @@
 # limitations under the License.
 #
 
-export OS_NAME=$(uname -s)
+if [[ $(uname -s) == "Darwin" ]]; then
+    export OS="darwin"
+else
+    export OS="linux"
+fi
 export ARCH=$(uname -m)
 if [[ "$ARCH" == "x86_64" ]]; then
-    export LOCAL_ARCH="amd64"
+    export ARCH="amd64"
 else
-    export LOCAL_ARCH="$ARCH"
+    export ARCH="$ARCH"
 fi
 
 export TOOLS_DIR="$(pwd)/bin"
@@ -29,14 +33,11 @@ if [[ ! -d "$TOOLS_DIR" ]]; then
 fi
 
 function check_yq() {
-    local OS="linux"
-    if [[ $OS_NAME == "Darwin" ]]; then
-        OS="darwin"
-    fi
-    local YQ_VERSION="3.4.1"
-    curl -LO https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${LOCAL_ARCH}
-    mv yq_${OS}_${LOCAL_ARCH} "$TOOLS_DIR"/yq
-    chmod +x "$TOOLS_DIR"/yq
+    local RELEASE_VERSION="3.4.1"
+    local URL="https://github.com/mikefarah/yq/releases/download"
+    local FILE_NAME="yq_${OS}_${ARCH}"
+    $CURL -L -o "$TOOLS_DIR/yq" "$URL/$RELEASE_VERSION/$FILE_NAME"
+    chmod +x "$TOOLS_DIR/yq"
     export YQ="$TOOLS_DIR/yq"
     $YQ --version
 }
@@ -55,17 +56,11 @@ function check_operator_sdk() {
     if [[ $(which operator-sdk) != "" ]]; then
         OPERATOR_SDK=$(which operator-sdk)
     elif [[ ! -f "$TOOLS_DIR/operator-sdk" ]]; then
-        local OS="linux"
-        if [[ $OS_NAME == "Darwin" ]]; then
-            OS="darwin"
-        fi
-        echo "istalling operator-sdk"
         local RELEASE_VERSION="v1.3.0"
         local URL="https://github.com/operator-framework/operator-sdk/releases/download"
-        local FILE_NAME="operator-sdk_${OS}_${LOCAL_ARCH}"
-        $CURL -LO "$URL/$RELEASE_VERSION/$FILE_NAME"
-        chmod +x "$FILE_NAME"
-        mv "$FILE_NAME" "$TOOLS_DIR/operator-sdk"
+        local FILE_NAME="operator-sdk_${OS}_${ARCH}"
+        $CURL -L -o "$TOOLS_DIR/operator-sdk" "$URL/$RELEASE_VERSION/$FILE_NAME"
+        chmod +x "$TOOLS_DIR/operator-sdk"
         echo "done"
     fi
     export OPERATOR_SDK=${OPERATOR_SDK:-"$TOOLS_DIR/operator-sdk"}
@@ -80,6 +75,20 @@ function check_opm() {
     fi
     export OPM=${OPM:-"$TOOLS_DIR/opm"}
     echo -n "opm version: " && $OPM version | cut -f2 -d\"
+}
+
+function check_manifest_tool() {
+    if [[ $(which manifest-tool) != "" ]]; then
+        export MANIFEST_TOOL=$(which manifest-tool)
+    elif [[ ! -f "$TOOLS_DIR/manifest-tool" ]]; then
+        local RELEASE_VERSION="v1.0.3"
+        local URL="https://github.com/estesp/manifest-tool/releases/download"
+        local FILE_NAME="manifest-tool-${OS}-${ARCH}"
+        $CURL -L -o "$TOOLS_DIR/manifest-tool" "$URL/$RELEASE_VERSION/$FILE_NAME"
+	    chmod +x "$TOOLS_DIR/manifest-tool"
+	fi
+    export MANIFEST_TOOL=${MANIFEST_TOOL:-"$TOOLS_DIR/manifest-tool"}
+    $MANIFEST_TOOL --version
 }
 
 function check_container_cli() {
@@ -105,8 +114,9 @@ function check_curl() {
     echo -n "curl version: " && $CURL --version | grep "^curl" | cut -f2 -d' '
 }
 
-check_container_cli
 check_curl
+check_container_cli
+check_manifest_tool
 check_operator_sdk
 check_kustomize
 check_opm
