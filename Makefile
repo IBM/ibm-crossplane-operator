@@ -291,7 +291,7 @@ update-submodule:
 	make build-crossplane-binary
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
-	git submodule update --init --recursive
+	git submodule update --init --recursive --remote
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
