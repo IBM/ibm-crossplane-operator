@@ -243,7 +243,7 @@ build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),amd64)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/amd64)
 endif
-ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == amd64 ]]; then echo ok; fi))
+ifneq (,$(shell if [ "$(BUILDX)" != "" ] || [ "$(ARCH)" == "amd64" ]; then echo ok; fi))
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-amd64 -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
@@ -261,7 +261,7 @@ build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),ppc64le)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/ppc64le)
 endif
-ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == ppc64le ]]; then echo ok; fi))
+ifneq (,$(shell if [ "$(BUILDX)" != "" ] || [ "$(ARCH)" == "ppc64le" ]; then echo ok; fi))
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-ppc64le -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
@@ -278,7 +278,7 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),s390x)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/s390x)
 endif
-ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == s390x ]]; then echo ok; fi))
+ifneq (,$(shell if [ "$(BUILDX)" != "" ] || [ "$(ARCH)" == "s390x" ]; then echo ok; fi))
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-s390x -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
