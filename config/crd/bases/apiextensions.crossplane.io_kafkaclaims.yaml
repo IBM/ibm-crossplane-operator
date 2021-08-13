@@ -222,6 +222,19 @@ spec:
                     lastPublishedTime:
                       type: string
                       format: date-time
+                resourceRef:
+                  type: object
+                  required:
+                    - apiVersion
+                    - kind
+                    - name
+                  properties:
+                    apiVersion:
+                      type: string
+                    kind:
+                      type: string
+                    name:
+                      type: string
       subresources:
         status: {}
       additionalPrinterColumns:

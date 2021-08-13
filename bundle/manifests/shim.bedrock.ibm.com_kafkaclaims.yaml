@@ -203,6 +203,19 @@ spec:
                     format: date-time
                     type: string
                 type: object
+              resourceRef:
+                properties:
+                  apiVersion:
+                    type: string
+                  kind:
+                    type: string
+                  name:
+                    type: string
+                required:
+                - apiVersion
+                - kind
+                - name
+                type: object
             type: object
         required:
         - spec

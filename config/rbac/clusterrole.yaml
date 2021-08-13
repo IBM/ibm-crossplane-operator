@@ -12,6 +12,15 @@ rules:
   verbs:
   - list
   - watch
+- verbs:
+  - get
+  apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  resourceNames:
+  - kafkacomposites.shim.bedrock.ibm.com
+  - kafkaclaims.shim.bedrock.ibm.com
 # for crossplane to register crossplane events
 - apiGroups:
   - ''
@@ -23,13 +32,13 @@ rules:
   - patch
   - delete
 # for crossplane to manage connection secrets
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - list
-  - watch
+# - apiGroups:
+#   - ''
+#   resources:
+#   - secrets
+#   verbs:
+#   - list
+#   - watch
 # for crossplane to manage crossplane resources
 - apiGroups:
   - apiextensions.crossplane.io
