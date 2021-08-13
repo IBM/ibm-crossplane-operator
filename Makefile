@@ -17,6 +17,7 @@
 # Dependence tools
 CONTAINER_CLI ?= $(shell basename $(shell which docker))
 CONTAINER_BUILD_CMD ?= build
+BUILDX := $(shell docker buildx version 2>/dev/null)
 KUBECTL ?= $(shell which kubectl)
 OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
@@ -39,6 +40,7 @@ GIT_VERSION ?= $(shell git describe --exact-match 2> /dev/null || \
 
 # Current Operator image name
 OPERATOR_IMAGE_NAME ?= ibm-crossplane-operator
+
 # Current Operator bundle image name
 BUNDLE_IMAGE_NAME ?= ibm-crossplane-operator-bundle
 
@@ -60,6 +62,7 @@ ifeq ($(BUILD_LOCALLY),0)
 else
 	REGISTRY ?= hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom
 endif
+OPERATOR_IMAGE := $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
 
 include common/Makefile.common.mk
 
@@ -206,7 +209,7 @@ test: ## Run unit test on prow
 ##@ Build
 ############################################################
 
-build: build-image-$(ARCH) ## Build operator image for local architecture
+build: build-image-amd64 build-image-ppc64le build-image-s390x  ## Build operator images
 
 build-dev: build-image-dev ## Build operator image for development
 
@@ -240,13 +243,16 @@ build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),amd64)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/amd64)
 endif
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64 \
+ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == amd64 ]]; then echo ok; fi))
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-amd64 -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
+endif
 
 push-image-amd64:
 ifeq ($(ARCH),amd64)
-	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-amd64
+	$(CONTAINER_CLI) push $(OPERATOR_IMAGE)-amd64
+	$(CONTAINER_CLI) push $(OPERATOR_IMAGE)-$(GIT_VERSION)-amd64
 endif
 
 
@@ -255,13 +261,16 @@ build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),ppc64le)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/ppc64le)
 endif
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le \
+ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == ppc64le ]]; then echo ok; fi))
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-ppc64le -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
+endif
 
 push-image-ppc64le:
 ifeq ($(ARCH),ppc64le)
-	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ppc64le
+	$(CONTAINER_CLI) push $(OPERATOR_IMAGE)-ppc64le
+	$(CONTAINER_CLI) push $(OPERATOR_IMAGE)-$(GIT_VERSION)-ppc64le
 endif
 
 # Build image for s390x
@@ -269,19 +278,22 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),s390x)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/s390x)
 endif
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x \
+ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == s390x ]]; then echo ok; fi))
+	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-s390x -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
+endif
 
 push-image-s390x:
 ifeq ($(ARCH),s390x)
-	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-s390x
+	$(CONTAINER_CLI) push $(OPERATOR_IMAGE)-s390x
+	$(CONTAINER_CLI) push $(OPERATOR_IMAGE)-$(GIT_VERSION)-s390x
 endif
 
 # Build binary in ibm-crossplane submodule
 build-crossplane-binary:
 	make -C ibm-crossplane build.all
-	
+
 ############################################################
 ##@ Release
 ############################################################
@@ -309,17 +321,17 @@ ifeq ($(OS),$(filter $(OS),linux darwin))
 	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(OS)-$(ARCH)
 	chmod +x /tmp/manifest-tool
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
+	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
 endif
 
 
