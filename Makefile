@@ -35,7 +35,7 @@ VCS_URL = $(shell git config --get remote.origin.url)
 VCS_REF ?= $(shell git rev-parse HEAD)
 VERSION ?= $(shell cat RELEASE_VERSION)
 PREVIOUS_VERSION ?= $(shell cat PREVIOUS_VERSION)
-TIMESTAPM ?= $(shell date +%s8)
+TIMESTAPM ?= $(shell echo ${$(date +%s)%???})
 
 # Current Operator image name
 OPERATOR_IMAGE_NAME ?= ibm-crossplane-operator
