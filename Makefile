@@ -17,6 +17,7 @@
 # Dependence tools
 CONTAINER_CLI ?= $(shell basename $(shell which docker))
 CONTAINER_BUILD_CMD ?= build
+BUILDX := $(shell docker buildx version 2>/dev/null)
 KUBECTL ?= $(shell which kubectl)
 OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
@@ -208,7 +209,7 @@ test: ## Run unit test on prow
 ##@ Build
 ############################################################
 
-build: build-image-$(ARCH) ## Build operator image for local architecture
+build: build-image-amd64 build-image-ppc64le build-image-s390x  ## Build operator images
 
 build-dev: build-image-dev ## Build operator image for development
 
@@ -242,9 +243,11 @@ build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),amd64)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/amd64)
 endif
+ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == amd64 ]]; then echo ok; fi))
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-amd64 -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
+endif
 
 push-image-amd64:
 ifeq ($(ARCH),amd64)
@@ -258,9 +261,11 @@ build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),ppc64le)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/ppc64le)
 endif
+ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == ppc64le ]]; then echo ok; fi))
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-ppc64le -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
+endif
 
 push-image-ppc64le:
 ifeq ($(ARCH),ppc64le)
@@ -273,9 +278,11 @@ build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),s390x)
 	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/s390x)
 endif
+ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == s390x ]]; then echo ok; fi))
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-s390x -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
+endif
 
 push-image-s390x:
 ifeq ($(ARCH),s390x)
