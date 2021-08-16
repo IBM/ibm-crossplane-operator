@@ -20,6 +20,7 @@ CONTAINER_CLI ?= $(shell basename $(shell which docker))
 CONTAINER_BUILD_CMD ?= build
 BUILDX := $(shell docker buildx version 2>/dev/null | grep buildx)
 BUILDX_VERSION := v0.6.1
+BUILDX_PLUGIN := ./bin/docker-buildx
 KUBECTL ?= $(shell which kubectl)
 OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
@@ -127,14 +128,13 @@ buildx:
 ifeq (,$(BUILDX))
 	@{ \
 	set -e ;\
-	mkdir -p $(HOME)/.docker ;\
-	mkdir -p $(HOME)/.docker/cli-plugins ;\
+	mkdir -p bin ;\
 	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/')) \
 	echo "Downloading docker-buildx ...";\
 	curl -LO https://github.com/docker/buildx/releases/download/$(BUILDX_VERSION)/buildx-$(BUILDX_VERSION).$(OS)-$(ARCH);\
-	mv buildx-$(BUILDX_VERSION).$(OS)-$(ARCH) $(HOME)/.docker/cli-plugins/docker-buildx;\
-	chmod a+x $(HOME)/.docker/cli-plugins/docker-buildx;\
-	$(HOME)/.docker/cli-plugins/docker-buildx create --use --platform linux/amd64,linux/ppc64le,linux/2390x;\
+	mv buildx-$(BUILDX_VERSION).$(OS)-$(ARCH) $(BUILDX_PLUGIN);\
+	chmod a+x $(BUILDX_PLUGIN);\
+	$(BUILDX_PLUGIN) create --use --platform linux/amd64,linux/ppc64le,linux/2390x;\
 	}
 endif
 
@@ -261,7 +261,7 @@ build-image-amd64: buildx $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),amd64)
 	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/amd64)
 ifeq (,$(BUILDX))
-	$(eval CONTAINER_CLI = $(HOME)/.docker/cli-plugins/docker-buildx)
+	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
 else
 	$(eval CONTAINER_CLI = docker buildx)
 endif
@@ -282,7 +282,7 @@ build-image-ppc64le: buildx $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),ppc64le)
 	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/ppc64le)
 ifeq (,$(BUILDX))
-	$(eval CONTAINER_CLI = $(HOME)/.docker/cli-plugins/docker-buildx)
+	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
 else
 	$(eval CONTAINER_CLI = docker buildx)
 endif
@@ -302,7 +302,7 @@ build-image-s390x: buildx $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),s390x)
 	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/s390x)
 ifeq (,$(BUILDX))
-	$(eval CONTAINER_CLI = $(HOME)/.docker/cli-plugins/docker-buildx)
+	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
 else
 	$(eval CONTAINER_CLI = docker buildx)
 endif
