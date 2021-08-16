@@ -4,59 +4,23 @@ kind: ClusterRole
 metadata:
   name: ibm-crossplane
 rules:
-# for operator to create clusterroles
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - clusterroles
-  verbs:
-  - create
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - clusterroles
-  resourceNames:
-  - ibm-crossplane
-  - ibm-crossplane-bedrock-shim
-  verbs:
-  - delete
-  - get
-  - list
-  - patch
-  - watch
-# for operator to create clusterrolebindings
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - clusterrolebindings
-  verbs:
-  - create
-  - list
-  - watch
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - clusterrolebindings
-  resourceNames:
-  - ibm-crossplane
-  - ibm-crossplane-bedrock-shim
-  verbs:
-  - delete
-  - get
-  - patch
-# for crossplane to manage provider CRDs
+# for crossplane to list CRDs
 - apiGroups:
   - apiextensions.k8s.io
   resources:
   - customresourcedefinitions
   verbs:
-  - create
-  - delete
-  - get
   - list
-  - patch
-  - update
   - watch
+- verbs:
+  - get
+  apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  resourceNames:
+  - kafkacomposites.shim.bedrock.ibm.com
+  - kafkaclaims.shim.bedrock.ibm.com
 # for crossplane to register crossplane events
 - apiGroups:
   - ''

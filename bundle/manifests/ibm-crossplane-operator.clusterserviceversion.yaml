@@ -69,6 +69,12 @@ spec:
       - kind: ControllerConfig
         name: controllerconfigs.pkg.crossplane.io
         version: v1alpha1
+      - kind: KafkaClaim
+        name: kafkaclaims.shim.bedrock.ibm.com
+        version: v1alpha1
+      - kind: KafkaComposite
+        name: kafkacomposites.shim.bedrock.ibm.com
+        version: v1alpha1
       - kind: Lock
         name: locks.pkg.crossplane.io
         version: v1alpha1
@@ -119,55 +125,21 @@ spec:
       clusterPermissions:
         - rules:
             - apiGroups:
-                - rbac.authorization.k8s.io
-              resources:
-                - clusterroles
-              verbs:
-                - create
-            - apiGroups:
-                - rbac.authorization.k8s.io
-              resourceNames:
-                - ibm-crossplane
-                - ibm-crossplane-bedrock-shim
-              resources:
-                - clusterroles
-              verbs:
-                - delete
-                - get
-                - list
-                - patch
-                - watch
-            - apiGroups:
-                - rbac.authorization.k8s.io
-              resources:
-                - clusterrolebindings
-              verbs:
-                - create
-                - list
-                - watch
-            - apiGroups:
-                - rbac.authorization.k8s.io
-              resourceNames:
-                - ibm-crossplane
-                - ibm-crossplane-bedrock-shim
-              resources:
-                - clusterrolebindings
-              verbs:
-                - delete
-                - get
-                - patch
-            - apiGroups:
                 - apiextensions.k8s.io
               resources:
                 - customresourcedefinitions
               verbs:
-                - create
-                - delete
-                - get
                 - list
-                - patch
-                - update
                 - watch
+            - apiGroups:
+                - apiextensions.k8s.io
+              resourceNames:
+                - kafkacomposites.shim.bedrock.ibm.com
+                - kafkaclaims.shim.bedrock.ibm.com
+              resources:
+                - customresourcedefinitions
+              verbs:
+                - get
             - apiGroups:
                 - ""
               resources:
@@ -177,13 +149,6 @@ spec:
                 - update
                 - patch
                 - delete
-            - apiGroups:
-                - ""
-              resources:
-                - secrets
-              verbs:
-                - list
-                - watch
             - apiGroups:
                 - apiextensions.crossplane.io
                 - pkg.crossplane.io
@@ -268,7 +233,7 @@ spec:
                             fieldPath: metadata.namespace
                       - name: LEADER_ELECTION
                         value: "true"
-                      - name: IBM_BEDROCK_SHIM_IMAGE
+                      - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
                         value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
                     image: quay.io/opencloudio/ibm-crossplane-operator:1.0.0
                     imagePullPolicy: Always
