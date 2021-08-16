@@ -292,6 +292,7 @@ endif
 
 # Build binary in ibm-crossplane submodule
 build-crossplane-binary:
+	rm -rf ibm-crossplane/_output/bin/*
 	make -C ibm-crossplane build.all
 
 ############################################################
