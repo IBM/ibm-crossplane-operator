@@ -15,9 +15,12 @@
 .DEFAULT_GOAL:=help
 
 # Dependence tools
+SHELL := /bin/bash
 CONTAINER_CLI ?= $(shell basename $(shell which docker))
 CONTAINER_BUILD_CMD ?= build
-BUILDX := $(shell docker buildx version 2>/dev/null)
+BUILDX := $(shell docker buildx version 2>/dev/null | grep buildx)
+BUILDX_VERSION := v0.6.1
+BUILDX_PLUGIN := ./bin/docker-buildx
 KUBECTL ?= $(shell which kubectl)
 OPERATOR_SDK ?= $(shell which operator-sdk)
 OPM ?= $(shell which opm)
@@ -120,6 +123,21 @@ YQ=$(realpath ./bin/yq)
 else
 YQ=$(shell which yq)
 endif
+
+buildx:
+ifeq (,$(BUILDX))
+	@{ \
+	set -e ;\
+	mkdir -p bin ;\
+	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/')) \
+	echo "Downloading docker-buildx ...";\
+	curl -LO https://github.com/docker/buildx/releases/download/$(BUILDX_VERSION)/buildx-$(BUILDX_VERSION).$(OS)-$(ARCH);\
+	mv buildx-$(BUILDX_VERSION).$(OS)-$(ARCH) $(BUILDX_PLUGIN);\
+	chmod a+x $(BUILDX_PLUGIN);\
+	$(BUILDX_PLUGIN) create --use --platform linux/amd64,linux/ppc64le,linux/2390x;\
+	}
+endif
+
 
 kubectl-crossplane: ## build binary needed for docker images
 	cd ./ibm-crossplane && go build -o ./../kubectl-crossplane ./cmd/crank
@@ -239,15 +257,18 @@ push-image-dev:
 	$(CONTAINER_CLI) push $(REGISTRY)/$(OPERATOR_IMAGE_NAME):dev
 
 # Build image for amd64
-build-image-amd64: $(CONFIG_DOCKER_TARGET) update-submodule
+build-image-amd64: buildx $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),amd64)
-	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/amd64)
+	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/amd64)
+ifeq (,$(BUILDX))
+	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
+else
+	$(eval CONTAINER_CLI = docker buildx)
 endif
-ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == amd64 ]]; then echo ok; fi))
+endif
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-amd64 -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
-endif
 
 push-image-amd64:
 ifeq ($(ARCH),amd64)
@@ -257,15 +278,18 @@ endif
 
 
 # Build image for ppc64le
-build-image-ppc64le: $(CONFIG_DOCKER_TARGET) update-submodule
+build-image-ppc64le: buildx $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),ppc64le)
-	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/ppc64le)
+	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/ppc64le)
+ifeq (,$(BUILDX))
+	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
+else
+	$(eval CONTAINER_CLI = docker buildx)
 endif
-ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == ppc64le ]]; then echo ok; fi))
+endif
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-ppc64le -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
-endif
 
 push-image-ppc64le:
 ifeq ($(ARCH),ppc64le)
@@ -274,15 +298,18 @@ ifeq ($(ARCH),ppc64le)
 endif
 
 # Build image for s390x
-build-image-s390x: $(CONFIG_DOCKER_TARGET) update-submodule
+build-image-s390x: buildx $(CONFIG_DOCKER_TARGET) update-submodule
 ifneq ($(ARCH),s390x)
-	$(eval CONTAINER_BUILD_CMD = buildx build --push --platform linux/s390x)
+	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/s390x)
+ifeq (,$(BUILDX))
+	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
+else
+	$(eval CONTAINER_CLI = docker buildx)
 endif
-ifneq (,$(shell if [[ "$(BUILDX)" != "" || $(ARCH) == s390x ]]; then echo ok; fi))
+endif
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-s390x -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
-endif
 
 push-image-s390x:
 ifeq ($(ARCH),s390x)
@@ -294,7 +321,7 @@ endif
 build-crossplane-binary:
 	rm -rf ibm-crossplane/_output/bin/*
 	make -C ibm-crossplane build.all
-
+	
 ############################################################
 ##@ Release
 ############################################################
