@@ -51,120 +51,7 @@ spec:
                         type: string
                 parameters:
                   type: object
-                  properties:
-                    kafka:
-                      type: object
-                      properties:
-                        replicas:
-                          description: Replicas
-                          type: integer
-                        resources:
-                          description: >-
-                            ResourceRequirements describes the compute resource
-                            requirements.
-                          type: object
-                          properties:
-                            limits:
-                              description: >-
-                                Limits describes the maximum amount of compute
-                                resources allowed. More info:
-                                https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-                              type: object
-                              additionalProperties:
-                                pattern: >-
-                                  ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
-                                anyOf:
-                                  - type: integer
-                                  - type: string
-                                x-kubernetes-int-or-string: true
-                            requests:
-                              description: >-
-                                Requests describes the minimum amount of compute
-                                resources required. If Requests is omitted for a
-                                container, it defaults to Limits if that is
-                                explicitly specified, otherwise to an
-                                implementation-defined value. More info:
-                                https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-                              type: object
-                              additionalProperties:
-                                pattern: >-
-                                  ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
-                                anyOf:
-                                  - type: integer
-                                  - type: string
-                                x-kubernetes-int-or-string: true
-                        storage:
-                          type: object
-                          properties:
-                            class:
-                              type: string
-                            size:
-                              type: string
-                            type:
-                              type: string
-                              enum:
-                                - persistent
-                                - persistent-claim
-                                - transient
-                                - ephemeral
-                    throughput:
-                      description: Throughput
-                      type: integer
-                    zookeeper:
-                      type: object
-                      properties:
-                        replicas:
-                          description: Replicas
-                          type: integer
-                        resources:
-                          description: >-
-                            ResourceRequirements describes the compute resource
-                            requirements.
-                          type: object
-                          properties:
-                            limits:
-                              description: >-
-                                Limits describes the maximum amount of compute
-                                resources allowed. More info:
-                                https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-                              type: object
-                              additionalProperties:
-                                pattern: >-
-                                  ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
-                                anyOf:
-                                  - type: integer
-                                  - type: string
-                                x-kubernetes-int-or-string: true
-                            requests:
-                              description: >-
-                                Requests describes the minimum amount of compute
-                                resources required. If Requests is omitted for a
-                                container, it defaults to Limits if that is
-                                explicitly specified, otherwise to an
-                                implementation-defined value. More info:
-                                https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-                              type: object
-                              additionalProperties:
-                                pattern: >-
-                                  ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
-                                anyOf:
-                                  - type: integer
-                                  - type: string
-                                x-kubernetes-int-or-string: true
-                        storage:
-                          type: object
-                          properties:
-                            class:
-                              type: string
-                            size:
-                              type: string
-                            type:
-                              type: string
-                              enum:
-                                - persistent
-                                - persistent-claim
-                                - transient
-                                - ephemeral
+                  x-kubernetes-preserve-unknown-fields: true
                 resourceRef:
                   type: object
                   required:
@@ -177,12 +64,6 @@ spec:
                     kind:
                       type: string
                     name:
-                      type: string
-                user:
-                  type: object
-                  properties:
-                    topicPrefix:
-                      description: Topic Prefix
                       type: string
                 writeConnectionSecretToRef:
                   type: object
