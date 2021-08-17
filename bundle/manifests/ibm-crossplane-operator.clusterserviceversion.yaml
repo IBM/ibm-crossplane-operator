@@ -150,6 +150,13 @@ spec:
                 - patch
                 - delete
             - apiGroups:
+                - ""
+              resources:
+                - secrets
+              verbs:
+                - list
+                - watch
+            - apiGroups:
                 - apiextensions.crossplane.io
                 - pkg.crossplane.io
               resources:
