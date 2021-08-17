@@ -88,12 +88,6 @@ spec:
                   - name
                   type: object
                 type: array
-              user:
-                properties:
-                  topicPrefix:
-                    description: Topic Prefix
-                    type: string
-                type: object
               writeConnectionSecretToRef:
                 properties:
                   name:

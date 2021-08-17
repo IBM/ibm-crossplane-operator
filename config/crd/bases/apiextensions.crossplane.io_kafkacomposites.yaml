@@ -83,12 +83,6 @@ spec:
                         type: string
                       name:
                         type: string
-                user:
-                  type: object
-                  properties:
-                    topicPrefix:
-                      description: Topic Prefix
-                      type: string
                 writeConnectionSecretToRef:
                   type: object
                   required:
