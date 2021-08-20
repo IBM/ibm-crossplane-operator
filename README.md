@@ -37,7 +37,7 @@ To install the operator with the IBM Common Services Operator follow the the ins
 
 The Platform API service requires running with the OpenShift Container Platform 4.x default restricted Security Context Constraints (SCCs).
 
-To use a custom SCC
+To use a Custom SecurityContextConstraints definition:
 
 1. Create and customize the following `ibm-crossplane-scc` SCC
 
