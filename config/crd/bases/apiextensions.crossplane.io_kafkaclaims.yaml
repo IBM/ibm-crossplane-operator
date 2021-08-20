@@ -130,3 +130,9 @@ spec:
           jsonPath: .metadata.creationTimestamp
   conversion:
     strategy: None
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
