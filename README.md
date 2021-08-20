@@ -41,6 +41,7 @@ To use a Custom SecurityContextConstraints definition:
 
 1. Create and customize the following `ibm-crossplane-scc` SCC
 
+Custom SecurityContextConstraints definition:
 ```
 apiVersion: security.openshift.io/v1
 kind: SecurityContextConstraints
