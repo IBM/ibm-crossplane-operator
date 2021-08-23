@@ -1,4 +1,4 @@
 ## Append samples you want in your CSV to this file as resources ##
 resources:
-- pkg.crossplane.io_configuration.yaml
+- pkg.ibm.crossplane.io_configuration.yaml
 
