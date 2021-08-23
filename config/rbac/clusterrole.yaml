@@ -41,8 +41,8 @@ rules:
   - watch
 # for crossplane to manage crossplane resources
 - apiGroups:
-  - apiextensions.crossplane.io
-  - pkg.crossplane.io
+  - apiextensions.ibm.crossplane.io
+  - pkg.ibm.crossplane.io
   resources:
   - '*'
   verbs:
