@@ -3,28 +3,28 @@ projectName: ibm-crossplane-operator
 layout: go.kubebuilder.io/v2
 repo: github.com/IBM/ibm-crossplane-operator
 resources:
-- group: pkg.crossplane.io
+- group: pkg.ibm.crossplane.io
   kind: Configuration
   version: v1
-- group: pkg.crossplane.io
+- group: pkg.ibm.crossplane.io
   kind: Lock
   version: v1alpha1
-- group: pkg.crossplane.io
+- group: pkg.ibm.crossplane.io
   kind: Provider
   version: v1
-- group: pkg.crossplane.io
+- group: pkg.ibm.crossplane.io
   kind: ProviderRevision
   version: v1
-- group: pkg.crossplane.io
+- group: pkg.ibm.crossplane.io
   kind: ControllerConfig
   version: v1alpha1
-- group: pkg.crossplane.io
+- group: pkg.ibm.crossplane.io
   kind: ConfigurationRevision
   version: v1
-- group: apiextensions.crossplane.io
+- group: apiextensions.ibm.crossplane.io
   kind: Composition
   version: v1
-- group: apiextensions.crossplane.io
+- group: apiextensions.ibm.crossplane.io
   kind: CompositeResourceDefinition
   version: v1
 version: 3-alpha
