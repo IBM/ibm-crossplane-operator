@@ -411,3 +411,8 @@ spec:
   provider:
     name: IBM
   version: 1.0.0
+  relatedImages:
+    - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
+      image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
+    - name: IBM_CROSSPLANE_OPERATOR_IMAGE
+      image: quay.io/opencloudio/ibm-crossplane-operator:1.0.0
