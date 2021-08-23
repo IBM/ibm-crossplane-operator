@@ -66,7 +66,6 @@ fsGroup:
 groups:
 - system:authenticated
 priority: null
-readOnlyRootFilesystem: false
 requiredDropCapabilities:
 - KILL
 - MKNOD
