@@ -4,12 +4,12 @@
 resources:
 - bases/apiextensions.ibm.crossplane.io_compositeresourcedefinitions.yaml
 - bases/apiextensions.ibm.crossplane.io_compositions.yaml
+- bases/shim.bedrock.ibm.com_kafkaclaims.yaml
+- bases/shim.bedrock.ibm.com_kafkacomposites.yaml
 - bases/pkg.ibm.crossplane.io_configurationrevisions.yaml
 - bases/pkg.ibm.crossplane.io_configurations.yaml
 - bases/pkg.ibm.crossplane.io_controllerconfigs.yaml
 - bases/pkg.ibm.crossplane.io_locks.yaml
 - bases/pkg.ibm.crossplane.io_providerrevisions.yaml
 - bases/pkg.ibm.crossplane.io_providers.yaml
-- bases/apiextensions.crossplane.io_kafkaclaims.yaml
-- bases/apiextensions.crossplane.io_kafkacomposites.yaml
 # +kubebuilder:scaffold:crdkustomizeresource

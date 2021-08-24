@@ -161,7 +161,8 @@ spec:
                 - apiextensions.ibm.crossplane.io
                 - pkg.ibm.crossplane.io
               resources:
-                - '*'
+                - compositeresourcedefinitions.apiextensions.ibm.crossplane.io
+                - compositions.apiextensions.ibm.crossplane.io
               verbs:
                 - create
                 - delete
@@ -173,7 +174,8 @@ spec:
             - apiGroups:
                 - shim.bedrock.ibm.com
               resources:
-                - '*'
+                - kafkaclaims.shim.bedrock.ibm.com
+                - kafkacomposites.shim.bedrock.ibm.com
               verbs:
                 - create
                 - delete

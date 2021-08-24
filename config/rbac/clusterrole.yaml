@@ -4,7 +4,7 @@ kind: ClusterRole
 metadata:
   name: ibm-crossplane
 rules:
-# for crossplane to list CRDs
+# for crossplane to list and watch CRDs
 - apiGroups:
   - apiextensions.k8s.io
   resources:
@@ -12,6 +12,7 @@ rules:
   verbs:
   - list
   - watch
+# for crossplane to verify specified CRDs
 - verbs:
   - get
   apiGroups:
@@ -44,7 +45,8 @@ rules:
   - apiextensions.ibm.crossplane.io
   - pkg.ibm.crossplane.io
   resources:
-  - '*'
+  - compositeresourcedefinitions.apiextensions.ibm.crossplane.io
+  - compositions.apiextensions.ibm.crossplane.io
   verbs:
   - create
   - delete
@@ -57,7 +59,8 @@ rules:
 - apiGroups:
   - shim.bedrock.ibm.com
   resources:
-  - '*'
+  - kafkaclaims.shim.bedrock.ibm.com
+  - kafkacomposites.shim.bedrock.ibm.com
   verbs:
   - create
   - delete
