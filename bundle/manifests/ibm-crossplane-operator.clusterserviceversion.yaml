@@ -27,8 +27,7 @@ metadata:
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
     olm.skipRange: '>=1.0.0 <1.0.0'
-    operators.operatorframework.io/builder: operator-sdk-v1.2.0
-    operators.operatorframework.io/operator-type: non-standalone
+    operators.operatorframework.io/builder: operator-sdk-v1.3.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
     repository: https://github.com/IBM/ibm-crossplane-operator
     support: IBM
@@ -234,11 +233,10 @@ spec:
                         weight: 100
                 containers:
                   - env:
-                      - name: POD_NAMESPACE
+                      - name: WATCH_NAMESPACE
                         valueFrom:
                           fieldRef:
-                            apiVersion: v1
-                            fieldPath: metadata.namespace
+                            fieldPath: metadata.annotations['olm.targetNamespaces']
                       - name: LEADER_ELECTION
                         value: "true"
                       - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
