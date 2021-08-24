@@ -13,3 +13,8 @@ resources:
 - bases/apiextensions.crossplane.io_kafkaclaims.yaml
 - bases/apiextensions.crossplane.io_kafkacomposites.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
+
+commonLabels:
+  app.kubernetes.io/instance: "ibm-crossplane-operator"
+  app.kubernetes.io/managed-by: "ibm-crossplane-operator"
+  app.kubernetes.io/name: "ibm-crossplane"

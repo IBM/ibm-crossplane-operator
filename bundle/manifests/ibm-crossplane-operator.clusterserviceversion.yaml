@@ -33,6 +33,9 @@ metadata:
     repository: https://github.com/IBM/ibm-crossplane-operator
     support: IBM
   labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
     operatorframework.io/arch.amd64: supported
     operatorframework.io/arch.ppc64le: supported
     operatorframework.io/arch.s390x: supported
