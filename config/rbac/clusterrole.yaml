@@ -45,7 +45,11 @@ rules:
   - apiextensions.ibm.crossplane.io
   - pkg.ibm.crossplane.io
   resources:
+  - locks.pkg.ibm.crossplane.io
+  - providerrevisions.pkg.ibm.crossplane.io
+  - providers.pkg.ibm.crossplane.io
   - compositeresourcedefinitions.apiextensions.ibm.crossplane.io
+  - configurationrevisions.pkg.ibm.crossplane.io
   - compositions.apiextensions.ibm.crossplane.io
   verbs:
   - create
