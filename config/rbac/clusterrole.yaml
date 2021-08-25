@@ -45,12 +45,32 @@ rules:
   - apiextensions.ibm.crossplane.io
   - pkg.ibm.crossplane.io
   resources:
-  - locks.pkg.ibm.crossplane.io
-  - providerrevisions.pkg.ibm.crossplane.io
-  - providers.pkg.ibm.crossplane.io
-  - compositeresourcedefinitions.apiextensions.ibm.crossplane.io
-  - configurationrevisions.pkg.ibm.crossplane.io
-  - compositions.apiextensions.ibm.crossplane.io
+      - locks
+      - compositeresourcedefinitions
+      - compositions
+      - providers
+      - providerrevisions
+      - configurations
+      - configurationrevisions
+      - controllerconfigs
+      # finalizers
+      - locks/finalizers
+      - compositeresourcedefinitions/finalizers
+      - compositions/finalizers
+      - providers/finalizers
+      - providerrevisions/finalizers
+      - configurations/finalizers
+      - configurationrevisions/finalizers
+      - controllerconfigs/finalizers
+      # status
+      - locks/status
+      - compositeresourcedefinitions/status
+      - compositions/status
+      - providers/status
+      - providerrevisions/status
+      - configurations/status
+      - configurationrevisions/status
+      - controllerconfigs/status
   verbs:
   - create
   - delete
@@ -63,8 +83,12 @@ rules:
 - apiGroups:
   - shim.bedrock.ibm.com
   resources:
-  - kafkaclaims.shim.bedrock.ibm.com
-  - kafkacomposites.shim.bedrock.ibm.com
+  - kafkaclaims
+  - kafkacomposites
+  - kafkaclaims/finalizers
+  - kafkacomposites/finalizers
+  - kafkaclaims/status
+  - kafkacomposites/status
   verbs:
   - create
   - delete
