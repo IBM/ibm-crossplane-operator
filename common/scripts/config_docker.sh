@@ -16,7 +16,8 @@
 #
 
 KUBECTL=$(command -v kubectl)
-DOCKER_REGISTRY="hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com"
+DOCKER_INTEGRATION_REGISTRY="hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com"
+DOCKER_EDGE_REGISTRY="hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com"
 DOCKER_USERNAME=$(${KUBECTL} -n default get secret artifactory-cred -o jsonpath='{.data.username}' | base64 --decode)
 DOCKER_PASSWORD=$(${KUBECTL} -n default get secret artifactory-cred -o jsonpath='{.data.password}' | base64 --decode)
 
@@ -24,4 +25,5 @@ DOCKER_PASSWORD=$(${KUBECTL} -n default get secret artifactory-cred -o jsonpath=
 CONTAINER_CLI=${CONTAINER_CLI:-docker}
 
 # login the docker registry
-${CONTAINER_CLI} login "${DOCKER_REGISTRY}" -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+echo "${DOCKER_PASSWORD}" | ${CONTAINER_CLI} login "${DOCKER_INTEGRATION_REGISTRY}" -u "${DOCKER_USERNAME}" --password-stdin
+echo "${DOCKER_PASSWORD}" | ${CONTAINER_CLI} login "${DOCKER_EDGE_REGISTRY}" -u "${DOCKER_USERNAME}" --password-stdin
