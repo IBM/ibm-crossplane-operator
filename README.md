@@ -284,9 +284,13 @@ For example, for Kafka
 
 ### Multiple instances in a single cluster
 
-Note: If more than 1 replica is set and leader election is not enabled then
-controllers could conflict. Environment variable "LEADER_ELECTION"
-can be used to enable leader election process.'
+If more than 1 replica is set and leader election is not enabled then controllers could conflict. Environment variable "LEADER_ELECTION" can be used to enable leader election process.'
+
+### Operator namespace scoping
+Operator support install modes:
+ - OwnNamespace
+ - SingleNamespace   
+[more info](https://sdk.operatorframework.io/docs/building-operators/golang/operator-scope/)
 
 ### End-to-End testing
 
