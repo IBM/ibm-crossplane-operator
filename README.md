@@ -282,6 +282,12 @@ For example, for Kafka
 # oc logs -f -l app=ibm-crossplane
 ```
 
+### Multiple instances in a single cluster
+
+Note: If more than 1 replica is set and leader election is not enabled then
+controllers could conflict. Environment variable "LEADER_ELECTION"
+can be used to enable leader election process.'
+
 ### End-to-End testing
 
 For more instructions on how to run end-to-end testing with the Operand Deployment Lifecycle Manager, see [ODLM guide](https://github.com/IBM/operand-deployment-lifecycle-manager/blob/master/docs/install/common-service-integration.md#end-to-end-test).
