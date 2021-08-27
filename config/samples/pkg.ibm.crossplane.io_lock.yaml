@@ -1,5 +1,9 @@
 apiVersion: pkg.ibm.crossplane.io/v1alpha1
 kind: Lock
 metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
   name: lock
 spec: {}
