@@ -8,7 +8,7 @@ For more information about the available IBM Cloud Platform Common Services, see
 
 ## Supported platforms
 
-Red Hat OpenShift Container Platform 4.3 or newer installed on one of the following platforms:
+Red Hat OpenShift Container Platform 4.6 or newer installed on one of the following platforms:
 
 - Linux x86_64
 - Linux on Power (ppc64le)
@@ -281,6 +281,16 @@ For example, for Kafka
 # oc describe po -l app=ibm-crossplane
 # oc logs -f -l app=ibm-crossplane
 ```
+
+### Multiple instances in a single cluster
+
+If more than 1 replica is set and leader election is not enabled then controllers could conflict. Environment variable "LEADER_ELECTION" can be used to enable leader election process.'
+
+### Operator namespace scoping
+Operator support install modes:
+ - OwnNamespace
+ - SingleNamespace   
+[more info](https://sdk.operatorframework.io/docs/building-operators/golang/operator-scope/)
 
 ### End-to-End testing
 
