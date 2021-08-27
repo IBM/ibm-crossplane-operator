@@ -6,4 +6,4 @@ metadata:
     app.kubernetes.io/managed-by: ibm-crossplane-operator
     app.kubernetes.io/name: ibm-crossplane
   name: lock
-spec: {}
+packages: []
