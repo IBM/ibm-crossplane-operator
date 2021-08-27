@@ -5,7 +5,7 @@ resources:
 # - pkg.ibm.crossplane.io_configurationrevision.yaml
 - pkg.ibm.crossplane.io_configuration.yaml
 # - pkg.ibm.crossplane.io_controllerconfig.yaml
-- pkg.ibm.crossplane.io_lock.yaml
+# - pkg.ibm.crossplane.io_lock.yaml
 # - pkg.ibm.crossplane.io_providerrevision.yaml
 # - pkg.ibm.crossplane.io_provider.yaml
 # - shim.bedrock.ibm.com_kafkaclaim.yaml
