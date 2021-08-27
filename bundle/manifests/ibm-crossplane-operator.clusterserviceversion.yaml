@@ -23,6 +23,14 @@ metadata:
             "revisionHistoryLimit": 1,
             "skipDependencyResolution": false
           }
+        },
+        {
+          "apiVersion": "pkg.ibm.crossplane.io/v1alpha1",
+          "kind": "Lock",
+          "metadata": {
+            "name": "lock"
+          },
+          "spec": {}
         }
       ]
     capabilities: Seamless Upgrades
