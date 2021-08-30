@@ -1,0 +1,20 @@
+apiVersion: shim.bedrock.ibm.com/v1alpha1
+kind: KafkaClaim
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
+  annotations:
+    bedrock.ibm.com/namespace: ibm-common-services
+    bedrock.ibm.com/shared-service-name: bedrock-kafka
+    bedrock.ibm.com/shared-service-namespace: iaf
+  name: example-kafkaclaim
+spec:
+  compositionSelector:
+    matchLabels:
+      consumer: iaf
+      kafkaUser: 'true'
+  parameters: {}
+  writeConnectionSecretToRef:
+    name: example-kafkaclaim-bindinfo

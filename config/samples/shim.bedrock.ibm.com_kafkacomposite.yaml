@@ -1,0 +1,34 @@
+apiVersion: shim.bedrock.ibm.com/v1alpha1
+kind: KafkaComposite
+metadata:
+  name: kafka-example1-pkf4v
+  labels:
+    crossplane.io/claim-name: kafka-example1
+    crossplane.io/claim-namespace: iaf
+    crossplane.io/composite: kafka-example1-pkf4v
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
+spec:
+  claimRef:
+    apiVersion: shim.bedrock.ibm.com/v1alpha1
+    kind: KafkaClaim
+    name: kafka-example1
+    namespace: iaf
+  compositionRef:
+    name: kafka-iaf.odlm.bedrock.ibm.com
+  compositionSelector:
+    matchLabels:
+      consumer: iaf
+      kafkaUser: 'true'
+  parameters: {}
+  resourceRefs:
+    - apiVersion: operator.ibm.com/v1alpha1
+      kind: OperandRequest
+      name: bedrock-kafka
+    - apiVersion: ibmevents.ibm.com/v1beta1
+      kind: KafkaUser
+      name: kafka-example1
+  writeConnectionSecretToRef:
+    name: 9486dd4c-81ad-4bb0-98b1-0ea8eb25da18
+    namespace: ibm-common-services
