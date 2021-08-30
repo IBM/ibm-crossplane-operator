@@ -1,0 +1,38 @@
+apiVersion: apiextensions.ibm.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: kafkacomposites.shim.bedrock.ibm.com
+spec:
+  claimNames:
+    kind: KafkaClaim
+    plural: kafkaclaims
+  connectionSecretKeys:
+    - kafka.authentication.type
+    - kafka.authentication.username
+    - kafka.authentication.password
+    - kafka.authentication.secret
+    - kafka.external.endpoint
+    - kafka.external.caCert
+    - kafka.http.url
+    - kafka.internal.endpoint
+    - kafka.internal.caCert
+  group: shim.bedrock.ibm.com
+  names:
+    kind: KafkaComposite
+    plural: kafkacomposites
+  versions:
+    - name: v1alpha1
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          properties:
+            spec:
+              properties:
+                parameters:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+              required:
+                - parameters
+              type: object
+          type: object
+      served: true
