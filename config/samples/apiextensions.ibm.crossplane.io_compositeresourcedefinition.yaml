@@ -1,6 +1,10 @@
 apiVersion: apiextensions.ibm.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
   name: kafkacomposites.shim.bedrock.ibm.com
 spec:
   claimNames:
