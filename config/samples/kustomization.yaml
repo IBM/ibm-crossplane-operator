@@ -1,6 +1,6 @@
 ## Append samples you want in your CSV to this file as resources ##
 resources:
-# - apiextensions.ibm.crossplane.io_compositeresourcedefinitions.yaml
+- apiextensions.ibm.crossplane.io_compositeresourcedefinition.yaml
 # - apiextensions.ibm.crossplane.io_composition.yaml
 # - pkg.ibm.crossplane.io_configurationrevision.yaml
 - pkg.ibm.crossplane.io_configuration.yaml
