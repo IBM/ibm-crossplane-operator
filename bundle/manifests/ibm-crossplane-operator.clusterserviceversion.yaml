@@ -735,6 +735,9 @@ spec:
                   productName: IBM Cloud Platform Common Services
                 labels:
                   app: ibm-crossplane
+                  app.kubernetes.io/instance: ibm-crossplane
+                  app.kubernetes.io/managed-by: ibm-crossplane
+                  app.kubernetes.io/name: ibm-crossplane
                   intent: projected
                   release: ibm-crossplane
               spec:
