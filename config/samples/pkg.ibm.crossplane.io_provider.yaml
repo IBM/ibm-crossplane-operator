@@ -1,0 +1,10 @@
+apiVersion: pkg.ibm.crossplane.io/v1
+kind: Provider
+metadata:
+  name: example-provider
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
+spec:
+  package: placeholder

@@ -65,6 +65,249 @@ metadata:
           }
         },
         {
+          "apiVersion": "apiextensions.ibm.crossplane.io/v1",
+          "kind": "Composition",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane",
+              "consumer": "iaf",
+              "kafkaUser": "true",
+              "provider": "odlm"
+            },
+            "name": "kafka-iaf.odlm.bedrock.ibm.com"
+          },
+          "spec": {
+            "compositeTypeRef": {
+              "apiVersion": "shim.bedrock.ibm.com/v1alpha1",
+              "kind": "KafkaComposite"
+            },
+            "resources": [
+              {
+                "base": {
+                  "apiVersion": "operator.ibm.com/v1alpha1",
+                  "kind": "OperandRequest",
+                  "spec": {
+                    "requests": [
+                      {
+                        "operands": [
+                          {
+                            "name": "ibm-events-operator"
+                          }
+                        ],
+                        "registry": "common-service",
+                        "registryNamespace": "ibm-common-services"
+                      }
+                    ]
+                  }
+                },
+                "patches": [
+                  {
+                    "fromFieldPath": "metadata.annotations[bedrock.ibm.com/shared-service-name]",
+                    "toFieldPath": "metadata.name",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.claimRef.namespace",
+                    "toFieldPath": "metadata.namespace",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "metadata.annotations[bedrock.ibm.com/shared-service-namespace]",
+                    "toFieldPath": "metadata.namespace",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "metadata.annotations[bedrock.ibm.com/namespace]",
+                    "toFieldPath": "spec.requests[0].registryNamespace",
+                    "type": "FromCompositeFieldPath"
+                  }
+                ],
+                "readinessChecks": [
+                  {
+                    "fieldPath": "status.phase",
+                    "matchString": "Running",
+                    "type": "MatchString"
+                  }
+                ]
+              },
+              {
+                "base": {
+                  "apiVersion": "ibmevents.ibm.com/v1beta1",
+                  "kind": "KafkaUser",
+                  "spec": {
+                    "authentication": {
+                      "type": "scram-sha-512"
+                    },
+                    "authorization": {
+                      "acls": [
+                        {
+                          "host": "*",
+                          "operation": "All",
+                          "resource": {
+                            "name": "iafdemo",
+                            "patternType": "prefix",
+                            "type": "topic"
+                          }
+                        },
+                        {
+                          "host": "*",
+                          "operation": "All",
+                          "resource": {
+                            "name": "iafdemo",
+                            "patternType": "prefix",
+                            "type": "group"
+                          }
+                        },
+                        {
+                          "host": "*",
+                          "operation": "Read",
+                          "resource": {
+                            "name": "__schema_iafdemo",
+                            "patternType": "prefix",
+                            "type": "topic"
+                          }
+                        },
+                        {
+                          "host": "*",
+                          "operation": "Alter",
+                          "resource": {
+                            "name": "__schema_iafdemo",
+                            "patternType": "prefix",
+                            "type": "topic"
+                          }
+                        },
+                        {
+                          "host": "*",
+                          "operation": "Describe",
+                          "resource": {
+                            "type": "cluster"
+                          }
+                        },
+                        {
+                          "host": "*",
+                          "operation": "Read",
+                          "resource": {
+                            "name": "__schema_",
+                            "patternType": "prefix",
+                            "type": "topic"
+                          }
+                        }
+                      ],
+                      "type": "simple"
+                    },
+                    "writeConnectionSecretToRef": {
+                      "name": "PLACEHOLDER"
+                    }
+                  }
+                },
+                "connectionDetails": [
+                  {
+                    "fromFieldPath": "spec.authentication.type",
+                    "name": "kafka.authentication.type"
+                  },
+                  {
+                    "fromFieldPath": "status.secret",
+                    "name": "kafka.authentication.secret"
+                  },
+                  {
+                    "fromFieldPath": "status.username",
+                    "name": "kafka.authentication.username"
+                  },
+                  {
+                    "fromConnectionSecretKey": "password",
+                    "name": "kafka.authentication.password"
+                  }
+                ],
+                "patches": [
+                  {
+                    "fromFieldPath": "spec.claimRef.name",
+                    "toFieldPath": "metadata.name",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.claimRef.namespace",
+                    "toFieldPath": "metadata.namespace",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "metadata.annotations[bedrock.ibm.com/shared-service-namespace]",
+                    "toFieldPath": "metadata.namespace",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "metadata.annotations[bedrock.ibm.com/shared-service-name]",
+                    "toFieldPath": "metadata.labels['ibmevents.ibm.com/cluster']",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.claimRef.name",
+                    "toFieldPath": "spec.writeConnectionSecretToRef.name",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.parameters.user.topicPrefix",
+                    "toFieldPath": "spec.authorization.acls[0].resource.name",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.parameters.user.topicPrefix",
+                    "toFieldPath": "spec.authorization.acls[1].resource.name",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.parameters.user.topicPrefix",
+                    "toFieldPath": "spec.authorization.acls[2].resource.name",
+                    "transforms": [
+                      {
+                        "string": {
+                          "fmt": "__schema_%s"
+                        },
+                        "type": "string"
+                      }
+                    ],
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.parameters.user.topicPrefix",
+                    "toFieldPath": "spec.authorization.acls[3].resource.name",
+                    "transforms": [
+                      {
+                        "string": {
+                          "fmt": "__schema_%s"
+                        },
+                        "type": "string"
+                      }
+                    ],
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.parameters.kafkaUserCR.authentication",
+                    "toFieldPath": "spec.authentication",
+                    "type": "FromCompositeFieldPath"
+                  },
+                  {
+                    "fromFieldPath": "spec.parameters.kafkaUserCR.authorization",
+                    "toFieldPath": "spec.authorization",
+                    "type": "FromCompositeFieldPath"
+                  }
+                ],
+                "readinessChecks": [
+                  {
+                    "fieldPath": "status.secret",
+                    "type": "NonEmpty"
+                  },
+                  {
+                    "fieldPath": "status.username",
+                    "type": "NonEmpty"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
           "apiVersion": "pkg.ibm.crossplane.io/v1",
           "kind": "Configuration",
           "metadata": {
@@ -82,6 +325,168 @@ metadata:
             "revisionActivationPolicy": "Automatic",
             "revisionHistoryLimit": 1,
             "skipDependencyResolution": false
+          }
+        },
+        {
+          "apiVersion": "pkg.ibm.crossplane.io/v1",
+          "kind": "ConfigurationRevision",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane",
+              "pkg.crossplane.io/package": "ibm-crossplane-bedrock-shim-config"
+            },
+            "name": "example-ibm-crossplane-bedrock-shim-config"
+          },
+          "spec": {
+            "desiredState": "Active",
+            "ignoreCrossplaneConstraints": false,
+            "image": "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0",
+            "packagePullPolicy": "Always",
+            "packagePullSecrets": [
+              {
+                "name": "artifactory-daily"
+              }
+            ],
+            "revision": 1,
+            "skipDependencyResolution": false
+          }
+        },
+        {
+          "apiVersion": "pkg.ibm.crossplane.io/v1",
+          "kind": "Provider",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane"
+            },
+            "name": "example-provider"
+          },
+          "spec": {
+            "package": "placeholder"
+          }
+        },
+        {
+          "apiVersion": "pkg.ibm.crossplane.io/v1",
+          "kind": "ProviderRevision",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane"
+            },
+            "name": "example-providerrevision"
+          },
+          "spec": {
+            "desiredState": "placeholder",
+            "image": "placeholder",
+            "revision": 1
+          }
+        },
+        {
+          "apiVersion": "pkg.ibm.crossplane.io/v1alpha1",
+          "kind": "ControllerConfig",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane"
+            },
+            "name": "example-controllerconfig"
+          },
+          "spec": {}
+        },
+        {
+          "apiVersion": "pkg.ibm.crossplane.io/v1alpha1",
+          "kind": "Lock",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane"
+            },
+            "name": "lock"
+          },
+          "packages": []
+        },
+        {
+          "apiVersion": "shim.bedrock.ibm.com/v1alpha1",
+          "kind": "KafkaClaim",
+          "metadata": {
+            "annotations": {
+              "bedrock.ibm.com/namespace": "ibm-common-services",
+              "bedrock.ibm.com/shared-service-name": "bedrock-kafka",
+              "bedrock.ibm.com/shared-service-namespace": "iaf"
+            },
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane"
+            },
+            "name": "example-kafkaclaim"
+          },
+          "spec": {
+            "compositionSelector": {
+              "matchLabels": {
+                "consumer": "iaf",
+                "kafkaUser": "true"
+              }
+            },
+            "parameters": {},
+            "writeConnectionSecretToRef": {
+              "name": "example-kafkaclaim-bindinfo"
+            }
+          }
+        },
+        {
+          "apiVersion": "shim.bedrock.ibm.com/v1alpha1",
+          "kind": "KafkaComposite",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/instance": "ibm-crossplane-operator",
+              "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
+              "app.kubernetes.io/name": "ibm-crossplane",
+              "crossplane.io/claim-name": "kafka-example1",
+              "crossplane.io/claim-namespace": "iaf",
+              "crossplane.io/composite": "kafka-example1-pkf4v"
+            },
+            "name": "kafka-example1-pkf4v"
+          },
+          "spec": {
+            "claimRef": {
+              "apiVersion": "shim.bedrock.ibm.com/v1alpha1",
+              "kind": "KafkaClaim",
+              "name": "kafka-example1",
+              "namespace": "iaf"
+            },
+            "compositionRef": {
+              "name": "kafka-iaf.odlm.bedrock.ibm.com"
+            },
+            "compositionSelector": {
+              "matchLabels": {
+                "consumer": "iaf",
+                "kafkaUser": "true"
+              }
+            },
+            "parameters": {},
+            "resourceRefs": [
+              {
+                "apiVersion": "operator.ibm.com/v1alpha1",
+                "kind": "OperandRequest",
+                "name": "bedrock-kafka"
+              },
+              {
+                "apiVersion": "ibmevents.ibm.com/v1beta1",
+                "kind": "KafkaUser",
+                "name": "kafka-example1"
+              }
+            ],
+            "writeConnectionSecretToRef": {
+              "name": "9486dd4c-81ad-4bb0-98b1-0ea8eb25da18",
+              "namespace": "ibm-common-services"
+            }
           }
         }
       ]

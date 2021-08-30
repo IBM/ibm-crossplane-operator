@@ -1,0 +1,18 @@
+apiVersion: pkg.ibm.crossplane.io/v1
+kind: ConfigurationRevision
+metadata:
+  name: example-ibm-crossplane-bedrock-shim-config
+  labels:
+    pkg.crossplane.io/package: ibm-crossplane-bedrock-shim-config
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
+spec:
+  desiredState: Active
+  ignoreCrossplaneConstraints: false
+  image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
+  packagePullPolicy: Always
+  packagePullSecrets:
+    - name: artifactory-daily
+  revision: 1
+  skipDependencyResolution: false

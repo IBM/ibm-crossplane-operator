@@ -1,0 +1,12 @@
+apiVersion: pkg.ibm.crossplane.io/v1
+kind: ProviderRevision
+metadata:
+  name: example-providerrevision
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
+spec:
+  desiredState: placeholder
+  image: placeholder
+  revision: 1
