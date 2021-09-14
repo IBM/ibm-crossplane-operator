@@ -9,8 +9,4 @@ if ! whoami &>/dev/null; then
   fi
 fi
 
-<<<<<<< HEAD
 exec ${OPERATOR} $@
-=======
-exec ${OPERATOR} $@
->>>>>>> 87b8ca3 (fix passing args to container (#29))

@@ -138,6 +138,7 @@ function build_multiarch() {
 ############################################################
 #### Operator bundle functions
 ############################################################
+
 declare -A IMG_TAGS
 declare -A IMG_REGS
 declare -A IMG_NAMES
