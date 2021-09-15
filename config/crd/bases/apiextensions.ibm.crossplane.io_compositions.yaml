@@ -65,13 +65,23 @@ spec:
                         description: Patch objects are applied between composite and composed resources. Their behaviour depends on the Type selected. The default Type, FromCompositeFieldPath, copies a value from the composite resource to the composed resource, applying any defined transformers.
                         properties:
                           fromFieldPath:
-                            description: FromFieldPath is the path of the field on the upstream resource whose value to be used as input. Required when type is FromCompositeFieldPath.
+                            description: FromFieldPath is the path of the field on the resource whose value is to be used as input. Required when type is FromCompositeFieldPath or ToCompositeFieldPath.
                             type: string
                           patchSetName:
                             description: PatchSetName to include patches from. Required when type is PatchSet.
                             type: string
+                          policy:
+                            description: Policy configures the specifics of patching behaviour.
+                            properties:
+                              fromFieldPath:
+                                description: FromFieldPath specifies how to patch from a field path. The default is 'Optional', which means the patch will be a no-op if the specified fromFieldPath does not exist. Use 'Required' if the patch should fail if the specified path does not exist.
+                                enum:
+                                - Optional
+                                - Required
+                                type: string
+                            type: object
                           toFieldPath:
-                            description: ToFieldPath is the path of the field on the base resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path on the target resource.
+                            description: ToFieldPath is the path of the field on the resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path as fromFieldPath.
                             type: string
                           transforms:
                             description: Transforms are the list of functions that are used as a FIFO pipe for the input to be transformed.
@@ -116,6 +126,11 @@ spec:
                                   type: object
                                 type:
                                   description: Type of the transform to be run.
+                                  enum:
+                                  - map
+                                  - math
+                                  - string
+                                  - convert
                                   type: string
                               required:
                               - type
@@ -127,6 +142,7 @@ spec:
                             enum:
                             - FromCompositeFieldPath
                             - PatchSet
+                            - ToCompositeFieldPath
                             type: string
                         type: object
                       type: array
@@ -171,19 +187,32 @@ spec:
                             type: string
                         type: object
                       type: array
+                    name:
+                      description: A Name uniquely identifies this entry within its Composition's resources array. Names are optional but *strongly* recommended. When all entries in the resources array are named entries may added, deleted, and reordered as long as their names do not change. When entries are not named the length and order of the resources array should be treated as immutable. Either all or no entries must be named.
+                      type: string
                     patches:
                       description: Patches will be applied as overlay to the base resource.
                       items:
                         description: Patch objects are applied between composite and composed resources. Their behaviour depends on the Type selected. The default Type, FromCompositeFieldPath, copies a value from the composite resource to the composed resource, applying any defined transformers.
                         properties:
                           fromFieldPath:
-                            description: FromFieldPath is the path of the field on the upstream resource whose value to be used as input. Required when type is FromCompositeFieldPath.
+                            description: FromFieldPath is the path of the field on the resource whose value is to be used as input. Required when type is FromCompositeFieldPath or ToCompositeFieldPath.
                             type: string
                           patchSetName:
                             description: PatchSetName to include patches from. Required when type is PatchSet.
                             type: string
+                          policy:
+                            description: Policy configures the specifics of patching behaviour.
+                            properties:
+                              fromFieldPath:
+                                description: FromFieldPath specifies how to patch from a field path. The default is 'Optional', which means the patch will be a no-op if the specified fromFieldPath does not exist. Use 'Required' if the patch should fail if the specified path does not exist.
+                                enum:
+                                - Optional
+                                - Required
+                                type: string
+                            type: object
                           toFieldPath:
-                            description: ToFieldPath is the path of the field on the base resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path on the target resource.
+                            description: ToFieldPath is the path of the field on the resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path as fromFieldPath.
                             type: string
                           transforms:
                             description: Transforms are the list of functions that are used as a FIFO pipe for the input to be transformed.
@@ -228,6 +257,11 @@ spec:
                                   type: object
                                 type:
                                   description: Type of the transform to be run.
+                                  enum:
+                                  - map
+                                  - math
+                                  - string
+                                  - convert
                                   type: string
                               required:
                               - type
@@ -239,6 +273,7 @@ spec:
                             enum:
                             - FromCompositeFieldPath
                             - PatchSet
+                            - ToCompositeFieldPath
                             type: string
                         type: object
                       type: array
@@ -364,13 +399,23 @@ spec:
                         description: Patch objects are applied between composite and composed resources. Their behaviour depends on the Type selected. The default Type, FromCompositeFieldPath, copies a value from the composite resource to the composed resource, applying any defined transformers.
                         properties:
                           fromFieldPath:
-                            description: FromFieldPath is the path of the field on the upstream resource whose value to be used as input. Required when type is FromCompositeFieldPath.
+                            description: FromFieldPath is the path of the field on the resource whose value is to be used as input. Required when type is FromCompositeFieldPath or ToCompositeFieldPath.
                             type: string
                           patchSetName:
                             description: PatchSetName to include patches from. Required when type is PatchSet.
                             type: string
+                          policy:
+                            description: Policy configures the specifics of patching behaviour.
+                            properties:
+                              fromFieldPath:
+                                description: FromFieldPath specifies how to patch from a field path. The default is 'Optional', which means the patch will be a no-op if the specified fromFieldPath does not exist. Use 'Required' if the patch should fail if the specified path does not exist.
+                                enum:
+                                - Optional
+                                - Required
+                                type: string
+                            type: object
                           toFieldPath:
-                            description: ToFieldPath is the path of the field on the base resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path on the target resource.
+                            description: ToFieldPath is the path of the field on the resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path as fromFieldPath.
                             type: string
                           transforms:
                             description: Transforms are the list of functions that are used as a FIFO pipe for the input to be transformed.
@@ -415,6 +460,11 @@ spec:
                                   type: object
                                 type:
                                   description: Type of the transform to be run.
+                                  enum:
+                                  - map
+                                  - math
+                                  - string
+                                  - convert
                                   type: string
                               required:
                               - type
@@ -426,6 +476,7 @@ spec:
                             enum:
                             - FromCompositeFieldPath
                             - PatchSet
+                            - ToCompositeFieldPath
                             type: string
                         type: object
                       type: array
@@ -450,29 +501,52 @@ spec:
                         description: ConnectionDetail includes the information about the propagation of the connection information from one secret to another.
                         properties:
                           fromConnectionSecretKey:
-                            description: FromConnectionSecretKey is the key that will be used to fetch the value from the given target resource.
+                            description: FromConnectionSecretKey is the key that will be used to fetch the value from the given target resource's secret.
+                            type: string
+                          fromFieldPath:
+                            description: FromFieldPath is the path of the field on the composed resource whose value to be used as input. Name must be specified if the type is FromFieldPath is specified.
                             type: string
                           name:
                             description: Name of the connection secret key that will be propagated to the connection secret of the composition instance. Leave empty if you'd like to use the same key name.
+                            type: string
+                          type:
+                            description: Type sets the connection detail fetching behaviour to be used. Each connection detail type may require its own fields to be set on the ConnectionDetail object. If the type is omitted Crossplane will attempt to infer it based on which other fields were specified.
+                            enum:
+                            - FromConnectionSecretKey
+                            - FromFieldPath
+                            - FromValue
                             type: string
                           value:
                             description: Value that will be propagated to the connection secret of the composition instance. Typically you should use FromConnectionSecretKey instead, but an explicit value may be set to inject a fixed, non-sensitive connection secret values, for example a well-known port. Supercedes FromConnectionSecretKey when set.
                             type: string
                         type: object
                       type: array
+                    name:
+                      description: A Name uniquely identifies this entry within its Composition's resources array. Names are optional but *strongly* recommended. When all entries in the resources array are named entries may added, deleted, and reordered as long as their names do not change. When entries are not named the length and order of the resources array should be treated as immutable. Either all or no entries must be named.
+                      type: string
                     patches:
                       description: Patches will be applied as overlay to the base resource.
                       items:
                         description: Patch objects are applied between composite and composed resources. Their behaviour depends on the Type selected. The default Type, FromCompositeFieldPath, copies a value from the composite resource to the composed resource, applying any defined transformers.
                         properties:
                           fromFieldPath:
-                            description: FromFieldPath is the path of the field on the upstream resource whose value to be used as input. Required when type is FromCompositeFieldPath.
+                            description: FromFieldPath is the path of the field on the resource whose value is to be used as input. Required when type is FromCompositeFieldPath or ToCompositeFieldPath.
                             type: string
                           patchSetName:
                             description: PatchSetName to include patches from. Required when type is PatchSet.
                             type: string
+                          policy:
+                            description: Policy configures the specifics of patching behaviour.
+                            properties:
+                              fromFieldPath:
+                                description: FromFieldPath specifies how to patch from a field path. The default is 'Optional', which means the patch will be a no-op if the specified fromFieldPath does not exist. Use 'Required' if the patch should fail if the specified path does not exist.
+                                enum:
+                                - Optional
+                                - Required
+                                type: string
+                            type: object
                           toFieldPath:
-                            description: ToFieldPath is the path of the field on the base resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path on the target resource.
+                            description: ToFieldPath is the path of the field on the resource whose value will be changed with the result of transforms. Leave empty if you'd like to propagate to the same path as fromFieldPath.
                             type: string
                           transforms:
                             description: Transforms are the list of functions that are used as a FIFO pipe for the input to be transformed.
@@ -517,6 +591,11 @@ spec:
                                   type: object
                                 type:
                                   description: Type of the transform to be run.
+                                  enum:
+                                  - map
+                                  - math
+                                  - string
+                                  - convert
                                   type: string
                               required:
                               - type
@@ -528,6 +607,7 @@ spec:
                             enum:
                             - FromCompositeFieldPath
                             - PatchSet
+                            - ToCompositeFieldPath
                             type: string
                         type: object
                       type: array
