@@ -258,15 +258,12 @@ push-image-dev:
 
 # Build image for amd64
 build-image-amd64: buildx $(CONFIG_DOCKER_TARGET) update-submodule
-ifneq ($(ARCH),amd64)
-	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/amd64)
 ifeq (,$(BUILDX))
 	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
 else
 	$(eval CONTAINER_CLI = docker buildx)
 endif
-endif
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-amd64 -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-amd64 \
+	$(CONTAINER_CLI) build --push --platform linux/amd64 -t $(OPERATOR_IMAGE)-amd64 -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-amd64 \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_amd64 \
 	-f Dockerfile .
 
@@ -279,15 +276,12 @@ endif
 
 # Build image for ppc64le
 build-image-ppc64le: buildx $(CONFIG_DOCKER_TARGET) update-submodule
-ifneq ($(ARCH),ppc64le)
-	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/ppc64le)
 ifeq (,$(BUILDX))
 	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
 else
 	$(eval CONTAINER_CLI = docker buildx)
 endif
-endif
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-ppc64le -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-ppc64le \
+	$(CONTAINER_CLI) build --push --platform linux/ppc64le -t $(OPERATOR_IMAGE)-ppc64le -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-ppc64le \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_ppc64le \
 	-f Dockerfile .
 
@@ -299,15 +293,12 @@ endif
 
 # Build image for s390x
 build-image-s390x: buildx $(CONFIG_DOCKER_TARGET) update-submodule
-ifneq ($(ARCH),s390x)
-	$(eval CONTAINER_BUILD_CMD = build --push --platform linux/s390x)
 ifeq (,$(BUILDX))
 	$(eval CONTAINER_CLI = $(BUILDX_PLUGIN))
 else
 	$(eval CONTAINER_CLI = docker buildx)
 endif
-endif
-	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -t $(OPERATOR_IMAGE)-s390x -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-s390x \
+	$(CONTAINER_CLI) build --push --platform linux/s390x -t $(OPERATOR_IMAGE)-s390x -t $(OPERATOR_IMAGE)-$(GIT_VERSION)-s390x \
 	--build-arg VCS_REF=$(VCS_REF) --build-arg VCS_URL=$(VCS_URL) --build-arg PLATFORM=linux_s390x \
 	-f Dockerfile .
 
