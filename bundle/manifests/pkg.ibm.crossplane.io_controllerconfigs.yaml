@@ -414,7 +414,7 @@ spec:
                           - key
                           type: object
                         fieldRef:
-                          description: 'Selects a field of the pod: supports metadata.name, metadata.namespace, metadata.labels, metadata.annotations, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.'
+                          description: 'Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels[''<KEY>'']`, `metadata.annotations[''<KEY>'']`, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.'
                           properties:
                             apiVersion:
                               description: Version of the schema the FieldPath is written in terms of, defaults to "v1".
@@ -510,6 +510,15 @@ spec:
                       type: string
                   type: object
                 type: array
+              metadata:
+                description: Metadata that will be added to the provider Pod.
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    description: 'Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations'
+                    type: object
+                type: object
               nodeName:
                 description: NodeName is a request to schedule this pod onto a specific node. If it is non-empty, the scheduler simply schedules this pod onto that node, assuming that it fits resource requirements.
                 type: string
@@ -526,7 +535,7 @@ spec:
                     format: int64
                     type: integer
                   fsGroupChangePolicy:
-                    description: 'fsGroupChangePolicy defines behavior of changing ownership and permission of the volume before being exposed inside Pod. This field will only apply to volume types which support fsGroup based ownership(and permissions). It will have no effect on ephemeral volume types such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" and "Always". If not specified defaults to "Always".'
+                    description: 'fsGroupChangePolicy defines behavior of changing ownership and permission of the volume before being exposed inside Pod. This field will only apply to volume types which support fsGroup based ownership(and permissions). It will have no effect on ephemeral volume types such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used.'
                     type: string
                   runAsGroup:
                     description: The GID to run the entrypoint of the container process. Uses runtime default if unset. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container.
@@ -554,6 +563,18 @@ spec:
                       user:
                         description: User is a SELinux user label that applies to the container.
                         type: string
+                    type: object
+                  seccompProfile:
+                    description: The seccomp options to use by the containers in this pod.
+                    properties:
+                      localhostProfile:
+                        description: localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must only be set if type is "Localhost".
+                        type: string
+                      type:
+                        description: "type indicates which kind of seccomp profile will be applied. Valid options are: \n Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied."
+                        type: string
+                    required:
+                    - type
                     type: object
                   supplementalGroups:
                     description: A list of groups applied to the first process run in each container, in addition to the container's primary GID.  If unspecified, no groups will be added to any container.
@@ -591,6 +612,32 @@ spec:
                         type: string
                     type: object
                 type: object
+              ports:
+                description: List of container ports to expose on the container
+                items:
+                  description: ContainerPort represents a network port in a single container.
+                  properties:
+                    containerPort:
+                      description: Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.
+                      format: int32
+                      type: integer
+                    hostIP:
+                      description: What host IP to bind the external port to.
+                      type: string
+                    hostPort:
+                      description: Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this.
+                      format: int32
+                      type: integer
+                    name:
+                      description: If specified, this must be an IANA_SVC_NAME and unique within the pod. Each named port in a pod must have a unique name. Name for the port that can be referred to by services.
+                      type: string
+                    protocol:
+                      description: Protocol for port. Must be UDP, TCP, or SCTP. Defaults to "TCP".
+                      type: string
+                  required:
+                  - containerPort
+                  type: object
+                type: array
               priorityClassName:
                 description: If specified, indicates the pod's priority. "system-node-critical" and "system-cluster-critical" are two special keywords which indicate the highest priorities with the former being the highest priority. Any other name must be defined by creating a PriorityClass object with that name. If not specified, the pod priority will be default or zero if there is no default.
                 type: string
@@ -680,6 +727,18 @@ spec:
                       user:
                         description: User is a SELinux user label that applies to the container.
                         type: string
+                    type: object
+                  seccompProfile:
+                    description: The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options.
+                    properties:
+                      localhostProfile:
+                        description: localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must only be set if type is "Localhost".
+                        type: string
+                      type:
+                        description: "type indicates which kind of seccomp profile will be applied. Valid options are: \n Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied."
+                        type: string
+                    required:
+                    - type
                     type: object
                   windowsOptions:
                     description: The Windows specific settings applied to all containers. If unspecified, the options from the PodSecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.

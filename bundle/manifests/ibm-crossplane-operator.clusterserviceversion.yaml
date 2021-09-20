@@ -496,7 +496,7 @@ metadata:
     containerImage: quay.io/opencloudio/ibm-crossplane-operator:1.0.0
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
-    olm.skipRange: '>=1.0.0 <1.0.0'
+    olm.skipRange: '>=1.0.0 <1.1.0'
     operators.operatorframework.io/builder: operator-sdk-v1.2.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
     repository: https://github.com/IBM/ibm-crossplane-operator
@@ -509,7 +509,7 @@ metadata:
     operatorframework.io/arch.ppc64le: supported
     operatorframework.io/arch.s390x: supported
     operatorframework.io/os.linux: supported
-  name: ibm-crossplane-operator.v1.0.0
+  name: ibm-crossplane-operator.v1.1.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -641,6 +641,20 @@ spec:
                 - customresourcedefinitions
               verbs:
                 - get
+            - apiGroups:
+                - ""
+                - coordination.k8s.io
+              resources:
+                - configmaps
+                - leases
+              verbs:
+                - get
+                - list
+                - create
+                - update
+                - patch
+                - watch
+                - delete
             - apiGroups:
                 - ""
               resources:
@@ -868,6 +882,18 @@ spec:
                 - update
                 - watch
             - apiGroups:
+                - coordination.k8s.io
+              resources:
+                - leases
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
                 - operator.ibm.com
               resources:
                 - crossplanes
@@ -940,9 +966,10 @@ spec:
   minKubeVersion: 1.19.0
   provider:
     name: IBM
-  version: 1.0.0
+  replaces: ibm-crossplane-operator.v1.0.0
+  version: 1.1.0
   relatedImages:
     - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-      image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
+      image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.1.0
     - name: IBM_CROSSPLANE_OPERATOR_IMAGE
-      image: quay.io/opencloudio/ibm-crossplane-operator:1.0.0
+      image: quay.io/opencloudio/ibm-crossplane-operator:1.1.0
