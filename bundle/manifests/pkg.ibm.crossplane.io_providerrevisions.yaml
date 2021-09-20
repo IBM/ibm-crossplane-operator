@@ -211,10 +211,6 @@ spec:
                   - verbs
                   type: object
                 type: array
-            required:
-            - foundDependencies
-            - installedDependencies
-            - invalidDependencies
             type: object
         type: object
     served: true
@@ -412,10 +408,6 @@ spec:
                   - verbs
                   type: object
                 type: array
-            required:
-            - foundDependencies
-            - installedDependencies
-            - invalidDependencies
             type: object
         type: object
     served: true
