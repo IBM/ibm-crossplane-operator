@@ -643,20 +643,6 @@ spec:
                 - get
             - apiGroups:
                 - ""
-                - coordination.k8s.io
-              resources:
-                - configmaps
-                - leases
-              verbs:
-                - get
-                - list
-                - create
-                - update
-                - patch
-                - watch
-                - delete
-            - apiGroups:
-                - ""
               resources:
                 - events
               verbs:
@@ -841,7 +827,6 @@ spec:
             - apiGroups:
                 - ""
               resources:
-                - configmaps
                 - events
                 - pods
                 - secrets

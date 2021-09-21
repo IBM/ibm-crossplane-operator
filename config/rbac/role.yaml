@@ -7,7 +7,6 @@ rules:
 - apiGroups:
   - ''
   resources:
-  - configmaps
   - events
   - pods
   - secrets
@@ -22,6 +21,13 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - ''
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - update
 - apiGroups:
   - apps
   resources:
@@ -52,13 +58,8 @@ rules:
   resources:
   - leases
   verbs:
-  - create
-  - delete
   - get
-  - list
-  - patch
   - update
-  - watch
 - apiGroups:
   - operator.ibm.com
   resources:
