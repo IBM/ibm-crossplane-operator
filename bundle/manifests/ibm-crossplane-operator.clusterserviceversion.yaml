@@ -948,10 +948,10 @@ spec:
   minKubeVersion: 1.19.0
   provider:
     name: IBM
-  replaces: ibm-crossplane-operator.v1.0.0
   version: 1.1.0
   relatedImages:
     - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
       image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.1.0
     - name: IBM_CROSSPLANE_OPERATOR_IMAGE
       image: quay.io/opencloudio/ibm-crossplane-operator:1.1.0
+  replaces: ibm-crossplane-operator.v1.0.0
