@@ -651,13 +651,6 @@ spec:
                 - patch
                 - delete
             - apiGroups:
-                - ""
-              resources:
-                - secrets
-              verbs:
-                - list
-                - watch
-            - apiGroups:
                 - apiextensions.ibm.crossplane.io
                 - pkg.ibm.crossplane.io
               resources:
