@@ -22,20 +22,6 @@ rules:
   resourceNames:
   - kafkacomposites.shim.bedrock.ibm.com
   - kafkaclaims.shim.bedrock.ibm.com
-- apiGroups:
-  - ""
-  - coordination.k8s.io
-  resources:
-  - configmaps
-  - leases
-  verbs:
-  - get
-  - list
-  - create
-  - update
-  - patch
-  - watch
-  - delete
 # for crossplane to register crossplane events
 - apiGroups:
   - ''
