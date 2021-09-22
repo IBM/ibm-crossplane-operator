@@ -959,6 +959,7 @@ spec:
   minKubeVersion: 1.19.0
   provider:
     name: IBM
+  replaces: ibm-crossplane-operator.v1.0.0
   version: 1.1.0
   relatedImages:
     - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
