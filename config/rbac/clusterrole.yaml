@@ -46,14 +46,6 @@ rules:
   - update
   - patch
   - delete
-# for crossplane to manage connection secrets
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - list
-  - watch
 # for crossplane to manage crossplane resources
 - apiGroups:
   - apiextensions.ibm.crossplane.io
