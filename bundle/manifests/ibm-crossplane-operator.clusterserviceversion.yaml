@@ -842,6 +842,14 @@ spec:
                 - update
                 - watch
             - apiGroups:
+                - ""
+              resources:
+                - configmaps
+              verbs:
+                - get
+                - create
+                - update
+            - apiGroups:
                 - apps
               resources:
                 - deployments
@@ -871,13 +879,9 @@ spec:
               resources:
                 - leases
               verbs:
-                - create
-                - delete
                 - get
-                - list
-                - patch
+                - create
                 - update
-                - watch
             - apiGroups:
                 - operator.ibm.com
               resources:
