@@ -16,7 +16,7 @@ Red Hat OpenShift Container Platform 4.6 or newer installed on one of the follow
 
 ## Operator versions
 
-- 1.0.0
+- 1.0.1
 
 ## Prerequisites
 
@@ -155,7 +155,7 @@ ibm-crossplane-operator-6cc44f4c5c-p74lg   1/1     Running   0          73s
 ```
 # oc get pkg
 NAME                                                                 INSTALLED   HEALTHY   PACKAGE                                                         AGE
-configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0   59s
+configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.1   59s
 ```
 
 #### Building and testing the operator using OLM
@@ -215,7 +215,7 @@ ibm-crossplane-operator-57bff8d56-98752                 1/1     Running   0     
 ```
 # oc get pkg
 NAME                                                                 INSTALLED   HEALTHY   PACKAGE                                                         AGE
-configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0   59s
+configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.1   59s
 ```
 
 ### Debugging guide
