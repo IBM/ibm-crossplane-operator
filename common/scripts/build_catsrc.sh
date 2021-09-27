@@ -230,7 +230,7 @@ function prepare_operator_bundle_yamls() {
     $YQ d -i "$CSV_YAML" "spec.replaces"
     # operand images
     $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$OPERATOR_IMG]}"
-    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[2].value" "${IMAGES[$IBM_BEDROCK_SHIM_IMG]}"
+    #$YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[2].value" "${IMAGES[$IBM_BEDROCK_SHIM_IMG]}"
     # annotations
     $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "ibm-crossplane-operator-app"
     $OPERATOR_SDK bundle validate ./bundle
