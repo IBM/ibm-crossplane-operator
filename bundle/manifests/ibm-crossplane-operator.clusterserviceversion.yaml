@@ -765,8 +765,8 @@ spec:
                       - name: LEADER_ELECTION
                         value: "true"
                       - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-                        value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.0.0
-                    image: quay.io/opencloudio/ibm-crossplane-operator:1.0.0
+                        value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.1.0
+                    image: quay.io/opencloudio/ibm-crossplane-operator:1.1.0
                     imagePullPolicy: Always
                     name: ibm-crossplane
                     resources:
@@ -835,14 +835,6 @@ spec:
                 - update
                 - watch
             - apiGroups:
-                - ""
-              resources:
-                - configmaps
-              verbs:
-                - get
-                - create
-                - update
-            - apiGroups:
                 - apps
               resources:
                 - deployments
@@ -868,8 +860,10 @@ spec:
                 - update
                 - watch
             - apiGroups:
+                - ""
                 - coordination.k8s.io
               resources:
+                - configmaps
                 - leases
               verbs:
                 - get
