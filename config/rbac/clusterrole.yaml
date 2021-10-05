@@ -81,6 +81,12 @@ rules:
   - kafkacomposites/finalizers
   - kafkaclaims/status
   - kafkacomposites/status
+  - postgresclaims
+  - postgrescomposites
+  - postgresclaims/finalizers
+  - postgrescomposites/finalizers
+  - postgresclaims/status
+  - postgrescomposites/status
   verbs:
   - create
   - delete

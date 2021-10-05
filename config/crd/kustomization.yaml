@@ -6,6 +6,8 @@ resources:
 - bases/apiextensions.ibm.crossplane.io_compositions.yaml
 - bases/shim.bedrock.ibm.com_kafkaclaims.yaml
 - bases/shim.bedrock.ibm.com_kafkacomposites.yaml
+- bases/shim.bedrock.ibm.com_postgresclaims.yaml
+- bases/shim.bedrock.ibm.com_postgrescomposites.yaml
 - bases/pkg.ibm.crossplane.io_configurationrevisions.yaml
 - bases/pkg.ibm.crossplane.io_configurations.yaml
 - bases/pkg.ibm.crossplane.io_controllerconfigs.yaml
