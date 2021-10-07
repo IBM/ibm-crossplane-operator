@@ -1,0 +1,12 @@
+- apiGroups:
+  - postgresql.k8s.enterprisedb.io/v1
+  resources:
+  - clusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

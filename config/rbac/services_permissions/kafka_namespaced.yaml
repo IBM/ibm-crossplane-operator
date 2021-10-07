@@ -1,0 +1,13 @@
+- apiGroups:
+  - ibmevents.ibm.com
+  resources:
+  - kafkas
+  - kafkausers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

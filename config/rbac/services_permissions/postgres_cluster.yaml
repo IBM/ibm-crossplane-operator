@@ -1,0 +1,26 @@
+- verbs:
+  - get
+  apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  resourceNames:
+  - postgrescomposites.shim.bedrock.ibm.com
+  - postgresclaims.shim.bedrock.ibm.com
+- apiGroups:
+  - shim.bedrock.ibm.com
+  resources:
+  - postgresclaims
+  - postgrescomposites
+  - postgresclaims/finalizers
+  - postgrescomposites/finalizers
+  - postgresclaims/status
+  - postgrescomposites/status
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

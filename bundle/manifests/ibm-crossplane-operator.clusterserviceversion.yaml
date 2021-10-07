@@ -639,15 +639,6 @@ spec:
                 - list
                 - watch
             - apiGroups:
-                - apiextensions.k8s.io
-              resourceNames:
-                - kafkacomposites.shim.bedrock.ibm.com
-                - kafkaclaims.shim.bedrock.ibm.com
-              resources:
-                - customresourcedefinitions
-              verbs:
-                - get
-            - apiGroups:
                 - ""
               resources:
                 - events
@@ -693,6 +684,15 @@ spec:
                 - update
                 - watch
             - apiGroups:
+                - apiextensions.k8s.io
+              resourceNames:
+                - kafkacomposites.shim.bedrock.ibm.com
+                - kafkaclaims.shim.bedrock.ibm.com
+              resources:
+                - customresourcedefinitions
+              verbs:
+                - get
+            - apiGroups:
                 - shim.bedrock.ibm.com
               resources:
                 - kafkaclaims
@@ -701,6 +701,26 @@ spec:
                 - kafkacomposites/finalizers
                 - kafkaclaims/status
                 - kafkacomposites/status
+              verbs:
+                - create
+                - delete
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - apiextensions.k8s.io
+              resourceNames:
+                - postgrescomposites.shim.bedrock.ibm.com
+                - postgresclaims.shim.bedrock.ibm.com
+              resources:
+                - customresourcedefinitions
+              verbs:
+                - get
+            - apiGroups:
+                - shim.bedrock.ibm.com
+              resources:
                 - postgresclaims
                 - postgrescomposites
                 - postgresclaims/finalizers

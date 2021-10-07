@@ -330,13 +330,27 @@ update-submodule:
 	make copy-operator-data
 	make build-crossplane-binary
 
+append-services-permissions: ## Append permissions from <myservice>_cluster.yaml and <myservice>_namespaced.yaml
+	cp ./config/rbac/role.yaml ./config/rbac/backup_role.yaml
+	cp ./config/rbac/clusterrole.yaml ./config/rbac/backup_clusterrole.yaml
+	echo "" >> ./config/rbac/role.yaml
+	echo "" >> ./config/rbac/clusterrole.yaml
+	(cd ./config/rbac/services_permissions/; find -iname '*namespaced.yaml' | xargs awk 1 >> ../role.yaml)
+	(cd ./config/rbac/services_permissions/; find -iname '*cluster.yaml' | xargs awk 1 >> ../clusterrole.yaml)
+
+restore-role-files: ## Restore original role.yaml and clusterrole.yaml files after appending services permissions
+	cp ./config/rbac/backup_role.yaml ./config/rbac/role.yaml; rm ./config/rbac/backup_role.yaml
+	cp ./config/rbac/backup_clusterrole.yaml ./config/rbac/clusterrole.yaml; rm ./config/rbac/backup_clusterrole.yaml
+
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
 	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+	- make append-services-permissions
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	- make bundle-manifests CHANNELS=v3 DEFAULT_CHANNEL=v3
+	- make restore-role-files
 
 bundle-manifests:
 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle \
