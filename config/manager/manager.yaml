@@ -88,6 +88,9 @@ spec:
               mountPath: /cache
           terminationMessagePolicy: File
           image: quay.io/opencloudio/ibm-crossplane-operator:1.1.0
+          args:
+            - core
+            - start
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
