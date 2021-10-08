@@ -335,8 +335,8 @@ append-services-permissions: ## Append permissions from <myservice>_cluster.yaml
 	cp ./config/rbac/clusterrole.yaml ./config/rbac/backup_clusterrole.yaml
 	echo "" >> ./config/rbac/role.yaml
 	echo "" >> ./config/rbac/clusterrole.yaml
-	(cd ./config/rbac/services_permissions/; find -iname '*namespaced.yaml' | xargs awk 1 >> ../role.yaml)
-	(cd ./config/rbac/services_permissions/; find -iname '*cluster.yaml' | xargs awk 1 >> ../clusterrole.yaml)
+	(cd ./services/; find ./*/rbac -iname '*namespaced.yaml' | xargs awk 1 >> ../config/rbac/role.yaml)
+	(cd ./services/; find ./*/rbac -iname '*cluster.yaml' | xargs awk 1 >> ../config/rbac/clusterrole.yaml)
 
 restore-role-files: ## Restore original role.yaml and clusterrole.yaml files after appending services permissions
 	cp ./config/rbac/backup_role.yaml ./config/rbac/role.yaml; rm ./config/rbac/backup_role.yaml
@@ -344,8 +344,11 @@ restore-role-files: ## Restore original role.yaml and clusterrole.yaml files aft
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
-	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
 	- make append-services-permissions
+	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+	cp ./services/*/crd/* ./config/crd/bases/
+	(cd ./config/crd; kustomize edit add resource ./bases/*)
+	
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
