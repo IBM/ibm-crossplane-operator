@@ -52,7 +52,7 @@ if [[ -f "${CSV_PATH}" ]]; then
     yq w ${CSV_PATH} "metadata.annotations[olm.skipRange]" ">=1.0.0 <${OPERATOR_VERSION}" 1<>${CSV_PATH}
 
 
-    yq w ${CSV_PATH} "spec.relatedImages[0] name" "IBM_CROSSPLANE_CONFIG_IMAGE" 1<>${CSV_PATH}
+    yq w ${CSV_PATH} "spec.relatedImages[0] name" "IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE" 1<>${CSV_PATH}
     yq w ${CSV_PATH} "spec.relatedImages[0] image" "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:${OPERATOR_VERSION}" 1<>${CSV_PATH}
     yq w ${CSV_PATH} "spec.relatedImages[1] name" "IBM_CROSSPLANE_OPERATOR_IMAGE" 1<>${CSV_PATH}
     yq w ${CSV_PATH} "spec.relatedImages[1] image" "quay.io/opencloudio/ibm-crossplane-operator:${OPERATOR_VERSION}" 1<>${CSV_PATH}
