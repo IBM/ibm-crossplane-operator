@@ -3,6 +3,7 @@
 # It should be run by config/default
 resources:
 - bases/apiextensions.ibm.crossplane.io_compositeresourcedefinitions.yaml
+- bases/apiextensions.ibm.crossplane.io_compositionrevisions.yaml
 - bases/apiextensions.ibm.crossplane.io_compositions.yaml
 - bases/shim.bedrock.ibm.com_kafkaclaims.yaml
 - bases/shim.bedrock.ibm.com_kafkacomposites.yaml
