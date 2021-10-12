@@ -521,6 +521,9 @@ spec:
       - kind: CompositeResourceDefinition
         name: compositeresourcedefinitions.apiextensions.ibm.crossplane.io
         version: v1beta1
+      - kind: CompositionRevision
+        name: compositionrevisions.apiextensions.ibm.crossplane.io
+        version: v1alpha1
       - kind: Composition
         name: compositions.apiextensions.ibm.crossplane.io
         version: v1
@@ -548,6 +551,9 @@ spec:
       - kind: KafkaComposite
         name: kafkacomposites.shim.bedrock.ibm.com
         version: v1alpha1
+      - kind: Lock
+        name: locks.pkg.ibm.crossplane.io
+        version: v1beta1
       - kind: Lock
         name: locks.pkg.ibm.crossplane.io
         version: v1alpha1
@@ -757,7 +763,10 @@ spec:
                           topologyKey: kubernetes.io/hostname
                         weight: 100
                 containers:
-                  - env:
+                  - args:
+                      - core
+                      - start
+                    env:
                       - name: WATCH_NAMESPACE
                         valueFrom:
                           fieldRef:
