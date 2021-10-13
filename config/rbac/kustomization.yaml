@@ -1,14 +1,16 @@
 resources:
-- clusterrole.yaml
-- clusterrole_binding.yaml
-- role.yaml
-- role_binding.yaml
-# - leader_election_role.yaml
-# - leader_election_role_binding.yaml
-# Comment the following 4 lines if you want to disable
-# the auth proxy (https://github.com/brancz/kube-rbac-proxy)
-# which protects your /metrics endpoint.
-# - auth_proxy_service.yaml
-# - auth_proxy_role.yaml
-# - auth_proxy_role_binding.yaml
-# - auth_proxy_client_clusterrole.yaml
+- ./clusterrole_binding.yaml
+- ./role_binding.yaml
+- ./role.yaml
+- ./clusterrole.yaml
+- ./kafka_clusterrole_binding.yaml
+- ./kafka_clusterrole.yaml
+- ./kafka_role_binding.yaml
+- ./kafka_role.yaml
+- ./postgres_clusterole.yaml
+- ./postgres_clusterrole_binding.yaml
+- ./postgres_role_binding.yaml
+- ./postgres_role.yaml
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
