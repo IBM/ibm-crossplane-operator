@@ -338,7 +338,7 @@ add-services-files: ## Copy services crd and rbac files.
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
-	cp ibm-crossplane/cluster/charts/crossplane/crds/* config/crd/bases/
+	cp ibm-crossplane/cluster/crds/* config/crd/bases/
 	- make add-services-files
 
 bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
