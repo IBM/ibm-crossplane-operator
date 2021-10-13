@@ -63,20 +63,6 @@ rules:
 - apiGroups:
   - operator.ibm.com
   resources:
-  - crossplanes
-  - crossplanes/status
-  - crossplanes/finalizers
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - operator.ibm.com
-  resources:
   - operandrequests
   verbs:
   - create
