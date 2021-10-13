@@ -73,7 +73,7 @@ spec:
             - name: LEADER_ELECTION
               value: 'true'
             - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-              value: "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.1.0"
+              value: "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.2.0"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -87,7 +87,10 @@ spec:
             - name: package-cache
               mountPath: /cache
           terminationMessagePolicy: File
-          image: quay.io/opencloudio/ibm-crossplane-operator:1.1.0
+          image: quay.io/opencloudio/ibm-crossplane-operator:1.2.0
+          args:
+            - core
+            - start
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
