@@ -14,6 +14,7 @@ resources:
 - ./bases/shim.bedrock.ibm.com_kafkacomposites.yaml
 - ./bases/shim.bedrock.ibm.com_postgresclaims.yaml
 - ./bases/shim.bedrock.ibm.com_postgrescomposites.yaml
+- ./bases/apiextensions.ibm.crossplane.io_compositionrevisions.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 commonLabels:
