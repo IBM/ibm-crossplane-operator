@@ -953,7 +953,7 @@ spec:
                 - update
                 - watch
             - apiGroups:
-                - postgresql.k8s.enterprisedb.io/v1
+                - postgresql.k8s.enterprisedb.io
               resources:
                 - clusters
               verbs:
