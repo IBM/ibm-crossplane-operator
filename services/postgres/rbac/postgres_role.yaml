@@ -4,7 +4,7 @@ metadata:
   name: ibm-crossplane-postgres
 rules:
 - apiGroups:
-  - postgresql.k8s.enterprisedb.io/v1
+  - postgresql.k8s.enterprisedb.io
   resources:
   - clusters
   verbs:
