@@ -273,6 +273,13 @@ spec:
                           the propagation of the connection information from one secret
                           to another.
                         properties:
+                          JSONPath:
+                            description: 'IBM Patch: Add json parser to secret fields
+                              JSONPath is the json path, that is used if given field
+                              is a json, Crossplane will retrieve a value based on
+                              this path. Considered only if FromConnectionSecretKey
+                              is not empty.'
+                            type: string
                           fromConnectionSecretKey:
                             description: FromConnectionSecretKey is the key that will
                               be used to fetch the value from the given target resource's
