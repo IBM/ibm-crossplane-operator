@@ -332,16 +332,16 @@ update-submodule:
 
 add-services-files: ## Copy services crd and rbac files.
 	cp ./services/*/crd/* ./config/crd/bases/
-	(cd ./config/crd; kustomize edit add resource ./bases/*)
+	(cd ./config/crd; $(KUSTOMIZE) edit add resource ./bases/*)
 	cp ./services/*/rbac/* ./config/rbac
-	(cd ./config/rbac; find ./ -type f  | grep -v kustomization | xargs kustomize edit add resource)
+	(cd ./config/rbac; find . -type f  | grep -v kustomization | xargs $(KUSTOMIZE) edit add resource)
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
 	git submodule update --init --recursive
 	cp ibm-crossplane/cluster/crds/* config/crd/bases/
 	- make add-services-files
 
-bundle: copy-operator-data kustomize ## Generate bundle manifests and metadata, then validate the generated files
+bundle: kustomize copy-operator-data ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	- make bundle-manifests CHANNELS=v3 DEFAULT_CHANNEL=v3
 
