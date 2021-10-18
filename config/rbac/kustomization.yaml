@@ -7,7 +7,7 @@ resources:
 - ./kafka_clusterrole.yaml
 - ./kafka_role_binding.yaml
 - ./kafka_role.yaml
-- ./postgres_clusterole.yaml
+- ./postgres_clusterrole.yaml
 - ./postgres_clusterrole_binding.yaml
 - ./postgres_role_binding.yaml
 - ./postgres_role.yaml
