@@ -58,11 +58,11 @@ spec:
       containers:
         - resources:
             limits:
-              cpu: 100m
-              memory: 512Mi
-            requests:
-              cpu: 100m
+              cpu: 50m
               memory: 256Mi
+            requests:
+              cpu: 25m
+              memory: 128Mi
           terminationMessagePath: /dev/termination-log
           name: ibm-crossplane
           env:
