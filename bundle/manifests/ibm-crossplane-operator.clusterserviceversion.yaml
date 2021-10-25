@@ -812,20 +812,13 @@ spec:
                     name: ibm-crossplane
                     resources:
                       limits:
-<<<<<<< HEAD
                         cpu: 50m
-=======
-                        cpu: 100m
-                        ephemeral-storage: 5Mi
-                        memory: 512Mi
-                      requests:
-                        cpu: 100m
-                        ephemeral-storage: 5Mi
->>>>>>> d6dbcdd (Add ephemeral storage limits and 'ibm-crossplane' labels)
                         memory: 256Mi
+                        ephemeral-storage: 5Mi
                       requests:
                         cpu: 25m
                         memory: 128Mi
+                        ephemeral-storage: 5Mi
                     securityContext:
                       allowPrivilegeEscalation: false
                       capabilities:
