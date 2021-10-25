@@ -190,14 +190,7 @@ configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True   
 # make install-operator
 ```
 
-6. Verify the operator is running in `ibm-common-services` namespace
-
-```
-# oc -n ibm-common-services get po | grep crossplane
-ibm-crossplane-57bff8d56-98752                 1/1     Running   0          3m35s
-```
-
-7. Verify the Crossplane installation and configuration package.
+6. Verify the Crossplane installation and configuration package.
 
 ```
 # oc -n ibm-common-services get po | grep crossplane
