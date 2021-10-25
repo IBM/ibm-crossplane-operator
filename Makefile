@@ -184,13 +184,6 @@ uninstall-operator: uninstall-catalog-source ## Install the operator from catalo
 	- kubectl delete --ignore-not-found -f config/samples/subscription.yaml
 	- make clean-cluster
 
-install-cr: delete-secret create-secret # Install sample CR
-	- kubectl apply -f config/samples/operator_v1beta1_crossplane_dev.yaml
-
-uninstall-cr: delete-secret # Uninstall sample CR
-	- kubectl get configurations -o name --ignore-not-found | xargs kubectl delete
-	- kubectl delete --ignore-not-found -f config/samples/operator_v1beta1_crossplane_dev.yaml
-
 clean-cluster: ## Clean up all the resources left in the Kubernetes cluster
 	@echo ....... Cleaning up .......
 	- kubectl get crossplanes -o name | xargs kubectl delete
