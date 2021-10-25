@@ -16,7 +16,7 @@ Red Hat OpenShift Container Platform 4.6 or newer installed on one of the follow
 
 ## Operator versions
 
-- 1.1.0
+- 1.1.0, 1.2.0
 
 ## Prerequisites
 
@@ -147,7 +147,6 @@ Use the following quick start commands for building and testing the operator:
 # oc -n ibm-common-services get po
 NAME                                       READY   STATUS    RESTARTS   AGE
 ibm-crossplane-7d6ff947df-pvg5t            1/1     Running   0          25s
-ibm-crossplane-operator-6cc44f4c5c-p74lg   1/1     Running   0          73s
 ```
 
 5. Verify the ibm-crossplane-bedrock-shim configuration package is installed
@@ -191,25 +190,11 @@ configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True   
 # make install-operator
 ```
 
-6. Verify the operator is running in `ibm-common-services` namespace
-
-```
-# oc -n ibm-common-services get po | grep crossplane
-ibm-crossplane-operator-57bff8d56-98752                 1/1     Running   0          3m35s
-```
-
-7. Install the sample Crossplane CR
-
-```
-# make install-cr
-```
-
-8. Verify the Crossplane installation and configuration package.
+6. Verify the Crossplane installation and configuration package.
 
 ```
 # oc -n ibm-common-services get po | grep crossplane
 ibm-crossplane-5d4bb64b5b-nx8w6                         1/1     Running   0          24s
-ibm-crossplane-operator-57bff8d56-98752                 1/1     Running   0          6m18s
 ```
 
 ```
@@ -227,13 +212,6 @@ Use the following commands to debug the operator:
 ```
 # oc get csv
 # oc describe csv ibm-crossplane-operator.<version>
-```
-
-#### Check the custom resource status
-
-```
-# oc describe crossplanes ibm-crossplane
-# oc get crossplanes ibm-crossplane -o yaml
 ```
 
 ### Check the installed Crossplane configuration package
@@ -268,14 +246,7 @@ For example, for Kafka
 # oc get kafkaclaims
 ```
 
-#### Check the Crossplane operator status and log
-
-```
-# oc describe po -l name=ibm-crossplane-operator
-# oc logs -f -l name=ibm-crossplane-operator
-```
-
-#### Check the Crossplane operand status and log
+#### Check the Crossplane status and log
 
 ```
 # oc describe po -l app=ibm-crossplane
@@ -289,8 +260,12 @@ If more than 1 replica is set and leader election is not enabled then controller
 ### Operator namespace scoping
 Operator support install modes:
  - OwnNamespace
- - SingleNamespace   
+ - SingleNamespace
 [more info](https://sdk.operatorframework.io/docs/building-operators/golang/operator-scope/)
+
+IBM Crossplane Operator does not support installation in:
+ - all namespaces
+ - multiple namespaces
 
 ### End-to-End testing
 
