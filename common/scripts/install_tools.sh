@@ -92,11 +92,11 @@ function check_manifest_tool() {
 }
 
 function check_container_cli() {
-    if [[ $(which podman) != "" ]]; then
+    if [[ $(which docker) != "" ]]; then
+        export CONTAINER_CLI="docker"
+    elif [[ $(which podman) != "" ]]; then
         export CONTAINER_CLI="podman"
         export CONTAINER_FORMAT="--format docker"
-    elif [[ $(which docker) != "" ]]; then
-        export CONTAINER_CLI="docker"
     else
         echo "no podman/docker executable in \$PATH"
         exit 1
