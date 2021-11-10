@@ -6,7 +6,7 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: quay.io/opencloudio/ibm-crossplane-operator:1.2.0
+    containerImage: quay.io/opencloudio/ibm-crossplane-operator:1.3.0
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
     olm.skipRange: ""
