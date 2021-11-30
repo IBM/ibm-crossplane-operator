@@ -330,7 +330,7 @@ add-services-files: ## Copy services crd and rbac files.
 	(cd ./config/rbac; find . -type f  | grep -v kustomization | xargs $(KUSTOMIZE) edit add resource)
 
 copy-operator-data: ## Copy files from ibm-crossplane submodule before recreating bundle
-	git submodule update --init --recursive
+#	git submodule update --init --recursive
 	cp ibm-crossplane/cluster/crds/* config/crd/bases/
 	- make add-services-files
 
