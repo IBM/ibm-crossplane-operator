@@ -2,3 +2,7 @@
 	path = ibm-crossplane
 	url = https://github.com/IBM/ibm-crossplane
 	branch = master
+[submodule "crossplane-provider-kubernetes"]
+	path = crossplane-provider-kubernetes
+	url = https://github.com/IBM/crossplane-provider-kubernetes
+	branch = main

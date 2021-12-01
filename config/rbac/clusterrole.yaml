@@ -30,6 +30,7 @@ rules:
 - apiGroups:
   - apiextensions.ibm.crossplane.io
   - pkg.ibm.crossplane.io
+  - kubernetes.crossplane.io
   resources:
   - locks
   - compositeresourcedefinitions
@@ -39,6 +40,7 @@ rules:
   - configurations
   - configurationrevisions
   - controllerconfigs
+  - objects
   # finalizers
   - locks/finalizers
   - compositeresourcedefinitions/finalizers
@@ -48,6 +50,7 @@ rules:
   - configurations/finalizers
   - configurationrevisions/finalizers
   - controllerconfigs/finalizers
+  - objects/finalizers
   # status
   - locks/status
   - compositeresourcedefinitions/status
@@ -57,6 +60,7 @@ rules:
   - configurations/status
   - configurationrevisions/status
   - controllerconfigs/status
+  - objects/status
   verbs:
   - create
   - delete

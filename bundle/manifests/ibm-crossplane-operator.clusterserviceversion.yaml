@@ -557,11 +557,20 @@ spec:
       - kind: Lock
         name: locks.pkg.ibm.crossplane.io
         version: v1alpha1
+      - kind: Object
+        name: objects.kubernetes.crossplane.io
+        version: v1alpha1
       - kind: PostgresClaim
         name: postgresclaims.shim.bedrock.ibm.com
         version: v1alpha1
       - kind: PostgresComposite
         name: postgrescomposites.shim.bedrock.ibm.com
+        version: v1alpha1
+      - kind: ProviderConfig
+        name: providerconfigs.kubernetes.crossplane.io
+        version: v1alpha1
+      - kind: ProviderConfigUsage
+        name: providerconfigusages.kubernetes.crossplane.io
         version: v1alpha1
       - kind: ProviderRevision
         name: providerrevisions.pkg.ibm.crossplane.io
@@ -656,6 +665,7 @@ spec:
             - apiGroups:
                 - apiextensions.ibm.crossplane.io
                 - pkg.ibm.crossplane.io
+                - kubernetes.crossplane.io
               resources:
                 - locks
                 - compositeresourcedefinitions
@@ -665,6 +675,7 @@ spec:
                 - configurations
                 - configurationrevisions
                 - controllerconfigs
+                - objects
                 - locks/finalizers
                 - compositeresourcedefinitions/finalizers
                 - compositions/finalizers
@@ -673,6 +684,7 @@ spec:
                 - configurations/finalizers
                 - configurationrevisions/finalizers
                 - controllerconfigs/finalizers
+                - objects/finalizers
                 - locks/status
                 - compositeresourcedefinitions/status
                 - compositions/status
@@ -681,6 +693,7 @@ spec:
                 - configurations/status
                 - configurationrevisions/status
                 - controllerconfigs/status
+                - objects/status
               verbs:
                 - create
                 - delete
