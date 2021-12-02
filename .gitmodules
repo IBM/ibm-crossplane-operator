@@ -1,8 +1,8 @@
 [submodule "ibm-crossplane"]
 	path = ibm-crossplane
 	url = https://github.com/IBM/ibm-crossplane
-	branch = master
+	branch = kubernetes-provider
 [submodule "crossplane-provider-kubernetes"]
 	path = crossplane-provider-kubernetes
 	url = https://github.com/IBM/crossplane-provider-kubernetes
-	branch = main
+	branch = add-connection-secret-support
