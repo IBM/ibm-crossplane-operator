@@ -524,9 +524,6 @@ spec:
     - kind: AutoscalingGroup
       name: autoscalinggroups.ibmclouddatabasesv5.ibmcloud.crossplane.io
       version: v1alpha1
-    - kind: BucketConfig
-      name: bucketconfigs.cos.ibmcloud.crossplane.io
-      version: v1alpha1
     - kind: Bucket
       name: buckets.cos.ibmcloud.crossplane.io
       version: v1alpha1

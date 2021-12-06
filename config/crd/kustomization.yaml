@@ -19,7 +19,6 @@ resources:
 - ./bases/kubernetes.crossplane.io_providerconfigs.yaml
 - ./bases/kubernetes.crossplane.io_providerconfigusages.yaml
 - ./bases/cloudantv1.ibmcloud.crossplane.io_cloudantdatabases.yaml
-- ./bases/cos.ibmcloud.crossplane.io_bucketconfigs.yaml
 - ./bases/cos.ibmcloud.crossplane.io_buckets.yaml
 - ./bases/eventstreamsadminv1.ibmcloud.crossplane.io_topics.yaml
 - ./bases/iamaccessgroupsv2.ibmcloud.crossplane.io_accessgrouprules.yaml

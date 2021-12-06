@@ -52,10 +52,10 @@ spec:
             description: BucketSpec - desired end-state of a Bucket on the IBM cloud
             properties:
               deletionPolicy:
+                default: Delete
                 description: DeletionPolicy specifies what will happen to the underlying
                   external when this managed resource is deleted - either "Delete"
-                  or "Orphan" the external resource. The "Delete" policy is the default
-                  when no policy is specified.
+                  or "Orphan" the external resource.
                 enum:
                 - Orphan
                 - Delete
@@ -129,6 +129,8 @@ spec:
                 - locationConstraint
                 type: object
               providerConfigRef:
+                default:
+                  name: default
                 description: ProviderConfigReference specifies how the provider that
                   will be used to create, observe, update, and delete this managed
                   resource should be configured.

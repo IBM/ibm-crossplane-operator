@@ -51,7 +51,7 @@ spec:
             description: A ProviderConfigSpec defines the desired state of a ProviderConfig.
             properties:
               credentials:
-                description: Credentials required to authenticate to this provider.
+                description: A ProviderCredentials stores the credentials of a ProviderConfig.
                 properties:
                   secretRef:
                     description: A CredentialsSecretRef is a reference to a secret

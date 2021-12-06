@@ -9,6 +9,12 @@ metadata:
 rules:
   - verbs:
       - get
+    apiGroups:
+      - operator.ibm.com
+    resources:
+      - namespacescopes
+  - verbs:
+      - get
       - delete
       - list
       - create
