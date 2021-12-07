@@ -133,7 +133,7 @@ rules:
       - resourcekeys/finalizers
       # status
       - resourceinstances/status
-      - resourcekeyss/status
+      - resourcekeys/status
     verbs:
       - create
       - delete
