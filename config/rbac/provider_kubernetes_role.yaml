@@ -21,13 +21,22 @@ rules:
       - kafkausers
       - clusters
   - verbs:
-      - get
-      - delete
-      - list
       - create
+      - delete
+      - get
+      - list
       - patch
+      - update
       - watch
     apiGroups:
       - ''
     resources:
       - secrets
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - operator.ibm.com
+    resources:
+      - namespacescopes

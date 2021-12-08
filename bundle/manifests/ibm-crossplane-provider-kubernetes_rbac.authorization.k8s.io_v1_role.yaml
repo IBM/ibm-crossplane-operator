@@ -26,9 +26,18 @@ rules:
   resources:
   - secrets
   verbs:
-  - get
-  - delete
-  - list
   - create
+  - delete
+  - get
+  - list
   - patch
+  - update
+  - watch
+- apiGroups:
+  - operator.ibm.com
+  resources:
+  - namespacescopes
+  verbs:
+  - get
+  - list
   - watch
