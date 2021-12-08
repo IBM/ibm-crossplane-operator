@@ -30,11 +30,9 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - secrets
+  - events
   verbs:
-  - get
-  - delete
-  - list
   - create
+  - update
   - patch
-  - watch
+  - delete

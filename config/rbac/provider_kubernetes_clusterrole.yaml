@@ -26,19 +26,12 @@ rules:
       - kubernetes.crossplane.io
     resources:
       - providerconfigusages
-# to be deleted. Problematic function:
-# PublishConnection()
-# in:
-# .work/pkg/pkg/mod/github.com/crossplane/crossplane-runtime@v0.13.0/pkg/reconciler/managed/reconciler.go
-# TODO !!!!!!!!
-  - verbs:
-      - get
-      - delete
-      - list
-      - create
-      - patch
-      - watch
-    apiGroups:
+  - apiGroups:
       - ''
     resources:
-      - secrets
+      - events
+    verbs:
+      - create
+      - update
+      - patch
+      - delete
