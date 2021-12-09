@@ -33,7 +33,7 @@ get-cluster-credentials: activate-serviceaccount
 config-docker: get-cluster-credentials
 	@common/scripts/config_docker.sh
 
-FINDFILES=find . \( -path ./.git -o -path ./.github -o -path ./ibm-crossplane \) -prune -o -type f
+FINDFILES=find . \( -path ./.git -o -path ./.github -o -path ./ibm-crossplane -o -path ./crossplane-provider-kubernetes \) -prune -o -type f
 XARGS = xargs -0 ${XARGS_FLAGS}
 CLEANXARGS = xargs ${XARGS_FLAGS}
 
