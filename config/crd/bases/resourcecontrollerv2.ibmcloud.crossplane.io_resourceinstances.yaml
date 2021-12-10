@@ -79,6 +79,7 @@ spec:
                     description: Configuration options represented as key-value pairs
                       that are passed through to the target resource brokers.
                     type: object
+                    x-kubernetes-preserve-unknown-fields: true
                   resourceGroupName:
                     description: The name of the resource group where the instance
                       is deployed

@@ -118,7 +118,7 @@ rules:
   - resourceinstances/finalizers
   - resourcekeys/finalizers
   - resourceinstances/status
-  - resourcekeyss/status
+  - resourcekeys/status
   verbs:
   - create
   - delete
