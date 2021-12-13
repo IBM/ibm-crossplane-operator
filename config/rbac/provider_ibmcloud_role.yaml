@@ -9,6 +9,8 @@ metadata:
 rules:
   - verbs:
       - get
+      - list
+      - watch
     apiGroups:
       - operator.ibm.com
     resources:
