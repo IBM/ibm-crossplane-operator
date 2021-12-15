@@ -8,11 +8,13 @@ rules:
   - operator.ibm.com
   - ibmevents.ibm.com
   - postgresql.k8s.enterprisedb.io
+  - ""
   resources:
   - operandrequests
   - kafkas
   - kafkausers
   - clusters
+  - configmaps
   verbs:
   - create
   - delete
