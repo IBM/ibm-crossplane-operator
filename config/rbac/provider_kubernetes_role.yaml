@@ -1,0 +1,44 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ibm-crossplane-provider-kubernetes
+rules:
+  - verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+    apiGroups:
+      - operator.ibm.com
+      - ibmevents.ibm.com
+      - postgresql.k8s.enterprisedb.io
+      - ''
+    resources:
+      - operandrequests
+      - kafkas
+      - kafkausers
+      - clusters
+      - configmaps
+  - verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - secrets
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - operator.ibm.com
+    resources:
+      - namespacescopes

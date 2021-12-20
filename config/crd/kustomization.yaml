@@ -15,6 +15,9 @@ resources:
 - ./bases/shim.bedrock.ibm.com_postgresclaims.yaml
 - ./bases/shim.bedrock.ibm.com_postgrescomposites.yaml
 - ./bases/apiextensions.ibm.crossplane.io_compositionrevisions.yaml
+- ./bases/kubernetes.crossplane.io_objects.yaml
+- ./bases/kubernetes.crossplane.io_providerconfigs.yaml
+- ./bases/kubernetes.crossplane.io_providerconfigusages.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 commonLabels:

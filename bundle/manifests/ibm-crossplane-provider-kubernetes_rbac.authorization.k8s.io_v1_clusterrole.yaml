@@ -1,0 +1,38 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: ibm-crossplane-provider-kubernetes
+rules:
+- apiGroups:
+  - kubernetes.crossplane.io
+  resources:
+  - objects
+  - objects/status
+  - providerconfigs
+  - providerconfigs/status
+  verbs:
+  - list
+  - watch
+  - update
+- apiGroups:
+  - kubernetes.crossplane.io
+  resources:
+  - providerconfigusages
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - update
+  - patch
+  - delete

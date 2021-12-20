@@ -11,6 +11,10 @@ resources:
 - ./postgres_clusterrole_binding.yaml
 - ./postgres_role_binding.yaml
 - ./postgres_role.yaml
+- ./provider_kubernetes_clusterrole.yaml
+- ./provider_kubernetes_role.yaml
+- ./provider_kubernetes_role_binding.yaml
+- ./provider_kubernetes_clusterrole_binding.yaml
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
