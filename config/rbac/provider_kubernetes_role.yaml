@@ -2,6 +2,10 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: ibm-crossplane-provider-kubernetes
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
 rules:
   - verbs:
       - create
