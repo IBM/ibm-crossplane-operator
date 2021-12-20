@@ -495,7 +495,10 @@ metadata:
     certified: "false"
     containerImage: quay.io/opencloudio/ibm-crossplane-operator:1.3.0
     createdAt: "2021-03-04"
-    description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
+    description: The IBM Crossplane Operator installs an IBM modified version of Crossplane,
+      an open source Kubernetes add-on that extends any cluster with the ability to
+      provision and manage cloud infrastructure, services, and applications using
+      kubectl, GitOps, or any tool that works with the Kubernetes API.
     olm.skipRange: '>=1.0.0 <1.3.1'
     operators.operatorframework.io/builder: operator-sdk-v1.3.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
@@ -593,9 +596,15 @@ spec:
     - kind: ProviderConfig
       name: providerconfigs.ibmcloud.crossplane.io
       version: v1beta1
+    - kind: ProviderConfig
+      name: providerconfigs.kubernetes.crossplane.io
+      version: v1alpha1
     - kind: ProviderConfigUsage
       name: providerconfigusages.ibmcloud.crossplane.io
       version: v1beta1
+    - kind: ProviderConfigUsage
+      name: providerconfigusages.kubernetes.crossplane.io
+      version: v1alpha1
     - kind: ProviderRevision
       name: providerrevisions.pkg.ibm.crossplane.io
       version: v1
@@ -704,6 +713,7 @@ spec:
         - apiGroups:
           - apiextensions.ibm.crossplane.io
           - pkg.ibm.crossplane.io
+          - kubernetes.crossplane.io
           resources:
           - locks
           - compositeresourcedefinitions
@@ -713,6 +723,7 @@ spec:
           - configurations
           - configurationrevisions
           - controllerconfigs
+          - objects
           - locks/finalizers
           - compositeresourcedefinitions/finalizers
           - compositions/finalizers
@@ -721,6 +732,7 @@ spec:
           - configurations/finalizers
           - configurationrevisions/finalizers
           - controllerconfigs/finalizers
+          - objects/finalizers
           - locks/status
           - compositeresourcedefinitions/status
           - compositions/status
@@ -729,6 +741,7 @@ spec:
           - configurations/status
           - configurationrevisions/status
           - controllerconfigs/status
+          - objects/status
           verbs:
           - create
           - delete
@@ -1172,8 +1185,8 @@ spec:
     name: IBM
   version: 1.3.1
   relatedImages:
-    - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-      image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.3.1
-    - name: IBM_CROSSPLANE_OPERATOR_IMAGE
-      image: quay.io/opencloudio/ibm-crossplane-operator:1.3.1
+  - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
+    image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.3.1
+  - name: IBM_CROSSPLANE_OPERATOR_IMAGE
+    image: quay.io/opencloudio/ibm-crossplane-operator:1.3.1
   replaces: ibm-crossplane-operator.v1.3.0
