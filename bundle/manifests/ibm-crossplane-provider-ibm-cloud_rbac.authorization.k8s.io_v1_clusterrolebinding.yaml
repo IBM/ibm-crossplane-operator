@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/instance: ibm-crossplane-operator
+    app.kubernetes.io/managed-by: ibm-crossplane-operator
+    app.kubernetes.io/name: ibm-crossplane
+  name: ibm-crossplane-provider-ibm-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ibm-crossplane-provider-ibm-cloud
+subjects:
+- kind: ServiceAccount
+  name: ibm-crossplane-provider-ibm-cloud
+  namespace: ibm-common-services
+- kind: ServiceAccount
+  name: ibm-crossplane
+  namespace: ibm-common-services
