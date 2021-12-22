@@ -13,5 +13,5 @@ roleRef:
   name: ibm-crossplane-provider-kubernetes
 subjects:
 - kind: ServiceAccount
-  name: provider-kubernetes
+  name: ibm-crossplane-provider-kubernetes
   namespace: ibm-common-services
