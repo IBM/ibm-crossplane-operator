@@ -75,7 +75,11 @@ spec:
             - name: LEADER_ELECTION
               value: 'true'
             - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-              value: "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.3.0"
+              value: "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.4.0"
+            - name: IBM_CROSSPLANE_KUBERNETES_PROVIDER_IMAGE
+              value: "quay.io/opencloudio/ibm-crossplane-provider-kubernetes:1.4.0"
+            - name: IBM_CROSSPLANE_IBM_CLOUD_PROVIDER_IMAGE
+              value: "quay.io/opencloudio/ibm-crossplane-provider-ibm-cloud:1.4.0"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -89,7 +93,7 @@ spec:
             - name: package-cache
               mountPath: /cache
           terminationMessagePolicy: File
-          image: quay.io/opencloudio/ibm-crossplane-operator:1.3.0
+          image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
           args:
             - core
             - start

@@ -56,6 +56,10 @@ if [[ -f "${CSV_PATH}" ]]; then
     yq w ${CSV_PATH} "spec.relatedImages[0] image" "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:${OPERATOR_VERSION}" 1<>${CSV_PATH}
     yq w ${CSV_PATH} "spec.relatedImages[1] name" "IBM_CROSSPLANE_OPERATOR_IMAGE" 1<>${CSV_PATH}
     yq w ${CSV_PATH} "spec.relatedImages[1] image" "quay.io/opencloudio/ibm-crossplane-operator:${OPERATOR_VERSION}" 1<>${CSV_PATH}
+    yq w ${CSV_PATH} "spec.relatedImages[2] name" "IBM_CROSSPLANE_KUBERNETES_PROVIDER_IMAGE" 1<>${CSV_PATH}
+    yq w ${CSV_PATH} "spec.relatedImages[2] image" "quay.io/opencloudio/ibm-crossplane-provider-kubernetes:${OPERATOR_VERSION}" 1<>${CSV_PATH}
+    yq w ${CSV_PATH} "spec.relatedImages[3] name" "IBM_CROSSPLANE_IBM_CLOUD_PROVIDER_IMAGE" 1<>${CSV_PATH}
+    yq w ${CSV_PATH} "spec.relatedImages[3] image" "quay.io/opencloudio/ibm-crossplane-provider-ibm-cloud:${OPERATOR_VERSION}" 1<>${CSV_PATH}
 
     # replaces
     yq w ${CSV_PATH} "spec.replaces" "${OPERATOR_NAME}.v${PREVIOUS_VERSION}" 1<>${CSV_PATH}
