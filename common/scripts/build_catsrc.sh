@@ -146,7 +146,9 @@ declare -A IMAGES
 
 OPERATOR_IMG="ibm-crossplane-operator"
 IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
-IMG_NAMES=([$OPERATOR_IMG]="scratch" [$IBM_BEDROCK_SHIM_IMG]="integration")
+CROSSPLANE_KUBERNETES_PROVIDER="ibm-crossplane-provider-kubernetes"
+CROSSPLANE_IBM_CLOUD_PROVIDER="ibm-crossplane-provider-ibm-cloud"
+IMG_NAMES=([$OPERATOR_IMG]="scratch" [$IBM_BEDROCK_SHIM_IMG]="integration" [$CROSSPLANE_KUBERNETES_PROVIDER]="integration" [$CROSSPLANE_IBM_CLOUD_PROVIDER]="integration")
 BUNDLE_METADATA_OPTS="--channels=v3 --default-channel=v3"
 OPERATOR_BUNDLE="ibm-crossplane-operator-bundle"
 OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$TIMESTAMP"
@@ -230,7 +232,12 @@ function prepare_operator_bundle_yamls() {
     $YQ d -i "$CSV_YAML" "spec.replaces"
     # operand images
     $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$OPERATOR_IMG]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[2].name" "IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE"
     $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[2].value" "${IMAGES[$IBM_BEDROCK_SHIM_IMG]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[3].name" "IBM_CROSSPLANE_KUBERNETES_PROVIDER_IMAGE"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[3].value" "${IMAGES[$CROSSPLANE_KUBERNETES_PROVIDER]}"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[4].name" "IBM_CROSSPLANE_IBM_CLOUD_PROVIDER_IMAGE"
+    $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[4].value" "${IMAGES[$CROSSPLANE_IBM_CLOUD_PROVIDER]}"
     # annotations
     $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "ibm-crossplane-operator-app"
     $OPERATOR_SDK bundle validate ./bundle
