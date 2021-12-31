@@ -15,9 +15,6 @@ resources:
 - ./bases/shim.bedrock.ibm.com_postgresclaims.yaml
 - ./bases/shim.bedrock.ibm.com_postgrescomposites.yaml
 - ./bases/apiextensions.ibm.crossplane.io_compositionrevisions.yaml
-- ./bases/kubernetes.crossplane.io_objects.yaml
-- ./bases/kubernetes.crossplane.io_providerconfigs.yaml
-- ./bases/kubernetes.crossplane.io_providerconfigusages.yaml
 - ./bases/cloudantv1.ibmcloud.crossplane.io_cloudantdatabases.yaml
 - ./bases/cos.ibmcloud.crossplane.io_buckets.yaml
 - ./bases/eventstreamsadminv1.ibmcloud.crossplane.io_topics.yaml

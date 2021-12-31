@@ -332,7 +332,7 @@ add-services-files: ## Copy services crd and rbac files.
 copy-operator-data: ## Copy files from submodules before recreating bundle
 	git submodule update --init --recursive
 	cp ibm-crossplane/cluster/crds/* config/crd/bases/
-	cp crossplane-provider-kubernetes/package/crds/* config/crd/bases/
+	# cp crossplane-provider-kubernetes/package/crds/* config/crd/bases/
 	cp crossplane-provider-ibm-cloud/package/crds/* config/crd/bases/
 	- make add-services-files
 
