@@ -515,21 +515,6 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-      - kind: AccessGroupRule
-        name: accessgrouprules.iamaccessgroupsv2.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: AccessGroup
-        name: accessgroups.iamaccessgroupsv2.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: AutoscalingGroup
-        name: autoscalinggroups.ibmclouddatabasesv5.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: Bucket
-        name: buckets.cos.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: CloudantDatabase
-        name: cloudantdatabases.cloudantv1.ibmcloud.crossplane.io
-        version: v1alpha1
       - kind: CompositeResourceDefinition
         name: compositeresourcedefinitions.apiextensions.ibm.crossplane.io
         version: v1
@@ -560,12 +545,6 @@ spec:
       - kind: ControllerConfig
         name: controllerconfigs.pkg.ibm.crossplane.io
         version: v1alpha1
-      - kind: CustomRole
-        name: customroles.iampolicymanagementv1.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: GroupMembership
-        name: groupmemberships.iamaccessgroupsv2.ibmcloud.crossplane.io
-        version: v1alpha1
       - kind: KafkaClaim
         name: kafkaclaims.shim.bedrock.ibm.com
         version: v1alpha1
@@ -578,21 +557,12 @@ spec:
       - kind: Lock
         name: locks.pkg.ibm.crossplane.io
         version: v1alpha1
-      - kind: Policy
-        name: policies.iampolicymanagementv1.ibmcloud.crossplane.io
-        version: v1alpha1
       - kind: PostgresClaim
         name: postgresclaims.shim.bedrock.ibm.com
         version: v1alpha1
       - kind: PostgresComposite
         name: postgrescomposites.shim.bedrock.ibm.com
         version: v1alpha1
-      - kind: ProviderConfig
-        name: providerconfigs.ibmcloud.crossplane.io
-        version: v1beta1
-      - kind: ProviderConfigUsage
-        name: providerconfigusages.ibmcloud.crossplane.io
-        version: v1beta1
       - kind: ProviderRevision
         name: providerrevisions.pkg.ibm.crossplane.io
         version: v1
@@ -605,21 +575,6 @@ spec:
       - kind: Provider
         name: providers.pkg.ibm.crossplane.io
         version: v1beta1
-      - kind: ResourceInstance
-        name: resourceinstances.resourcecontrollerv2.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: ResourceKey
-        name: resourcekeys.resourcecontrollerv2.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: ScalingGroup
-        name: scalinggroups.ibmclouddatabasesv5.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: Topic
-        name: topics.eventstreamsadminv1.ibmcloud.crossplane.io
-        version: v1alpha1
-      - kind: Whitelist
-        name: whitelists.ibmclouddatabasesv5.ibmcloud.crossplane.io
-        version: v1alpha1
   description: |-
     **Important:** Do not install this operator directly. Only install this operator using the IBM Common Services Operator. For more information about installing this operator and other Common Services operators, see [Installer documentation](http://ibm.biz/cpcs_opinstall). Additionally, you can exit this panel and navigate to the IBM Common Services tile in OperatorHub to learn more about the operator. If you are using this operator as part of an IBM Cloud Pak, see the documentation for that IBM Cloud Pak to learn more about how to install and use the operator service. For more information about IBM Cloud Paks, see [IBM Cloud Paks that use Common Services](http://ibm.biz/cpcs_cloudpaks).
 
@@ -785,141 +740,6 @@ spec:
               verbs:
                 - create
                 - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - cloudantv1.ibmcloud.crossplane.io
-              resources:
-                - cloudantdatabases
-                - cloudantdatabases/finalizers
-                - cloudantdatabases/status
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - cos.ibmcloud.crossplane.io
-              resources:
-                - buckets
-                - bucketconfigs
-                - buckets/finalizers
-                - bucketconfigs/finalizers
-                - buckets/status
-                - bucketconfigs/status
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - eventstreamsadminv1.ibmcloud.crossplane.io
-              resources:
-                - topics
-                - topics/finalizers
-                - topics/status
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - iamaccessgroupsv2.ibmcloud.crossplane.io
-              resources:
-                - accessgrouprules
-                - accessgroups
-                - groupmemberships
-                - accessgrouprules/finalizers
-                - accessgroups/finalizers
-                - groupmemberships/finalizers
-                - accessgrouprules/status
-                - accessgroups/status
-                - groupmemberships/status
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - iampolicymanagementv1.ibmcloud.crossplane.io
-              resources:
-                - customroles
-                - policies
-                - customroles/finalizers
-                - policies/finalizers
-                - customroles/status
-                - policies/status
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - ibmclouddatabasesv5.ibmcloud.crossplane.io
-              resources:
-                - autoscalinggroups
-                - scalinggroups
-                - whitelists
-                - autoscalinggroups/finalizers
-                - scalinggroups/finalizers
-                - whitelists/finalizers
-                - autoscalinggroups/status
-                - scalinggroups/status
-                - whitelists/status
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - resourcecontrollerv2.ibmcloud.crossplane.io
-              resources:
-                - resourceinstances
-                - resourcekeys
-                - resourceinstances/finalizers
-                - resourcekeys/finalizers
-                - resourceinstances/status
-                - resourcekeys/status
-              verbs:
-                - create
-                - delete
-                - get
-                - list
-                - patch
-                - update
-                - watch
-            - apiGroups:
-                - ibmcloud.crossplane.io
-              resources:
-                - providerconfigs
-                - providerconfigusages
-                - providerconfigs/finalizers
-                - providerconfigusages/finalizers
-                - providerconfigs/status
-                - providerconfigusages/status
-              verbs:
-                - create
                 - get
                 - list
                 - patch
