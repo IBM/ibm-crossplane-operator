@@ -146,6 +146,7 @@ declare -A IMG_REGS
 declare -A IMG_NAMES
 declare -A IMAGES
 
+OPERATOR_NAME="ibm-crossplane-operator"
 OPERATOR_IMG="ibm-crossplane-operator"
 IBM_BEDROCK_SHIM_IMG="ibm-crossplane-bedrock-shim-config"
 IMG_NAMES=([$OPERATOR_IMG]="scratch" [$IBM_BEDROCK_SHIM_IMG]="integration")
@@ -234,7 +235,7 @@ function prepare_operator_bundle_yamls() {
     $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].image" "${IMAGES[$OPERATOR_IMG]}"
     $YQ w -i "$CSV_YAML" "spec.install.spec.deployments[0].spec.template.spec.containers[0].env[2].value" "${IMAGES[$IBM_BEDROCK_SHIM_IMG]}"
     # annotations
-    $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "ibm-crossplane-operator-app"
+    $YQ w -i "$METADATA_YAML" "annotations.\"operators.operatorframework.io.bundle.package.v1\"" "$OPERATOR_NAME-app"
     $OPERATOR_SDK bundle validate ./bundle
 }
 
@@ -310,7 +311,7 @@ function list_packages() {
     local PACKAGE
     for BUNDLE in $(echo $1 | tr , ' '); do
         PACKAGE=$(echo $1 | cut -f1 -d: | cut -f3 -d/ )
-        PACKAGES="$PACKAGES,$PACKAGE"
+        PACKAGES="$PACKAGES,$PACKAGE-app"
     done
 }
 
