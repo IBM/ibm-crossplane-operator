@@ -15,24 +15,6 @@ resources:
 - ./bases/shim.bedrock.ibm.com_postgresclaims.yaml
 - ./bases/shim.bedrock.ibm.com_postgrescomposites.yaml
 - ./bases/apiextensions.ibm.crossplane.io_compositionrevisions.yaml
-- ./bases/kubernetes.crossplane.io_objects.yaml
-- ./bases/kubernetes.crossplane.io_providerconfigs.yaml
-- ./bases/kubernetes.crossplane.io_providerconfigusages.yaml
-- ./bases/cloudantv1.ibmcloud.crossplane.io_cloudantdatabases.yaml
-- ./bases/cos.ibmcloud.crossplane.io_buckets.yaml
-- ./bases/eventstreamsadminv1.ibmcloud.crossplane.io_topics.yaml
-- ./bases/iamaccessgroupsv2.ibmcloud.crossplane.io_accessgrouprules.yaml
-- ./bases/iamaccessgroupsv2.ibmcloud.crossplane.io_accessgroups.yaml
-- ./bases/iamaccessgroupsv2.ibmcloud.crossplane.io_groupmemberships.yaml
-- ./bases/iampolicymanagementv1.ibmcloud.crossplane.io_customroles.yaml
-- ./bases/iampolicymanagementv1.ibmcloud.crossplane.io_policies.yaml
-- ./bases/ibmcloud.crossplane.io_providerconfigs.yaml
-- ./bases/ibmcloud.crossplane.io_providerconfigusages.yaml
-- ./bases/ibmclouddatabasesv5.ibmcloud.crossplane.io_autoscalinggroups.yaml
-- ./bases/ibmclouddatabasesv5.ibmcloud.crossplane.io_scalinggroups.yaml
-- ./bases/ibmclouddatabasesv5.ibmcloud.crossplane.io_whitelists.yaml
-- ./bases/resourcecontrollerv2.ibmcloud.crossplane.io_resourceinstances.yaml
-- ./bases/resourcecontrollerv2.ibmcloud.crossplane.io_resourcekeys.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 commonLabels:
