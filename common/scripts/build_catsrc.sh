@@ -70,6 +70,8 @@ Options:
         Build crossplane operator bundle with operand images with tags specified
         in OPERAND_TAG_LIST in format \"OPERAND_1:TAG_1:REG_1,...,OPERAND_N:TAG_N:REG_N\",
         default for every image are contents of file \"RELEASE_VERSION\"
+ -b  | --bundles BUNDLE_LIST
+        List of bundles to be added to catalog in format \"BUNDLE_IMAGE_1,...,BUNDLE_IMAGE_N\"
 "
 }
 
@@ -282,7 +284,6 @@ function build_operator_bundle() {
 COMMON_SERVICE_BASE_REGISTRY="hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom"
 COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:latest-validated"
 NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
-BUNDLES="$OPERATOR_BUNDLE_IMG"
 PACKAGES="$OPERATOR_IMG-app"
 
 DB_NAME="index.db"
@@ -303,10 +304,26 @@ function prepare_db() {
     PATH_TO_DB=$(basename $PATH_TO_DB)
 }
 
+# usage: list_packages $BUNDLES
+function list_packages() {
+    local BUNDLE
+    local PACKAGE
+    for BUNDLE in $(echo $1 | tr , ' '); do
+        PACKAGE=$(echo $1 | cut -f1 -d: | cut -f3 -d/ )
+        PACKAGES="$PACKAGES,$PACKAGE"
+    done
+}
+
 # usage: update_registry <path to db>;
 # creates updated registry with specified versions of operators
 # passed as arguments
 function update_registry() {
+    if [[ "$BUNDLES" ]]; then
+        list_packages $BUNDLES
+        BUNDLES="$OPERATOR_BUNDLE_IMG,$BUNDLES"
+    else
+        BUNDLES="$OPERATOR_BUNDLE_IMG"
+    fi
     $OPM registry rm \
         --packages "$PACKAGES" \
         --database "$1"/"$DB_NAME"
@@ -377,29 +394,34 @@ while [[ "$#" -gt 0 ]]; do
     shift
     case $OPTION in
     -ot | --operand-tags)
-        if [[ "$1" != "" ]]; then
+        if [[ "$1" != "" && "$1" != -* ]]; then
             OPERAND_VERSION_LIST=$(echo $1 | tr , ' ')
         fi
         shift
         ;;
     -ac | --artifactory-creds)
-        if [[ "$1" != "" ]]; then
+        if [[ "$1" != "" && "$1" != -* ]]; then
             ARTIFACTORY_USER=$(echo $1 | cut -f1 -d:)
             ARTIFACTORY_TOKEN=$(echo $1 | cut -f2 -d:)
         fi
         shift
         ;;
     -r | --registry)
-        if [[ "$1" != "" ]]; then
+        if [[ "$1" != "" && "$1" != -* ]]; then
             REGISTRY="$1"
         fi
         shift
         ;;
     -t | --tag)
-        if [[ "$1" != "" && "$1" != "default" ]]; then
+        if [[ "$1" != "" && "$1" != -* && "$1" != "default" ]]; then
             USER_TAG="$1"
             OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$USER_TAG"
-            BUNDLES="$OPERATOR_BUNDLE_IMG"
+        fi
+        shift
+        ;;
+    -b | --bundles)
+        if [[ "$1" != "" && "$1" != -* ]]; then
+            BUNDLES="$1"
         fi
         shift
         ;;
