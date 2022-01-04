@@ -2,7 +2,3 @@
 	path = ibm-crossplane
 	url = https://github.com/IBM/ibm-crossplane
 	branch = master
-[submodule "crossplane-provider-ibm-cloud"]
-	path = crossplane-provider-ibm-cloud
-	url = https://github.com/IBM/crossplane-provider-ibm-cloud
-	branch = master
