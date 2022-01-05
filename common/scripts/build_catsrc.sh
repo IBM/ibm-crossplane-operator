@@ -309,9 +309,12 @@ function prepare_db() {
 function list_packages() {
     local BUNDLE
     local PACKAGE
-    for BUNDLE in $(echo $1 | tr , ' '); do
-        PACKAGE=$(echo $1 | cut -f1 -d: | cut -f3 -d/ )
-        PACKAGES="$PACKAGES,$PACKAGE-app"
+    for BUNDLE in $(echo "$1" | tr , ' '); do
+        PACKAGE=$(echo "$1" | cut -f1 -d: | cut -f3 -d/ )
+        if [[ "$PACKAGE" != *provider* ]]; then
+          PACKAGE="$PACKAGE-app"          
+        fi
+        PACKAGES="$PACKAGES,$PACKAGE"
     done
 }
 
