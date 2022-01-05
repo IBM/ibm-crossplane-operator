@@ -26,6 +26,9 @@ on:
         description: "Force build even if no changes in images"
         required: true
         default: "false"
+      bundles:
+        description: "Images of other bundles to be included in CatalogSource"
+        required: false
   push:
     branches:
       - master
@@ -99,6 +102,7 @@ jobs:
         run: |
           if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
           if [[ "${{ github.event.inputs.force }}" == "true" ]]; then OPTIONS="$OPTIONS -f"; fi
+          if [[ "${{ github.event.inputs.bundles }}" != "" ]]; then OPTIONS="$OPTIONS -b ${{ github.event.inputs.bundles }}"; fi
           ./common/scripts/build_catsrc.sh $OPTIONS | tee ./build_logs.txt
 
       - name: Archive logs

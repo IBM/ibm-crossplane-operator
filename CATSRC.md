@@ -29,6 +29,7 @@ Tags depend on name of branch on which the script is being run:
 
 3. Run script `./common/scripts/build_catsrc.sh`. Options:
     * select operator and operand images using option `-ot <image name>:<tag>:<registry>`
+    * add other bundles to CatalogSource using option `-b <bundle image 1>,...,<bundle image n>`
     * specify catsrc image tag: `-t <tag>`
     * force build even if no changes detected: `-f `
     * pass artifactory credentials (overrides env variables): `-ac <artifactory user>:<artofactory token>`
