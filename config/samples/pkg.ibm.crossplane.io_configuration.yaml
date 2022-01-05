@@ -8,7 +8,7 @@ metadata:
   name: ibm-crossplane-bedrock-shim-config
 spec:
   ignoreCrossplaneConstraints: false
-  package: 'quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.3.0'
+  package: 'quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.4.0'
   packagePullPolicy: Always
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 1
