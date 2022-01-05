@@ -170,7 +170,7 @@ function set_image_digest() {
             "$REGISTRY_URL/$NAME/$TAG/manifest.json?properties" |
             grep "docker.manifest.digest" | cut -f4 -d\")
         if [[ $DIGEST == "" ]]; then
-            erro "could not find digest for $NAME:$TAG:$REG"
+            erro "could not find digest for $REGISTRY_URI/$NAME:$TAG"
         fi
     fi
     info "digest of $NAME:$TAG:$REG: $DIGEST"
