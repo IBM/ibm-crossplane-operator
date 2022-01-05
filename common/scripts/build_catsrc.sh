@@ -397,34 +397,34 @@ while [[ "$#" -gt 0 ]]; do
     -ot | --operand-tags)
         if [[ "$1" != "" && "$1" != -* ]]; then
             OPERAND_VERSION_LIST=$(echo $1 | tr , ' ')
+            shift
         fi
-        shift
         ;;
     -ac | --artifactory-creds)
         if [[ "$1" != "" && "$1" != -* ]]; then
             ARTIFACTORY_USER=$(echo $1 | cut -f1 -d:)
             ARTIFACTORY_TOKEN=$(echo $1 | cut -f2 -d:)
+            shift
         fi
-        shift
         ;;
     -r | --registry)
         if [[ "$1" != "" && "$1" != -* ]]; then
             REGISTRY="$1"
+            shift
         fi
-        shift
         ;;
     -t | --tag)
         if [[ "$1" != "" && "$1" != -* && "$1" != "default" ]]; then
             USER_TAG="$1"
             OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$USER_TAG"
+            shift
         fi
-        shift
         ;;
     -b | --bundles)
         if [[ "$1" != "" && "$1" != -* ]]; then
             BUNDLES="$1"
+            shift
         fi
-        shift
         ;;
     -f | --force)
         FORCE=true
