@@ -421,6 +421,8 @@ while [[ "$#" -gt 0 ]]; do
             USER_TAG="$1"
             OPERATOR_BUNDLE_IMG="$SCRATCH_REG/$OPERATOR_BUNDLE:$USER_TAG"
             shift
+        elif [[ "$1" == "default" ]]; then
+            shift
         fi
         ;;
     -b | --bundles)
