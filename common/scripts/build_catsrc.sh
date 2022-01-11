@@ -440,7 +440,7 @@ while [[ "$#" -gt 0 ]]; do
         exit 0
         ;;
     *)
-        erro "unknown option $1"
+        erro "unknown option $OPTION"
         ;;
     esac
 done
