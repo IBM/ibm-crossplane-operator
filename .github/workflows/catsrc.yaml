@@ -103,7 +103,6 @@ jobs:
           if [[ "${{ github.event.inputs.tag }}" != "" ]]; then OPTIONS="-t ${{ github.event.inputs.tag }}"; fi
           if [[ "${{ github.event.inputs.force }}" == "true" ]]; then OPTIONS="$OPTIONS -f"; fi
           if [[ "${{ github.event.inputs.bundles }}" != "" ]]; then OPTIONS="$OPTIONS -b ${{ github.event.inputs.bundles }}"; fi
-          echo ./common/scripts/build_catsrc.sh $OPTIONS
           ./common/scripts/build_catsrc.sh $OPTIONS | tee ./build_logs.txt
 
       - name: Archive logs
