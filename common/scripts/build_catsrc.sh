@@ -311,10 +311,7 @@ function list_packages() {
     local PACKAGE
     for BUNDLE in $(echo "$1" | tr , ' '); do
         PACKAGE=$(echo "$1" | cut -f1 -d: | cut -f3 -d/ )
-        if [[ "$PACKAGE" != *provider* ]]; then
-          PACKAGE="$PACKAGE-app"          
-        fi
-        PACKAGES="$PACKAGES,$PACKAGE"
+        PACKAGES="$PACKAGES,$PACKAGE-app"
     done
 }
 
