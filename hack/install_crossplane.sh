@@ -68,7 +68,7 @@ spec:
   ignoreCrossplaneConstraints: false
   package: FromEnvVar
   packagePullSecrets:
-    - name: ${CONFIG_SECRET_PULL}
+    - name: artifactory-${ARTIFACTORY_REPO}
   packagePullPolicy: Always
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 1
