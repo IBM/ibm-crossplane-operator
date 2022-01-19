@@ -16,7 +16,7 @@
 #
 
 if [[ (-z "${ARTIFACTORY_REPO}") ]]; then
-    ARTIFACTORY_REPO=scratch
+    ARTIFACTORY_REPO=integration
 fi
 if [[ (-z "${ARTIFACTORY_URL}") ]]; then
     ARTIFACTORY_URL="hyc-cloud-private-${ARTIFACTORY_REPO}-docker-local.artifactory.swg-devops.com"
@@ -44,6 +44,8 @@ kubectl -n "${INSTALL_NAMESPACE}" create secret docker-registry "artifactory-${A
 echo "[INFO] create ibm-crossplane ServiceAccount"
 CROSSPLANE_NAME="ibm-crossplane"
 kubectl -n "${INSTALL_NAMESPACE}" create sa "${CROSSPLANE_NAME}"
+kubectl -n "${INSTALL_NAMESPACE}" patch serviceaccount "${CROSSPLANE_NAME}" \
+  -p "{\"imagePullSecrets\": [{\"name\": \"artifactory-${ARTIFACTORY_REPO}\"}]}"
 
 echo "[INFO] apply crossplane's CRDs"
 kubectl apply -f ./config/crd/bases
@@ -56,8 +58,8 @@ sed  "s|quay.io/opencloudio|${ARTIFACTORY_URL}/ibmcom|g" config/manager/manager.
   yq w - "spec.template.metadata.annotations[olm.targetNamespaces]" "${INSTALL_NAMESPACE}" |\
   kubectl -n "${INSTALL_NAMESPACE}" apply -f -
 
-echo "[INFO] create ProviderConfig"
-cat <<EOF kubectl apply -f -
+echo "[INFO] create Configuration"
+cat <<EOF | kubectl apply -f -
 apiVersion: pkg.ibm.crossplane.io/v1
 kind: Configuration
 metadata:
@@ -68,7 +70,7 @@ spec:
   ignoreCrossplaneConstraints: false
   package: FromEnvVar
   packagePullSecrets:
-    - name: ${CONFIG_SECRET_PULL}
+    - name: artifactory-${ARTIFACTORY_REPO}
   packagePullPolicy: Always
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 1
