@@ -37,7 +37,7 @@ on:
       - master
 
 env:
-  GO_VERSION: "1.16.13"
+  GO_VERSION: "1.17.5"
   GOLANGCI_VERSION: "v1.31"
 
 jobs:
