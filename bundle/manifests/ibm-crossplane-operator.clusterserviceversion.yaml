@@ -830,8 +830,12 @@ spec:
                     terminationMessagePath: /dev/termination-log
                     terminationMessagePolicy: File
                     volumeMounts:
-                      - mountPath: /cache
+                      - mountPath: /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
                         name: package-cache
+                        subPath: ibm-crossplane-bedrock-shim-config.xpkg
+                      - mountPath: /cache/ibm-crossplane-bedrock-shim-config.xpkg
+                        name: package-cache
+                        subPath: ibm-crossplane-bedrock-shim-config.xpkg
                 dnsPolicy: ClusterFirst
                 restartPolicy: Always
                 schedulerName: default-scheduler

@@ -86,8 +86,12 @@ spec:
             runAsNonRoot: true
           imagePullPolicy: Always
           volumeMounts:
-            - name: package-cache
-              mountPath: /cache
+            - mountPath: /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
+              name: package-cache
+              subPath: ibm-crossplane-bedrock-shim-config.xpkg
+            - mountPath: /cache/ibm-crossplane-bedrock-shim-config.xpkg
+              name: package-cache
+              subPath: ibm-crossplane-bedrock-shim-config.xpkg
           terminationMessagePolicy: File
           image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
           args:
