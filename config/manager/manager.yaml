@@ -111,8 +111,8 @@ spec:
       serviceAccount: ibm-crossplane
       volumes:
         - name: package-cache
-          emptyDir:
-            sizeLimit: 5Mi
+          configMap:
+            name: crossplane-config
       dnsPolicy: ClusterFirst
   strategy:
     type: RollingUpdate

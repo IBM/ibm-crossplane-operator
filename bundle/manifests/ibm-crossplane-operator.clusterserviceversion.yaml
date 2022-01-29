@@ -855,8 +855,8 @@ spec:
                     topologyKey: topology.kubernetes.io/region
                     whenUnsatisfiable: ScheduleAnyway
                 volumes:
-                  - emptyDir:
-                      sizeLimit: 5Mi
+                  - configMap:
+                      name: crossplane-config
                     name: package-cache
       permissions:
         - rules:
