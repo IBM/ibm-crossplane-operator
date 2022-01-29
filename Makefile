@@ -325,6 +325,15 @@ update-submodule:
 
 add-bedrockshim-configmap:
 	echo add-bedrockshim-configmap
+	rm -f bedrock-shim.xpkg || true
+	rm -rf ./bedrockshim || true
+	mkdir bedrockshim
+	docker save hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:$(VERSION) -o ./bedrockshim/bedrock.tar
+	(cd ./bedrockshim; ls -ls ; tar -xvf ./bedrock.tar; rm -f ./bedrock.tar; )
+	(cd ./bedrockshim; find . -name '*.tar' -exec tar -xvf {} \; )
+	cp ./bedrockshim/bedrock-shim.xpkg ./
+	kubectl create configmap crossplane-config --from-file=bedrock-shim.xpkg --dry-run='client' -o yaml > ./config/configmap/config.yaml
+
 
 add-services-files: ## Copy services crd and rbac files.
 	cp ./services/*/crd/* ./config/crd/bases/
