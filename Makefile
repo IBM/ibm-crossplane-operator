@@ -323,6 +323,9 @@ update-submodule:
 	make copy-operator-data
 	make build-crossplane-binary
 
+add-bedrockshim-configmap:
+	echo add-bedrockshim-configmap
+
 add-services-files: ## Copy services crd and rbac files.
 	cp ./services/*/crd/* ./config/crd/bases/
 	(cd ./config/crd; $(KUSTOMIZE) edit add resource ./bases/*)
@@ -333,6 +336,7 @@ copy-operator-data: ## Copy files from submodules before recreating bundle
 	git submodule update --init --recursive
 	cp ibm-crossplane/cluster/crds/* config/crd/bases/
 	- make add-services-files
+	- make add-bedrockshim-configmap
 
 bundle: kustomize copy-operator-data ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
