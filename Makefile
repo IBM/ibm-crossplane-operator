@@ -331,8 +331,8 @@ add-bedrockshim-configmap:
 	docker save hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:$(VERSION) -o ./bedrockshim/bedrock.tar
 	(cd ./bedrockshim; ls -ls ; tar -xvf ./bedrock.tar; rm -f ./bedrock.tar; )
 	(cd ./bedrockshim; find . -name '*.tar' -exec tar -xvf {} \; )
-	cp ./bedrockshim/bedrock-shim.xpkg ./ibm-crossplane-bedrock-shim-config.xpkg
-	kubectl create configmap crossplane-config --from-file=ibm-crossplane-bedrock-shim-config.xpkg --dry-run='client' -o yaml > ./config/configmap/config.yaml
+	$(eval XPKG = $(shell (find . -name "*.xpkg")))
+	kubectl create configmap crossplane-config --from-file=$(XPKG) --dry-run='client' -o yaml > ./config/configmap/config.yaml
 
 
 add-services-files: ## Copy services crd and rbac files.
@@ -356,6 +356,8 @@ bundle-manifests:
 	-q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 	$(OPERATOR_SDK) bundle validate ./bundle
 	@./common/scripts/adjust_manifests.sh $(VERSION) $(PREVIOUS_VERSION)
+	sed -i -e "s|{ID_XPKG}|63fa12d28a2d|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
+
 
 images: build-image-amd64 push-image-amd64 build-image-ppc64le push-image-ppc64le build-image-s390x push-image-s390x ## Build and publish the multi-arch operator image
 ifeq ($(OS),$(filter $(OS),linux darwin))

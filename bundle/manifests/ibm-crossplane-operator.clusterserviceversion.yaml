@@ -832,24 +832,22 @@ spec:
                     volumeMounts:
                       - mountPath: /cache
                         name: package-cache
-                      - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
-                        name: package-config
-                        subPath: ibm-crossplane-bedrock-shim-config.xpkg
                 dnsPolicy: ClusterFirst
                 initContainers:
-                  - command:
+                  - args:
+                      - cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/; cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg
+                    command:
                       - bash
                       - -c
-                      - cp /ibm-crossplane-bedrock-shim-config.xpkg /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
                     image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
                     name: copy-config
                     resources: {}
                     volumeMounts:
                       - mountPath: /cache
                         name: package-cache
-                      - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
+                      - mountPath: /ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
                         name: package-config
-                        subPath: ibm-crossplane-bedrock-shim-config.xpkg
+                        subPath: ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
                 restartPolicy: Always
                 schedulerName: default-scheduler
                 securityContext: {}

@@ -58,13 +58,16 @@ spec:
       initContainers:
         - name: copy-config
           image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
-          command: ["bash", "-c", "cp /ibm-crossplane-bedrock-shim-config.xpkg /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg"]
+          command:
+            - bash
+            - '-c'
+          args: ["cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/; cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg"]
           volumeMounts:
             - mountPath: /cache
               name: package-cache
-            - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
+            - mountPath: /ibm-crossplane-bedrock-shim-config-{ID_XPKG}.xpkg
               name: package-config
-              subPath: ibm-crossplane-bedrock-shim-config.xpkg
+              subPath: ibm-crossplane-bedrock-shim-config-{ID_XPKG}.xpkg
       containers:
         - resources:
             limits:
@@ -98,12 +101,6 @@ spec:
           volumeMounts:
             - mountPath: /cache
               name: package-cache
-            - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
-              name: package-config
-              subPath: ibm-crossplane-bedrock-shim-config.xpkg
-#            - mountPath: /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
- #             name: package-config
-  #            subPath: ibm-crossplane-bedrock-shim-config.xpkg
           terminationMessagePolicy: File
           image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
           args:
