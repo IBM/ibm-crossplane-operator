@@ -99,8 +99,8 @@ spec:
             runAsNonRoot: true
           imagePullPolicy: Always
           volumeMounts:
-            - mountPath: /cache
-              name: package-cache
+            - name: package-cache
+              mountPath: /cache
           terminationMessagePolicy: File
           image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
           args:
