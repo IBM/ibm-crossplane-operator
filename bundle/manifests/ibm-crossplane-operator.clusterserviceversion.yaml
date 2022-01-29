@@ -830,13 +830,26 @@ spec:
                     terminationMessagePath: /dev/termination-log
                     terminationMessagePolicy: File
                     volumeMounts:
-                      - mountPath: /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
+                      - mountPath: /cache
                         name: package-cache
-                        subPath: ibm-crossplane-bedrock-shim-config.xpkg
-                      - mountPath: /cache/ibm-crossplane-bedrock-shim-config.xpkg
-                        name: package-cache
+                      - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
+                        name: package-config
                         subPath: ibm-crossplane-bedrock-shim-config.xpkg
                 dnsPolicy: ClusterFirst
+                initContainers:
+                  - command:
+                      - bash
+                      - -c
+                      - cp /ibm-crossplane-bedrock-shim-config.xpkg /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
+                    image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
+                    name: copy-config
+                    resources: {}
+                    volumeMounts:
+                      - mountPath: /cache
+                        name: package-cache
+                      - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
+                        name: package-config
+                        subPath: ibm-crossplane-bedrock-shim-config.xpkg
                 restartPolicy: Always
                 schedulerName: default-scheduler
                 securityContext: {}
@@ -859,9 +872,12 @@ spec:
                     topologyKey: topology.kubernetes.io/region
                     whenUnsatisfiable: ScheduleAnyway
                 volumes:
+                  - emptyDir:
+                      sizeLimit: 5Mi
+                    name: package-cache
                   - configMap:
                       name: crossplane-config
-                    name: package-cache
+                    name: package-config
       permissions:
         - rules:
             - apiGroups:

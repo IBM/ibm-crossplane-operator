@@ -55,6 +55,16 @@ spec:
                 topologyKey: kubernetes.io/hostname
       terminationGracePeriodSeconds: 30
       securityContext: {}
+      initContainers:
+        - name: copy-config
+          image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
+          command: ["bash", "-c", "cp /ibm-crossplane-bedrock-shim-config.xpkg /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg"]
+          volumeMounts:
+            - mountPath: /cache
+              name: package-cache
+            - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
+              name: package-config
+              subPath: ibm-crossplane-bedrock-shim-config.xpkg
       containers:
         - resources:
             limits:
@@ -86,12 +96,14 @@ spec:
             runAsNonRoot: true
           imagePullPolicy: Always
           volumeMounts:
-            - mountPath: /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
+            - mountPath: /cache
               name: package-cache
+            - mountPath: /ibm-crossplane-bedrock-shim-config.xpkg
+              name: package-config
               subPath: ibm-crossplane-bedrock-shim-config.xpkg
-            - mountPath: /cache/ibm-crossplane-bedrock-shim-config.xpkg
-              name: package-cache
-              subPath: ibm-crossplane-bedrock-shim-config.xpkg
+#            - mountPath: /cache/ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
+ #             name: package-config
+  #            subPath: ibm-crossplane-bedrock-shim-config.xpkg
           terminationMessagePolicy: File
           image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
           args:
@@ -115,6 +127,9 @@ spec:
       serviceAccount: ibm-crossplane
       volumes:
         - name: package-cache
+          emptyDir:
+            sizeLimit: 5Mi
+        - name: package-config
           configMap:
             name: crossplane-config
       dnsPolicy: ClusterFirst
