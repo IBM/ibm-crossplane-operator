@@ -61,7 +61,14 @@ spec:
           command:
             - bash
             - '-c'
-          args: ["cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/; cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg"]
+          args:
+            - echo "Start initContainers";
+              echo "copy xpkg file with ID";
+              cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/;
+              echo "copy xpkg file without ID";
+              cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg;
+              ls -ls /cache/;
+              echo "Finish initContainers";
           volumeMounts:
             - mountPath: /cache
               name: package-cache
