@@ -340,7 +340,8 @@ add-bedrockshim-configmap:
 	(cd ./bedrockshim; ls -ls ; tar -xvf ./bedrock.tar; rm -f ./bedrock.tar; )
 	(cd ./bedrockshim; find . -name '*.tar' -exec tar -xvf {} \; )
 	$(eval XPKG = $(shell find . -name "*.xpkg"))
-	kubectl create configmap crossplane-config --from-file=$(XPKG) --dry-run='client' -o yaml > ./config/configmap/config.yaml
+	kubectl create configmap crossplane-config --from-file=$(XPKG) --dry-run='client' -o yaml |\
+		$(SED) "s|bedrock-shim|ibm-crossplane-bedrock-shim-config|g" > ./config/configmap/config.yaml
 
 
 add-services-files: ## Copy services crd and rbac files.
