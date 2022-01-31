@@ -329,15 +329,17 @@ update-submodule:
 	make copy-operator-data
 	make build-crossplane-binary
 
+BEDROCK_SHIM_CONFIG ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:$(VERSION)
+
 add-bedrockshim-configmap:
 	echo add-bedrockshim-configmap
 	rm -f bedrock-shim.xpkg || true
 	rm -rf ./bedrockshim || true
 	mkdir bedrockshim
-	docker save hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:$(VERSION) -o ./bedrockshim/bedrock.tar
+	docker save $(BEDROCK_SHIM_CONFIG) -o ./bedrockshim/bedrock.tar
 	(cd ./bedrockshim; ls -ls ; tar -xvf ./bedrock.tar; rm -f ./bedrock.tar; )
 	(cd ./bedrockshim; find . -name '*.tar' -exec tar -xvf {} \; )
-	$(eval XPKG = $(shell (find . -name "*.xpkg")))
+	$(eval XPKG = $(shell find . -name "*.xpkg"))
 	kubectl create configmap crossplane-config --from-file=$(XPKG) --dry-run='client' -o yaml > ./config/configmap/config.yaml
 
 
