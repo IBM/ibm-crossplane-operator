@@ -64,17 +64,16 @@ spec:
           args:
             - echo "Start initContainers";
               echo "copy xpkg file with ID";
-              cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/;
+              cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/;
               echo "copy xpkg file without ID";
-              cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg;
+              cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg;
               ls -ls /cache/;
               echo "Finish initContainers";
           volumeMounts:
             - mountPath: /cache
               name: package-cache
-            - mountPath: /ibm-crossplane-bedrock-shim-config-{ID_XPKG}.xpkg
+            - mountPath: /package
               name: package-config
-              subPath: ibm-crossplane-bedrock-shim-config-{ID_XPKG}.xpkg
       containers:
         - resources:
             limits:
