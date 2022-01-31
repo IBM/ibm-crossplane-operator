@@ -320,8 +320,8 @@ metadata:
           },
           "spec": {
             "ignoreCrossplaneConstraints": false,
-            "package": "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.4.0",
-            "packagePullPolicy": "Always",
+            "package": "ibm-crossplane-bedrock-shim-config",
+            "packagePullPolicy": "Never",
             "revisionActivationPolicy": "Automatic",
             "revisionHistoryLimit": 1,
             "skipDependencyResolution": false
