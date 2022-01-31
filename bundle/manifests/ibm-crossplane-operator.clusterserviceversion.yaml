@@ -835,7 +835,7 @@ spec:
                 dnsPolicy: ClusterFirst
                 initContainers:
                   - args:
-                      - echo "Start initContainers"; echo "copy xpkg file with ID"; cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/; echo "copy xpkg file without ID"; cp /ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg; ls -ls /cache/; echo "Finish initContainers";
+                      - echo "Start initContainers"; echo "copy xpkg file with ID"; cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/; echo "copy xpkg file without ID"; cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg; ls -ls /cache/; echo "Finish initContainers";
                     command:
                       - bash
                       - -c
@@ -845,9 +845,8 @@ spec:
                     volumeMounts:
                       - mountPath: /cache
                         name: package-cache
-                      - mountPath: /ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
+                      - mountPath: /package
                         name: package-config
-                        subPath: ibm-crossplane-bedrock-shim-config-63fa12d28a2d.xpkg
                 restartPolicy: Always
                 schedulerName: default-scheduler
                 securityContext: {}
