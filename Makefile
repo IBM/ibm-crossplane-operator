@@ -73,9 +73,15 @@ include common/Makefile.common.mk
 ##@ Develement tools
 ############################################################
 
+ifneq (,$(shell which gsed))
+SED=$(shell which gsed)
+else
+SED=$(shell which sed)
+endif
+
 OS    := $(shell uname -s | tr '[:upper:]' '[:lower:]')
-ARCH  := $(shell uname -m | sed 's/x86_64/amd64/')
-OSOPER   := $(shell uname -s | tr '[:upper:]' '[:lower:]' | sed 's/darwin/apple-darwin/' | sed 's/linux/linux-gnu/')
+ARCH  := $(shell uname -m | $(SED) 's/x86_64/amd64/')
+OSOPER   := $(shell uname -s | tr '[:upper:]' '[:lower:]' | $(SED) 's/darwin/apple-darwin/' | $(SED) 's/linux/linux-gnu/')
 ARCHOPER := $(shell uname -m )
 
 tools: kustomize opm yq ## Install all development tools
@@ -113,7 +119,7 @@ ifeq (, $(shell which yq 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p bin ;\
-	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/')) \
+	$(eval ARCH := $(shell uname -m | $(SED) 's/x86_64/amd64/')) \
 	echo "Downloading yq ...";\
 	curl -LO https://github.com/mikefarah/yq/releases/download/$(YQ_VERSION)/yq_$(OS)_$(ARCH);\
 	mv yq_$(OS)_$(ARCH) ./bin/yq ;\
@@ -129,7 +135,7 @@ ifeq (,$(BUILDX))
 	@{ \
 	set -e ;\
 	mkdir -p bin ;\
-	$(eval ARCH := $(shell uname -m|sed 's/x86_64/amd64/')) \
+	$(eval ARCH := $(shell uname -m | $(SED) 's/x86_64/amd64/')) \
 	echo "Downloading docker-buildx ...";\
 	curl -LO https://github.com/docker/buildx/releases/download/$(BUILDX_VERSION)/buildx-$(BUILDX_VERSION).$(OS)-$(ARCH);\
 	mv buildx-$(BUILDX_VERSION).$(OS)-$(ARCH) $(BUILDX_PLUGIN);\
@@ -230,7 +236,7 @@ build-catalog: build-bundle-image build-catalog-source ## Build bundle image and
 build-bundle-image: bundle
 	@cp -f bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml /tmp/ibm-crossplane-operator.clusterserviceversion.yaml
 	@$(YQ) d -i bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml "spec.replaces"
-	sed -i -e "s|quay.io/opencloudio|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
+	$(SED) -i -e "s|quay.io/opencloudio|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -f bundle.Dockerfile -t $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH) .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH)
 	@mv /tmp/ibm-crossplane-operator.clusterserviceversion.yaml bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
@@ -323,6 +329,23 @@ update-submodule:
 	make copy-operator-data
 	make build-crossplane-binary
 
+BEDROCK_SHIM_CONFIG ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:$(VERSION)
+
+add-bedrockshim-configmap:
+	@echo add-bedrockshim-configmap
+	rm -f bedrock-shim.xpkg || true
+	rm -rf ./bedrockshim || true
+	mkdir bedrockshim
+# in case used image is not present locally
+	docker pull $(BEDROCK_SHIM_CONFIG) || true 
+	docker save $(BEDROCK_SHIM_CONFIG) -o ./bedrockshim/bedrock.tar
+	(cd ./bedrockshim; ls -ls ; tar -xvf ./bedrock.tar; rm -f ./bedrock.tar; )
+	(cd ./bedrockshim; find . -name '*.tar' -exec tar -xvf {} \; )
+	find . -name "*.xpkg" |\
+		xargs -r -I{} kubectl create configmap crossplane-config --from-file={} --dry-run='client' -o yaml |\
+		$(SED) "s|bedrock-shim|ibm-crossplane-bedrock-shim-config|g" > ./config/configmap/config.yaml
+
+
 add-services-files: ## Copy services crd and rbac files.
 	cp ./services/*/crd/* ./config/crd/bases/
 	(cd ./config/crd; $(KUSTOMIZE) edit add resource ./bases/*)
@@ -333,6 +356,7 @@ copy-operator-data: ## Copy files from submodules before recreating bundle
 	git submodule update --init --recursive
 	cp ibm-crossplane/cluster/crds/* config/crd/bases/
 	- make add-services-files
+	- make add-bedrockshim-configmap
 
 bundle: kustomize copy-operator-data ## Generate bundle manifests and metadata, then validate the generated files
 	$(OPERATOR_SDK) generate kustomize manifests -q
@@ -344,16 +368,11 @@ bundle-manifests:
 	$(OPERATOR_SDK) bundle validate ./bundle
 	@./common/scripts/adjust_manifests.sh $(VERSION) $(PREVIOUS_VERSION)
 
+
 images: build-image-amd64 push-image-amd64 build-image-ppc64le push-image-ppc64le build-image-s390x push-image-s390x ## Build and publish the multi-arch operator image
 ifeq ($(OS),$(filter $(OS),linux darwin))
 	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(OS)-$(ARCH)
 	chmod +x /tmp/manifest-tool
-	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
-	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)
-	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)"
-	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64 --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)"

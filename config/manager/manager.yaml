@@ -55,6 +55,25 @@ spec:
                 topologyKey: kubernetes.io/hostname
       terminationGracePeriodSeconds: 30
       securityContext: {}
+      initContainers:
+        - name: copy-config
+          image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
+          command:
+            - bash
+            - '-c'
+          args:
+            - echo "Start initContainers";
+              echo "copy xpkg file with ID";
+              cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/;
+              echo "copy xpkg file without ID";
+              cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg;
+              ls -ls /cache/;
+              echo "Finish initContainers";
+          volumeMounts:
+            - mountPath: /cache
+              name: package-cache
+            - mountPath: /package
+              name: package-config
       containers:
         - resources:
             limits:
@@ -113,6 +132,9 @@ spec:
         - name: package-cache
           emptyDir:
             sizeLimit: 5Mi
+        - name: package-config
+          configMap:
+            name: crossplane-config
       dnsPolicy: ClusterFirst
   strategy:
     type: RollingUpdate

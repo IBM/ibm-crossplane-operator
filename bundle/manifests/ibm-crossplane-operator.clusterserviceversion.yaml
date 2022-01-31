@@ -833,6 +833,20 @@ spec:
                       - mountPath: /cache
                         name: package-cache
                 dnsPolicy: ClusterFirst
+                initContainers:
+                  - args:
+                      - echo "Start initContainers"; echo "copy xpkg file with ID"; cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/; echo "copy xpkg file without ID"; cp /package/ibm-crossplane-bedrock-shim-config*.xpkg /cache/ibm-crossplane-bedrock-shim-config.xpkg; ls -ls /cache/; echo "Finish initContainers";
+                    command:
+                      - bash
+                      - -c
+                    image: quay.io/opencloudio/ibm-crossplane-operator:1.4.0
+                    name: copy-config
+                    resources: {}
+                    volumeMounts:
+                      - mountPath: /cache
+                        name: package-cache
+                      - mountPath: /package
+                        name: package-config
                 restartPolicy: Always
                 schedulerName: default-scheduler
                 securityContext: {}
@@ -858,6 +872,9 @@ spec:
                   - emptyDir:
                       sizeLimit: 5Mi
                     name: package-cache
+                  - configMap:
+                      name: crossplane-config
+                    name: package-config
       permissions:
         - rules:
             - apiGroups:

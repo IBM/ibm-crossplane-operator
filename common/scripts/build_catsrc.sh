@@ -377,11 +377,13 @@ function create_index_tags() {
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$RELEASE_VERSION-$TIMESTAMP"
         )
-    else
+    elif [[ "$CROSSPLANE_BRANCH" != "" ]]; then
         CATSRC_TAGS=(
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$CROSSPLANE_BRANCH"
             "$REGISTRY/$NEW_CUSTOM_CATSRC:$CROSSPLANE_BRANCH-$TIMESTAMP"
         )
+    else
+      CATSRC_TAGS=("$REGISTRY/$NEW_CUSTOM_CATSRC:$TIMESTAMP")
     fi
 }
 

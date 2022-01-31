@@ -21,3 +21,4 @@ bundle_tmp*
 index.Dockerfile
 
 ibm-crossplane/*
+bedrockshim
