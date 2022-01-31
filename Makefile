@@ -367,8 +367,6 @@ bundle-manifests:
 	-q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 	$(OPERATOR_SDK) bundle validate ./bundle
 	@./common/scripts/adjust_manifests.sh $(VERSION) $(PREVIOUS_VERSION)
-	$(eval ID_XPKG = $(shell find . -type f -name "*.xpkg" | $(SED) "s/.\/bedrockshim\/bedrock-shim-//g" | $(SED) "s/.xpkg//g"))
-	$(SED) -i -e "s|{ID_XPKG}|$(ID_XPKG)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
 
 
 images: build-image-amd64 push-image-amd64 build-image-ppc64le push-image-ppc64le build-image-s390x push-image-s390x ## Build and publish the multi-arch operator image
