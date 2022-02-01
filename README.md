@@ -270,3 +270,7 @@ IBM Crossplane Operator does not support installation in:
 ### End-to-End testing
 
 For more instructions on how to run end-to-end testing with the Operand Deployment Lifecycle Manager, see [ODLM guide](https://github.com/IBM/operand-deployment-lifecycle-manager/blob/master/docs/install/common-service-integration.md#end-to-end-test).
+
+### Upgrade
+
+Newer versions of IBM Crossplane are included in the Catalog Source and after starting the upgrade, IBM Crossplane Operator should automatically pick up new images and restart its pod. Existing services created by IBM Crossplane (for example Kafka) should remain unchanged after the upgrade.
