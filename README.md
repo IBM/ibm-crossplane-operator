@@ -255,7 +255,7 @@ For example, for Kafka
 
 ### Multiple instances in a single cluster
 
-If more than 1 replica is set and leader election is not enabled then controllers could conflict. Environment variable "LEADER_ELECTION" can be used to enable leader election process.'
+If more than 1 replica is set and leader election is not enabled then controllers could conflict. Environment variable "LEADER_ELECTION" can be used to enable leader election process.' But this may only happen during the upgrade. Normal state assumes only one pod per cluster
 
 ### Operator namespace scoping
 Operator support install modes:
