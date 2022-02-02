@@ -74,6 +74,23 @@ spec:
               name: package-cache
             - mountPath: /package
               name: package-config
+          resources:
+            limits:
+              cpu: 50m
+              memory: 256Mi
+              ephemeral-storage: 5Mi
+            requests:
+              cpu: 25m
+              memory: 128Mi
+              ephemeral-storage: 5Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
       containers:
         - resources:
             limits:
