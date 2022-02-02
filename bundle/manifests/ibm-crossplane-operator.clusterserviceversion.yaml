@@ -314,7 +314,8 @@ metadata:
             "labels": {
               "app.kubernetes.io/instance": "ibm-crossplane-operator",
               "app.kubernetes.io/managed-by": "ibm-crossplane-operator",
-              "app.kubernetes.io/name": "ibm-crossplane"
+              "app.kubernetes.io/name": "ibm-crossplane",
+              "ibm-crossplane-provider": "odlm"
             },
             "name": "ibm-crossplane-bedrock-shim-config"
           },
