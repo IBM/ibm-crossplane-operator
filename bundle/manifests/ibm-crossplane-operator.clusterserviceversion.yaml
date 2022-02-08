@@ -657,6 +657,7 @@ spec:
             - apiGroups:
                 - apiextensions.ibm.crossplane.io
                 - pkg.ibm.crossplane.io
+                - kubernetes.crossplane.io
               resources:
                 - locks
                 - compositeresourcedefinitions
@@ -666,6 +667,7 @@ spec:
                 - configurations
                 - configurationrevisions
                 - controllerconfigs
+                - objects
                 - locks/finalizers
                 - compositeresourcedefinitions/finalizers
                 - compositions/finalizers
@@ -674,6 +676,7 @@ spec:
                 - configurations/finalizers
                 - configurationrevisions/finalizers
                 - controllerconfigs/finalizers
+                - objects/finalizers
                 - locks/status
                 - compositeresourcedefinitions/status
                 - compositions/status
@@ -682,6 +685,7 @@ spec:
                 - configurations/status
                 - configurationrevisions/status
                 - controllerconfigs/status
+                - objects/status
               verbs:
                 - create
                 - delete
