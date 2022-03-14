@@ -10,7 +10,7 @@ metadata:
 spec:
   desiredState: Active
   ignoreCrossplaneConstraints: false
-  image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.5.0
+  image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.6.0
   packagePullPolicy: Always
   packagePullSecrets:
     - name: artifactory-daily

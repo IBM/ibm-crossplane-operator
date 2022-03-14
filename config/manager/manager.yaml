@@ -57,7 +57,7 @@ spec:
       securityContext: {}
       initContainers:
         - name: copy-config
-          image: quay.io/opencloudio/ibm-crossplane-operator:1.5.0
+          image: quay.io/opencloudio/ibm-crossplane-operator:1.6.0
           command:
             - bash
             - '-c'
@@ -111,7 +111,7 @@ spec:
             - name: LEADER_ELECTION
               value: 'true'
             - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-              value: "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.5.0"
+              value: "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.6.0"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -125,7 +125,7 @@ spec:
             - name: package-cache
               mountPath: /cache
           terminationMessagePolicy: File
-          image: quay.io/opencloudio/ibm-crossplane-operator:1.5.0
+          image: quay.io/opencloudio/ibm-crossplane-operator:1.6.0
           args:
             - core
             - start
