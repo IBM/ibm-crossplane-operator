@@ -343,7 +343,7 @@ metadata:
           "spec": {
             "desiredState": "Active",
             "ignoreCrossplaneConstraints": false,
-            "image": "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.5.0",
+            "image": "quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.6.0",
             "packagePullPolicy": "Always",
             "packagePullSecrets": [
               {
@@ -494,10 +494,10 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: quay.io/opencloudio/ibm-crossplane-operator:1.5.0
+    containerImage: quay.io/opencloudio/ibm-crossplane-operator:1.6.0
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
-    olm.skipRange: '>=1.0.0 <1.5.0'
+    olm.skipRange: '>=1.0.0 <1.6.0'
     operators.operatorframework.io/builder: operator-sdk-v1.3.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
     repository: https://github.com/IBM/ibm-crossplane-operator
@@ -510,7 +510,7 @@ metadata:
     operatorframework.io/arch.ppc64le: supported
     operatorframework.io/arch.s390x: supported
     operatorframework.io/os.linux: supported
-  name: ibm-crossplane-operator.v1.5.0
+  name: ibm-crossplane-operator.v1.6.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -811,8 +811,8 @@ spec:
                       - name: LEADER_ELECTION
                         value: "true"
                       - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-                        value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.5.0
-                    image: quay.io/opencloudio/ibm-crossplane-operator:1.5.0
+                        value: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.6.0
+                    image: quay.io/opencloudio/ibm-crossplane-operator:1.6.0
                     imagePullPolicy: Always
                     name: ibm-crossplane
                     resources:
@@ -844,7 +844,7 @@ spec:
                     command:
                       - bash
                       - -c
-                    image: quay.io/opencloudio/ibm-crossplane-operator:1.5.0
+                    image: quay.io/opencloudio/ibm-crossplane-operator:1.6.0
                     name: copy-config
                     resources:
                       limits:
@@ -1025,10 +1025,10 @@ spec:
   minKubeVersion: 1.19.0
   provider:
     name: IBM
-  version: 1.5.0
+  version: 1.6.0
   relatedImages:
     - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-      image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.5.0
+      image: quay.io/opencloudio/ibm-crossplane-bedrock-shim-config:1.6.0
     - name: IBM_CROSSPLANE_OPERATOR_IMAGE
-      image: quay.io/opencloudio/ibm-crossplane-operator:1.5.0
-  replaces: ibm-crossplane-operator.v1.4.1
+      image: quay.io/opencloudio/ibm-crossplane-operator:1.6.0
+  replaces: ibm-crossplane-operator.v1.5.0
