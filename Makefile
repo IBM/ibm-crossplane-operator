@@ -236,7 +236,8 @@ build-catalog: build-bundle-image build-catalog-source ## Build bundle image and
 build-bundle-image: bundle
 	@cp -f bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml /tmp/ibm-crossplane-operator.clusterserviceversion.yaml
 	@$(YQ) d -i bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml "spec.replaces"
-	$(SED) -i -e "s|quay.io/opencloudio|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
+	$(SED) -i -e "s|icr.io/cpopen/cpfs|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
+	$(SED) -i -e "s|icr.io/cpopen|$(REGISTRY)|g" bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
 	$(CONTAINER_CLI) $(CONTAINER_BUILD_CMD) -f bundle.Dockerfile -t $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH) .
 	$(CONTAINER_CLI) push $(REGISTRY)/$(BUNDLE_IMAGE_NAME):$(VERSION)-$(ARCH)
 	@mv /tmp/ibm-crossplane-operator.clusterserviceversion.yaml bundle/manifests/ibm-crossplane-operator.clusterserviceversion.yaml
