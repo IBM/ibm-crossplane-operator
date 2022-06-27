@@ -10,7 +10,7 @@ metadata:
 spec:
   desiredState: Active
   ignoreCrossplaneConstraints: false
-  image: icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.0
+  image: icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.9.0
   packagePullPolicy: Always
   packagePullSecrets:
     - name: artifactory-daily
