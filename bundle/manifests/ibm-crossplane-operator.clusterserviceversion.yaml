@@ -1037,4 +1037,3 @@ spec:
     image: icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.9.0
   - name: IBM_CROSSPLANE_OPERATOR_IMAGE
     image: icr.io/cpopen/ibm-crossplane-operator:1.9.0
-  replaces: ibm-crossplane-operator.v1.8.0
