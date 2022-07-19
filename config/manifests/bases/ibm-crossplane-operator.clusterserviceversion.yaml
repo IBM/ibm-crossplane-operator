@@ -8,7 +8,10 @@ metadata:
     certified: "false"
     containerImage: icr.io/cpopen/ibm-crossplane-operator:1.9.0
     createdAt: "2021-03-04"
-    description: The IBM Crossplane Operator installs an IBM modified version of Crossplane, an open source Kubernetes add-on that extends any cluster with the ability to provision and manage cloud infrastructure, services, and applications using kubectl, GitOps, or any tool that works with the Kubernetes API.
+    description: The IBM Crossplane Operator installs an IBM modified version of Crossplane,
+      an open source Kubernetes add-on that extends any cluster with the ability to
+      provision and manage cloud infrastructure, services, and applications using
+      kubectl, GitOps, or any tool that works with the Kubernetes API.
     olm.skipRange: ""
     operators.operatorframework.io/builder: operator-sdk-v1.2.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
@@ -28,12 +31,15 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - description: An CompositeResourceDefinition defines a new kind of composite infrastructure resource. The new resource is composed of other composite or managed infrastructure resources.
+    - description: An CompositeResourceDefinition defines a new kind of composite
+        infrastructure resource. The new resource is composed of other composite or
+        managed infrastructure resources.
       displayName: CompositeResourceDefinition
       kind: CompositeResourceDefinition
       name: compositeresourcedefinitions.apiextensions.ibm.crossplane.io
       version: ""
-    - description: Composition defines the group of resources to be created when a compatible type is created with reference to the composition.
+    - description: Composition defines the group of resources to be created when a
+        compatible type is created with reference to the composition.
       displayName: Composition
       kind: Composition
       name: compositions.apiextensions.ibm.crossplane.io
@@ -43,7 +49,8 @@ spec:
       kind: ConfigurationRevision
       name: configurationrevisions.pkg.ibm.crossplane.io
       version: ""
-    - description: Configuration is the CRD type for a request to add a configuration to Crossplane.
+    - description: Configuration is the CRD type for a request to add a configuration
+        to Crossplane.
       displayName: Configuration
       kind: Configuration
       name: configurations.pkg.ibm.crossplane.io

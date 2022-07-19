@@ -105,6 +105,7 @@ spec:
             required:
             - parameters
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             properties:
               conditions:

@@ -101,6 +101,7 @@ spec:
             required:
             - package
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: ConfigurationStatus represents the observed state of a Configuration.
             properties:
@@ -241,6 +242,7 @@ spec:
             required:
             - package
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: ConfigurationStatus represents the observed state of a Configuration.
             properties:
