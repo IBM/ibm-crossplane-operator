@@ -27,7 +27,7 @@ resources:
 - group: apiextensions.ibm.crossplane.io
   kind: CompositeResourceDefinition
   version: v1
-version: 3-alpha
+version: "3"
 plugins:
   go.operator-sdk.io/v2-alpha: {}
   manifests.sdk.operatorframework.io/v2: {}
