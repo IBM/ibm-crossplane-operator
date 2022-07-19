@@ -114,6 +114,7 @@ spec:
             required:
             - package
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: ProviderStatus represents the observed state of a Provider.
             properties:
@@ -264,6 +265,7 @@ spec:
             required:
             - package
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: ProviderStatus represents the observed state of a Provider.
             properties:

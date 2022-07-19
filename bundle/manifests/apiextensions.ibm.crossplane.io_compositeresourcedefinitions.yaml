@@ -286,6 +286,7 @@ spec:
             - names
             - versions
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: CompositeResourceDefinitionStatus shows the observed state
               of the definition.
@@ -635,6 +636,7 @@ spec:
             - names
             - versions
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: CompositeResourceDefinitionStatus shows the observed state
               of the definition.

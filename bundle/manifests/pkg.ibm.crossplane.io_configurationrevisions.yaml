@@ -124,6 +124,7 @@ spec:
             - image
             - revision
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: PackageRevisionStatus represents the observed state of a
               PackageRevision.
@@ -368,6 +369,7 @@ spec:
             - image
             - revision
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: PackageRevisionStatus represents the observed state of a
               PackageRevision.

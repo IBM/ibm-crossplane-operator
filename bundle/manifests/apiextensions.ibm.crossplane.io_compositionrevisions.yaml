@@ -539,6 +539,7 @@ spec:
             - resources
             - revision
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
             description: CompositionRevisionStatus shows the observed state of the
               composition revision.
