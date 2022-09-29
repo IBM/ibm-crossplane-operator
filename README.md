@@ -154,7 +154,7 @@ ibm-crossplane-7d6ff947df-pvg5t            1/1     Running   0          25s
 ```
 # oc get pkg
 NAME                                                                 INSTALLED   HEALTHY   PACKAGE                                                         AGE
-configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.11.0   59s
+configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.4   59s
 ```
 
 #### Building and testing the operator using OLM
@@ -200,7 +200,7 @@ ibm-crossplane-5d4bb64b5b-nx8w6                         1/1     Running   0     
 ```
 # oc get pkg
 NAME                                                                 INSTALLED   HEALTHY   PACKAGE                                                         AGE
-configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.11.0   59s
+configuration.pkg.ibm.crossplane.io/ibm-crossplane-bedrock-shim-config   True        True      icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.4   59s
 ```
 
 ### Debugging guide
