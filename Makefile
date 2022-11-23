@@ -342,8 +342,9 @@ add-bedrockshim-configmap:
 	docker save $(BEDROCK_SHIM_CONFIG) -o ./bedrockshim/bedrock.tar
 	(cd ./bedrockshim; ls -ls ; tar -xvf ./bedrock.tar; rm -f ./bedrock.tar; )
 	(cd ./bedrockshim; find . -name '*.tar' -exec tar -xvf {} \; )
+	kubectl version
 	find . -name "*.xpkg" |\
-		xargs -r -I{} kubectl create configmap crossplane-config --from-file={} --dry-run='client' -o yaml |\
+		xargs -r -I{} kubectl create configmap crossplane-config --from-file={} --dry-run=1 -o yaml |\
 		$(SED) "s|bedrock-shim|ibm-crossplane-bedrock-shim-config|g" > ./config/configmap/config.yaml
 
 
