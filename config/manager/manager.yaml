@@ -57,7 +57,7 @@ spec:
       securityContext: {}
       initContainers:
         - name: copy-config
-          image: icr.io/cpopen/ibm-crossplane-operator:1.11.0
+          image: icr.io/cpopen/ibm-crossplane-operator:1.12.0
           command:
             - bash
             - '-c'
@@ -111,7 +111,7 @@ spec:
             - name: LEADER_ELECTION
               value: 'true'
             - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-              value: "icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.4"
+              value: "icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.6"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -125,7 +125,7 @@ spec:
             - name: package-cache
               mountPath: /cache
           terminationMessagePolicy: File
-          image: icr.io/cpopen/ibm-crossplane-operator:1.11.0
+          image: icr.io/cpopen/ibm-crossplane-operator:1.12.0
           args:
             - core
             - start
