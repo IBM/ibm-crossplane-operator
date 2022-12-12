@@ -69,7 +69,7 @@ def get_previous_version():
 
 def main():
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Automatically update release version of IBM Crossplane operator.')
     parser.add_argument('-n', '--next-version',
                         help='next version number. Overrides bump_type')
     parser.add_argument('-b', '--bump-type', required=True, help="type of the upgrade (minor, patch)", choices=['minor', 'patch'])
