@@ -29,11 +29,11 @@ def compare_versions(v1, v2):
             return 1
         if int(e1) < int(e2):
             return -1 
-        return 0
+    return 0
 
 def add_to_version_list_line(version_list : str, addition : str) -> str:
 
-    versions = version_list[2:].split(', ')
+    versions = version_list[2:-1].split(', ')
 
     i = 0
     while i < len(versions):
@@ -45,7 +45,7 @@ def add_to_version_list_line(version_list : str, addition : str) -> str:
 
     new_versions = [*versions[:i], addition, *versions[i:]]
 
-    return f"{version_list[:2]}{', '.join(new_versions)}"
+    return f"{version_list[:2]}{', '.join(new_versions)}\n"
 
 
 
@@ -72,7 +72,8 @@ def main():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('-n', '--next-version',
                         help='next version number. Overrides bump_type')
-    parser.add_argument('bump_type', metavar='bump-type', help="type of the upgrade (minor, patch)", choices=['minor', 'patch'])
+    parser.add_argument('-b', '--bump-type', required=True, help="type of the upgrade (minor, patch)", choices=['minor', 'patch'])
+    parser.add_argument('-s', '--shim-version', required=True, help="version of bedrock-shim image to be used")
     parser.add_argument("--verbose", help="increase output verbosity",
                     action="store_true")
 
@@ -98,13 +99,15 @@ def main():
             lines = f.readlines()
         with open(file, 'w') as f:
             for line in lines:
-                if file == README and re.fullmatch(r'- (\d+\.\d+\.\d+, )*\d+\.\d+\.\d+', line) != None:
+                if re.fullmatch(r'- (\d+\.\d+\.\d+, )*\d+\.\d+\.\d+\n', line) != None:
                     changed = add_to_version_list_line(line, next_version)
                 else:
                     # bump references to next version
                     changed=re.sub(rf'{release_version}', f'{next_version}', line)
                     # bump references to previous version
                     changed=re.sub(rf'{previous_version}', f'{release_version}', changed)
+                    # bump references to bedrock-shim-config
+                    changed=re.sub(rf'bedrock-shim-config:\d+\.\d+\.\d+', f'bedrock-shim-config:{args.shim_version}', changed)
 
                 if args.verbose and line != changed:
                     print(f"-{line}+{changed}")
