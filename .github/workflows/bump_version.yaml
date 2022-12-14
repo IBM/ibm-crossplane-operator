@@ -44,5 +44,6 @@ jobs:
           ref: ${{ github.ref }}
       - name: run bump version 
         run: git checkout -b "update-version-action"
+      - run: ls -la
       - run: echo "python bump-verision.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}"
       - run: python bump-verision.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}
