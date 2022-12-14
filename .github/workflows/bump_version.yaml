@@ -28,8 +28,8 @@ on:
         options:
         - minor
         - patch 
-      tags:
-        description: 'Test scenario tags'
+      shimVersion:
+        description: 'bedrock-shim verison'
         required: true 
         type: string
 
@@ -44,4 +44,5 @@ jobs:
           ref: ${{ github.ref }}
       - name: run bump version 
         run: git checkout -b "update-version-action"
-      - run: python bump_verision.py
+      - run: echo "python bump-verision.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}"
+      - run: python bump-verision.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}
