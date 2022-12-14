@@ -42,8 +42,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
-      - name: run bump version 
-        run: git checkout -b "update-version-action"
-      - run: ls -la
-      - run: echo "python bump-verision.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}"
-      - run: python bump-verision.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}
+      - name: checkout branch
+        run: git checkout -b update-version-action
+      - name: run update-version script
+        run: python bump-version.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}
+      - name: commit changes
+        run: git add .; git commit -m "update version"
+      - name: push changes to branch
+        run: git push --set-upstream origin update-version-action
