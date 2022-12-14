@@ -38,6 +38,8 @@ jobs:
     name: Bump version of crossplane operator
     runs-on: ubuntu-20.04
     steps:
+      - name: configure git
+        run: git config --global user.email "piotr.kotara@ibm.com"; git config --global user.name "Piotr Kotara"
       - name: Checkout crossplane operator
         uses: actions/checkout@v2
         with:
