@@ -20,6 +20,19 @@ run-name: bump-version
 on: 
   workflow_dispatch:
     inputs:
+      BRANCH:
+        description: 'Branch on which to update'
+        required: true
+        default: 'master'
+        type: choice
+        options:
+        - master
+        - release-ltsr
+      destBranch:
+        description: 'Branch on which commit will be placed'
+        required: true
+        default: update-version-action
+        type: string
       bumpType:
         description: 'Type of version bump'
         required: true
@@ -43,12 +56,12 @@ jobs:
       - name: Checkout crossplane operator
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.inputs.BRANCH }}
       - name: checkout branch
-        run: git checkout -b update-version-action
+        run: git checkout -b ${{ github.event.inputs.destBranch }}
       - name: run update-version script
         run: python bump-version.py -s ${{ github.event.inputs.shimVersion }} -b ${{ github.event.inputs.bumpType }}
       - name: commit changes
         run: git add .; git commit -m "update version"
       - name: push changes to branch
-        run: git push --set-upstream origin update-version-action
+        run: git push --set-upstream origin ${{ github.event.inputs.destBranch }}
