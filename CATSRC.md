@@ -6,7 +6,7 @@ Script `common/scripts/build_catsrc.sh` adds `ibm-crossplane-operator-app` packa
 
 Script builds new image only if there is no catalog source image with selected tag or digests of selected operator/operand images were changed.
 
-Resulting catalog source is pushed to `hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/crossplane-common-service-catalog` (names of created images are shown at the end of script's output).
+Resulting catalog source is pushed to `docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-scratch-docker-local/ibmcom/crossplane-common-service-catalog` (names of created images are shown at the end of script's output).
 Tags depend on name of branch on which the script is being run:
 
 * on master: tags latest, `<version>`, `<version>-<timestamp>` (eg. `1.0.0-12345`)
@@ -21,7 +21,7 @@ Tags depend on name of branch on which the script is being run:
     ```
     Artifactory credentials can also be passed to the script via `-ac <artifactory user>:<artofactory token>` option.
 
-2. (Optional) To change repository to which resulting image will be pushed export enviroment variable `REGISTRY` (default is `hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/`).
+2. (Optional) To change repository to which resulting image will be pushed export enviroment variable `REGISTRY` (default is `docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-scratch-docker-local/ibmcom/`).
     ```
     export REGISTRY=<docker repository>
     ```
@@ -57,4 +57,4 @@ Tags depend on name of branch on which the script is being run:
     ```
     ./common/scripts/update_catalogsource.sh <catsrc name> <catsrc image>
     ```
-    ex. `./common/scripts/update_catalogsource.sh opencloud-operators hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom/crossplane-common-service-catalog:1.0.0`
+    ex. `./common/scripts/update_catalogsource.sh opencloud-operators docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-scratch-docker-local/ibmcom/crossplane-common-service-catalog:1.0.0`
