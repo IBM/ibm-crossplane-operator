@@ -32,28 +32,28 @@ artifactory_secret=$(echo -n "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" | base64
 new_pull_secret=$(kubectl -n openshift-config get secret/pull-secret -o jsonpath='{.data.\.dockerconfigjson}' | base64 --decode | tr -d "\r|\n| ")
 
 if [[ -z "$(echo "${new_pull_secret}" | grep 'hyc-cloud-private-scratch-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
+    registry_pull_secret="\"docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-scratch-docker-local\":{\"auth\":\"${artifactory_secret}\"}"
     new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
     new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
     changed=true
 fi
 
 if [[ -z "$(echo "${new_pull_secret}" | grep 'hyc-cloud-private-integration-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
+    registry_pull_secret="\"docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-integration-docker-local\":{\"auth\":\"${artifactory_secret}\"}"
     new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
     new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
     changed=true
 fi
 
 if [[ -z "$(echo "${new_pull_secret}"| grep 'hyc-cloud-private-daily-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
+    registry_pull_secret="\"docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-daily-docker-local\":{\"auth\":\"${artifactory_secret}\"}"
     new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
     new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
     changed=true
 fi
 
 if [[ -z "$(echo "${new_pull_secret}" | grep 'hyc-cloud-private-edge-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
+    registry_pull_secret="\"docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-edge-docker-local\":{\"auth\":\"${artifactory_secret}\"}"
     new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
     new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
     changed=true
