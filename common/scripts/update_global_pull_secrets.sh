@@ -38,34 +38,6 @@ if [[ -z "$(echo "${new_pull_secret}" | grep 'docker-na-public')" ]]; then
     changed=true
 fi
 
-if [[ -z "$(echo "${new_pull_secret}" | grep 'hyc-cloud-private-scratch-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
-    new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
-    new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
-    changed=true
-fi
-
-if [[ -z "$(echo "${new_pull_secret}" | grep 'hyc-cloud-private-integration-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
-    new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
-    new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
-    changed=true
-fi
-
-if [[ -z "$(echo "${new_pull_secret}"| grep 'hyc-cloud-private-daily-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
-    new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
-    new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
-    changed=true
-fi
-
-if [[ -z "$(echo "${new_pull_secret}" | grep 'hyc-cloud-private-edge-docker-local')" ]]; then
-    registry_pull_secret="\"hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com\":{\"auth\":\"${artifactory_secret}\"}"
-    new_pull_secret=$(echo "${new_pull_secret}" | sed -e "s/}}$//")
-    new_pull_secret=$(echo "${new_pull_secret},${registry_pull_secret}}}")
-    changed=true
-fi
-
 if [[ "${changed}" == "true" ]]; then
     echo "${new_pull_secret}" > /tmp/dockerconfig.json
     oc -n openshift-config set data secret/pull-secret --from-file=.dockerconfigjson=/tmp/dockerconfig.json
