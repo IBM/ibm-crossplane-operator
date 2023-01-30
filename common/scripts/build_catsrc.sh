@@ -159,7 +159,7 @@ function set_image_digest() {
     local NAME=$1
     local TAG=$2
     local REG=$3
-    local REGISTRY_URI="hyc-cloud-private-$REG-docker-local.artifactory.swg-devops.com/ibmcom"
+    local REGISTRY_URI="docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-$REG-docker-local/ibmcom"
     local REGISTRY_URL="https://na.artifactory.swg-devops.com/artifactory/hyc-cloud-private-$REG-docker-local/ibmcom"
     info "getting digest for $NAME:$TAG:$REG"
     local DIGEST=$($CURL --user "$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN" \
