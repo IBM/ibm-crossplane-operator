@@ -1,4 +1,4 @@
-# Copyright 2022 IBM Corporation
+# Copyright 2023 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -330,7 +330,7 @@ update-submodule:
 	make copy-operator-data
 	make build-crossplane-binary
 
-BEDROCK_SHIM_CONFIG ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:1.8.7
+BEDROCK_SHIM_CONFIG ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:$(VERSION)
 
 add-bedrockshim-configmap:
 	@echo add-bedrockshim-configmap
@@ -372,7 +372,7 @@ bundle-manifests:
 
 images: build-image-amd64 push-image-amd64 build-image-ppc64le push-image-ppc64le build-image-s390x push-image-s390x ## Build and publish the multi-arch operator image
 ifeq ($(OS),$(filter $(OS),linux darwin))
-	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-$(OS)-$(ARCH)
+	curl -L -o /tmp/manifest-tool https://github.com/estesp/manifest-tool/releases/download/v2.0.6/manifest-tool-$(OS)-$(ARCH)
 	chmod +x /tmp/manifest-tool
 	@echo "Merging and push multi-arch image $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest"
 	/tmp/manifest-tool $(MANIFEST_TOOL_ARGS) push from-args --platforms linux/amd64,linux/ppc64le,linux/s390x --template $(REGISTRY)/$(OPERATOR_IMAGE_NAME):$(VERSION)-$(GIT_VERSION)-ARCH --target $(REGISTRY)/$(OPERATOR_IMAGE_NAME):latest
