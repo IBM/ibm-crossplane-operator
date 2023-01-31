@@ -330,7 +330,7 @@ update-submodule:
 	make copy-operator-data
 	make build-crossplane-binary
 
-BEDROCK_SHIM_CONFIG ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:$(VERSION)
+BEDROCK_SHIM_CONFIG ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/ibm-crossplane-bedrock-shim-config:1.8.7
 
 add-bedrockshim-configmap:
 	@echo add-bedrockshim-configmap
