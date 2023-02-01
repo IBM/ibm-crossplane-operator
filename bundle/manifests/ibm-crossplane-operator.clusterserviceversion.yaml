@@ -343,7 +343,7 @@ metadata:
           "spec": {
             "desiredState": "Active",
             "ignoreCrossplaneConstraints": false,
-            "image": "icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.6",
+            "image": "icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.7",
             "packagePullPolicy": "Always",
             "packagePullSecrets": [
               {
@@ -494,13 +494,13 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: icr.io/cpopen/ibm-crossplane-operator:1.12.0
+    containerImage: icr.io/cpopen/ibm-crossplane-operator:1.12.1
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane,
       an open source Kubernetes add-on that extends any cluster with the ability to
       provision and manage cloud infrastructure, services, and applications using
       kubectl, GitOps, or any tool that works with the Kubernetes API.
-    olm.skipRange: '>=1.0.0 <1.12.0'
+    olm.skipRange: '>=1.0.0 <1.12.1'
     operators.operatorframework.io/builder: operator-sdk-v1.22.1
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
     repository: https://github.com/IBM/ibm-crossplane-operator
@@ -513,7 +513,7 @@ metadata:
     operatorframework.io/arch.ppc64le: supported
     operatorframework.io/arch.s390x: supported
     operatorframework.io/os.linux: supported
-  name: ibm-crossplane-operator.v1.12.0
+  name: ibm-crossplane-operator.v1.12.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -819,8 +819,8 @@ spec:
                 - name: LEADER_ELECTION
                   value: "true"
                 - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-                  value: icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.6
-                image: icr.io/cpopen/ibm-crossplane-operator:1.12.0
+                  value: icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.7
+                image: icr.io/cpopen/ibm-crossplane-operator:1.12.1
                 imagePullPolicy: Always
                 name: ibm-crossplane
                 resources:
@@ -855,7 +855,7 @@ spec:
                 command:
                 - bash
                 - -c
-                image: icr.io/cpopen/ibm-crossplane-operator:1.12.0
+                image: icr.io/cpopen/ibm-crossplane-operator:1.12.1
                 name: copy-config
                 resources:
                   limits:
@@ -1036,9 +1036,9 @@ spec:
   minKubeVersion: 1.19.0
   provider:
     name: IBM
-  version: 1.12.0
+  version: 1.12.1
   relatedImages:
   - name: IBM_CROSSPLANE_BEDROCK_SHIM_CONFIG_IMAGE
-    image: icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.6
+    image: icr.io/cpopen/cpfs/ibm-crossplane-bedrock-shim-config:1.8.7
   - name: IBM_CROSSPLANE_OPERATOR_IMAGE
-    image: icr.io/cpopen/ibm-crossplane-operator:1.12.0
+    image: icr.io/cpopen/ibm-crossplane-operator:1.12.1
