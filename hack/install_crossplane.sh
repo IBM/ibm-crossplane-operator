@@ -19,7 +19,7 @@ if [[ (-z "${ARTIFACTORY_REPO}") ]]; then
     ARTIFACTORY_REPO=integration
 fi
 if [[ (-z "${ARTIFACTORY_URL}") ]]; then
-    ARTIFACTORY_URL="hyc-cloud-private-${ARTIFACTORY_REPO}-docker-local.artifactory.swg-devops.com"
+    ARTIFACTORY_URL="docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-${ARTIFACTORY_REPO}-docker-local"
 fi
 echo "[INFO] ARTIFACTORY_URL set to ${ARTIFACTORY_URL}"
 

@@ -25,7 +25,7 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 TIMESTAMP=$(date +%s)
-SCRATCH_REG="hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com/ibmcom"
+SCRATCH_REG="docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-scratch-docker-local/ibmcom"
 REGISTRY=${REGISTRY:-"$SCRATCH_REG"}
 
 # usage: info <message>;
@@ -159,7 +159,7 @@ function set_image_digest() {
     local NAME=$1
     local TAG=$2
     local REG=$3
-    local REGISTRY_URI="hyc-cloud-private-$REG-docker-local.artifactory.swg-devops.com/ibmcom"
+    local REGISTRY_URI="docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-$REG-docker-local/ibmcom"
     local REGISTRY_URL="https://na.artifactory.swg-devops.com/artifactory/hyc-cloud-private-$REG-docker-local/ibmcom"
     info "getting digest for $NAME:$TAG:$REG"
     local DIGEST=$($CURL --user "$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN" \
@@ -282,7 +282,7 @@ function build_operator_bundle() {
 #### Main functions
 ############################################################
 
-COMMON_SERVICE_BASE_REGISTRY="hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom"
+COMMON_SERVICE_BASE_REGISTRY="docker-na-public.artifactory.swg-devops.com/hyc-cloud-private-daily-docker-local/ibmcom"
 COMMON_SERVICE_BASE_CATSRC="$COMMON_SERVICE_BASE_REGISTRY/ibm-common-service-catalog:latest-validated"
 NEW_CUSTOM_CATSRC="crossplane-common-service-catalog"
 PACKAGES="$OPERATOR_IMG-app"
