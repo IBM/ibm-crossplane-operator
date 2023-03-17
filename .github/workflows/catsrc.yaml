@@ -38,7 +38,7 @@ on:
 
 env:
   GO_VERSION: "1.20.2"
-  GOLANGCI_VERSION: "v1.45"
+  GOLANGCI_VERSION: "v1.51.2"
 
 jobs:
   build-ibm-crossplane-catsrc:
