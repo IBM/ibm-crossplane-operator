@@ -327,6 +327,7 @@ build-crossplane-binary:
 ############################################################
 
 update-submodule:
+	@go version
 	make copy-operator-data
 	make build-crossplane-binary
 
