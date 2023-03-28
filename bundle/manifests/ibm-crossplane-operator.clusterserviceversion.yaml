@@ -502,6 +502,7 @@ metadata:
       kubectl, GitOps, or any tool that works with the Kubernetes API.
     olm.skipRange: '>=1.0.0 <1.12.2'
     operators.operatorframework.io/builder: operator-sdk-v1.22.1
+    operators.operatorframework.io/operator-type: 'non-standalone'
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v2
     repository: https://github.com/IBM/ibm-crossplane-operator
     support: IBM
