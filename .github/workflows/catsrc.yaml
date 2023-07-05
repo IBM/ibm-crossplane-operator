@@ -32,9 +32,11 @@ on:
   push:
     branches:
       - master
+      - release-ltsr
   pull_request:
     branches:
       - master
+      - release-ltsr
 
 env:
   GO_VERSION: "1.20.5"
