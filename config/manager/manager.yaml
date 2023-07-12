@@ -57,7 +57,7 @@ spec:
       securityContext: {}
       initContainers:
         - name: copy-config
-          image: icr.io/cpopen/ibm-crossplane-operator:1.12.5
+          image: icr.io/cpopen/ibm-crossplane-operator:1.12.6
           command:
             - bash
             - '-c'
@@ -125,7 +125,7 @@ spec:
             - name: package-cache
               mountPath: /cache
           terminationMessagePolicy: File
-          image: icr.io/cpopen/ibm-crossplane-operator:1.12.5
+          image: icr.io/cpopen/ibm-crossplane-operator:1.12.6
           args:
             - core
             - start
