@@ -6,7 +6,7 @@ metadata:
     capabilities: Seamless Upgrades
     categories: Developer Tools
     certified: "false"
-    containerImage: icr.io/cpopen/ibm-crossplane-operator:1.12.6
+    containerImage: icr.io/cpopen/ibm-crossplane-operator:1.12.7
     createdAt: "2021-03-04"
     description: The IBM Crossplane Operator installs an IBM modified version of Crossplane,
       an open source Kubernetes add-on that extends any cluster with the ability to
