@@ -39,7 +39,7 @@ on:
       - release-ltsr
 
 env:
-  GO_VERSION: "1.21.8"
+  GO_VERSION: "1.21"
   GOLANGCI_VERSION: "v1.51.2"
 
 jobs:
